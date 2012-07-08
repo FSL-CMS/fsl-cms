@@ -1,0 +1,41 @@
+{* Šablona s kontrolou infromací *}
+
+@{block content}
+
+{if !$existujeLetosniRocnik}
+	<p class="error">Pro letošní rok nebyl vytvořen ročník.</p>	
+{else}
+	<p class="ok">Pro letošní rok byl vytvořen ročník.</p>	
+
+	{if !count($zavodyRocniku)}
+		<p class="error">Pro letošní ročník nejsou přiřazeny žádné závody. <a href="{plink Zavody:edit}" class="add">Přidat nový závod</a></p>
+	{else}
+		<p class="ok">Pro letošní ročník byly přiřazeny závody. <a href="{plink Zavody:edit}" class="add">Přidat nový závod</a></p>
+	
+		{if count($zavodyBezKontaktu['zavody'])}
+			<div class="error">
+			{include '../Zavody/zavody.sprava.phtml', 'zavody' => $zavodyBezKontaktu, 'caption' => 'Závody bez kontaktních údajů'}
+			</div>
+		{else}
+			<p class="ok">Pro všechny letošní závody jsou uvedeny kontaktní údaje.</p>	
+		{/if}
+		
+		{if count($zavodyBezSP['zavody'])}
+			<div class="error">
+			{include '../Zavody/zavody.sprava.phtml', 'zavody' => $zavodyBezSP, 'caption' => 'Soutěže aktuálního ročníku bez možnosti registrace startovního pořadí'}
+			</div>
+		{else}
+			<p class="ok">U všech závodů je možnost registrace startovního pořadí připravena.</p>	
+		{/if}
+		
+		{if count($zavodyBezVysledku['zavody'])}
+			<div class="error">
+			{include '../Zavody/zavody.sprava.phtml', 'zavody' => $zavodyBezVysledku, 'caption' => 'Proběhlé soutěže aktuálního ročníku bez uvedených výsledků'}
+			</div>
+		{else}
+			<p class="ok">U všech proběhlých závodů jsou uvedené výsledky.</p>	
+		{/if}
+	
+	{/if}
+
+{/if}

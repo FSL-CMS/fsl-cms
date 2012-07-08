@@ -1,0 +1,34 @@
+@{block #content}
+
+<h1>Družstvo {$druzstvo['nazev']}</h1>
+
+<dl>
+	<dt>Sbor</dt><dd><a href="{link Sbory:sbor, $druzstvo['id_sboru']}">{$druzstvo['sbor']}</a></dd>
+     <dt>Kategorie</dt><dd>{$druzstvo['kategorie']}</dd>
+     <dt>Počet účastí na závodech</dt><dd>{$druzstvo['pocet_zavodu']}</dd>
+     <dt>Počet získaných bodů</dt><dd>{$druzstvo['pocet_bodu']}</dd>
+</dl>
+
+<h2>Průměrné časy sezón</h2>
+<table>
+	{foreach $prumerneCasySezon_zahlavi as $radky}
+	<tr>
+		{foreach $radky as $radek}
+		<th colspan="{$radek['sirka']}" rowspan="{$radek['vyska']}">{$radek['nazev']}</th>
+		{/foreach}
+	</tr>
+	{/foreach}
+	{foreach $prumerneCasySezon as $sezona => $foo}
+	<tr>
+		<td>{$sezona}</td>
+		{for $i=0; $i<$prumerneCasySezon_oddilu; $i++}
+		{if isset($foo[$i]) }<td>{$foo[$i]['prumer']}</td>{else}<td></td>{/if}
+		{/for}
+	</tr>
+	{/foreach}
+</table>
+
+{widget grafy array(600, 400, 'Druzstva:grafPrumerneCasySezon', $druzstvo['id'])}
+
+<h2>Komentáře k družstvu</h2>
+{include '../Diskuze/diskuze.phtml', 'diskuze' => $diskuze}

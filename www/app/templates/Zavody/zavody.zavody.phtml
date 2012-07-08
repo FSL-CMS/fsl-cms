@@ -1,0 +1,22 @@
+<table class="prehled">
+	<caption>Soutěže {$rocnik->rocnik}. ročníku</caption>
+	<thead>
+		<tr>
+			<th>Datum</th><th>Pořadatel (okres)</th><th>Terče</th><th>Výsledky</th>{if $zavody['sprava'] == true}<th>Správa</th>{/if}
+		</tr>
+	</thead>
+	<tbody>
+{foreach $zavody['zavody'] as $zavod}
+	<tr{if $zavod['zruseno']} class="zruseny-zavod"{/if}>
+		<td class="datum">{$zavod['datum']|datum:0:0:0}</td>
+		<td><a href="{link Zavody:zavod, $zavod['id']}" title="Informace o závodu">{$zavod['nazev']}</a> ({$zavod['okres']})</td>
+		<td class="terce">{$zavod['terce']}</td>
+		<td class="center">{if $zavod['vysledky'] == 1}&check;{/if}</td>
+		{if $zavod['muze_editovat'] == true}<td><a href="{plink Zavody:edit, $zavod['id']}" title="Upravit informace o závodu" class="edit">Upravit</a></td>{/if}
+	</tr>
+{/foreach}
+	<tr class="zapati-tabulky">
+		<td colspan="5"><a href="{link Rocniky:vysledky, $rocnik->id}">Bodová tabulka ročníku {$rocnik->rok}</a></td>
+	</tr>
+	</tbody>
+</table>

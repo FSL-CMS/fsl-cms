@@ -1,0 +1,26 @@
+@{block content}
+
+{snippet sportoviste}
+{if count($sportoviste['sportoviste'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Obec</th><th>Okres</th><th>Popis</th>{if $sportoviste['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $sportoviste['sportoviste'] as $sportoviste_}
+	<tr>
+     	<td>{$sportoviste_['obec']}</a></td>
+     	<td>{$sportoviste_['okres']}</td>
+		<td>{$sportoviste_['popis']|truncate:30}</td>
+     	{if $sportoviste['muze_editovat'] == true}<td><a href="{plink edit, $sportoviste_['id']}" title="Úprava informací o místu" class="edit">Upravit</a></td>{/if}
+     	{if $sportoviste['muze_mazat'] == true}<td><a href="{plink delete!, $sportoviste_['id']}" title="Smazání místa" class="delete">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+<p class="warning">Žádná sportoviště nebyla nalezena.</p>
+{/if}
+{/snippet}

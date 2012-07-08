@@ -1,0 +1,29 @@
+@{block content}
+
+{widget prehledRocniku}
+
+{if $rocniky['muze_editovat'] == true || $rocniky['muze_smazat'] == true}<p class="config">
+	{if $rocniky['muze_editovat'] == true}<a href="{plink Rocniky:edit, $rocnik->id}" title="Upravit informace o ročníku" class="edit">Upravit ročník</a>{/if}
+	{if $rocniky['muze_smazat'] == true} <a href="{plink Rocniky:delete, $rocnik->id}" title="Smazat ročník" class="delete">Smazat ročník</a>{/if}
+</p>{/if}
+
+{if $rocniky['muze_editovat'] == true}
+	{if $rocnik['zverejneny'] == false}<p class="warning">Ročník nebyl zveřejněn. {if count($zavody['zavody'])}<a href="{plink zverejnit!, $rocnik->id}" title="Zveřejnit ročník" class="zverejnit">Zveřejnit ročník!</a>{else}Zveřejnit půjde až po přidání závodů.{/if}</p>{/if}
+{/if}
+
+<p><a href="{plink Pravidla:pravidla, $rocnik['id_pravidel']}">Pravidla ročníku {$rocnik['rok']}</a></p>
+
+{if count($zavody['zavody'])}
+	{if $zavody['muze_editovat'] == true}<p class="config"><a href="{plink Zavody:add}" title="Přidat nový závod" class="add">Přidat nový závod</a></p>{/if}
+{if $zavody['muze_editovat'] == false}
+	{include '../Zavody/zavody.zavody.phtml'}
+{else}
+	{include '../Zavody/zavody.sprava.phtml', caption => 'Soutěže '.$rocnik->rocnik.'. ročníku'}
+{/if}
+
+<h2>Všechny soutěže tohoto ročníku</h2>
+{widget mapa:prehledZavodu $zavody['pozice']}
+
+{else}
+	<p class="warning">Nebyly nalezeny žádné závody. {if $zavody['muze_editovat'] == true}<a href="{plink Zavody:add}" title="Přidat nový závod" class="add">Přidat nový závod!</a>{/if}</p>
+{/if}

@@ -1,0 +1,25 @@
+@{block content}
+
+<div class="aktivni-diskuze">
+<h2>Aktivní diskuze za poslední týden</h2>
+{if count($diskuze['aktivni'])}
+	<ul>
+	{foreach $diskuze['aktivni'] as $id => $disk}
+		<li>diskuze <a href="{link Diskuze:diskuze, $id}">{$disk['tema_diskuze']}</a>, <ul><li>téma <a href="{link Forum:forum, $disk['id_tematu']}">{$disk['tema']}</a></li><li>poslední příspěvek {$disk['datum_pridani']|Datum:0:0:0}</li></ul></li>
+	{/foreach}
+	</ul>
+{else}
+	<p class="warning">Zrovna není aktivní žádné téma diskuze.</p>
+{/if}
+</div>
+
+{if $temata['muze_pridavat'] == true}<p><a href="{plink Temata:edit}" title="Přidat nové téma" class="add">Přidat nové téma</a></p>{/if}
+
+{if count($fora['fora'])}
+	{foreach $fora['fora'] as $forum}
+		<h3><a href="{plink Forum:forum, $forum['id']}">{$forum['nazev']}</a>{if $forum['muze_editovat'] == true} <a href="{plink Temata:edit, $forum['id']}" class="edit">Upravit</a>{/if}{if $forum['muze_smazat'] == true} <a href="{plink Temata:delete, $forum['id']}" class="delete">Smazat</a>{/if}</h3>
+		<p>Počet diskuzí: {$forum['pocet_diskuzi']}.</p>
+	{/foreach}
+{else}
+	<p class="warning">Ve fóru není zatím žádné téma.</p>
+{/if}

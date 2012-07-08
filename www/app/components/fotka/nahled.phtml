@@ -1,0 +1,14 @@
+{* Šablona s náhledem fotky *}
+
+{if $control->fotka !== false}
+	<div class="fotka-nahled">
+		<div class="odkazy-ve-fotce">
+			{if $control->fotka['muze_smazat']}<a href="{link smazat! $control->fotka['id']}" class="ajax delete">Smazat</a>{/if}
+		</div>
+		<a href="{plink Fotky:fotka, $control->fotka['id']}" title="Velká fotka" class="zvetsenina" rel="galerie">
+			<img src="{plink Fotky:nahled, $control->fotka['id']}" width="{$control->fotka['sirka']}" height="{$control->fotka['vyska']}" />
+		</a>
+	</div>
+{else}
+<p>Smazaná fotka.</p>
+{/if}

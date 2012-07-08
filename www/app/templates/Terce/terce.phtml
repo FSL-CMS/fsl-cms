@@ -1,0 +1,34 @@
+@{block content}
+
+<h2>Informace o terčích{if $terc['muze_editovat'] == true} <a href="{plink Terce:edit, $terc['id']}" title="Upravit informace o terčích" class="edit">Upravit</a>{/if}</h2>
+
+<dl>
+	<dt>Typ terčů</dt><dd>{$terc->typ}</dd>
+	<dt>Majitel terčů</dt><dd><a href="{link Sbory:sbor, $terc->id_majitele}" title="Informace o majiteli terčů">{$terc->majitel}</a></dd>
+	{if !empty($terc['text'])}<dt>Informace</dt><dd>{!$terc['text']|texy}</dd>{/if}
+{widget souvisejici 'terce', $terc->id}
+</dl>
+
+{foreach $nejlepsiCasy as $kategorie => $foo}
+<h2>Nejlepší čas terče v kategorii {$kategorie}</h2>
+<table class="prehled">
+	<thead>
+	<tr>
+		<th>Pořadí</th><th>Družstvo</th><th>Závod</th><th>Čas</th>
+	</tr>
+	</thead>
+	<tbody>
+{foreach $foo as $vysledek}
+	<tr>
+	     <td class="poradi">{$vysledek['poradi']}.</td>
+	     <td><a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td>
+          <td><a href="{plink Zavody:zavod, $vysledek['id_zavodu']}" title="Informace o závodu">{$vysledek['poradatel']}</a> ({$vysledek['okres']})</td>
+          <td class="cas">{$vysledek['vysledny_cas']|vyslednyCas}</td>
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{/foreach}
+
+<h2>Komentáře k terčům</h2>
+@{widget diskuze $terc->id, 'terce'}

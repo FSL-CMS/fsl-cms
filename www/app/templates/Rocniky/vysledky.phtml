@@ -1,0 +1,51 @@
+@{block content}
+
+{widget prehledRocniku}
+
+{if false && isset($zavod)}<p><a href="{plink Zavody:zavod, $zavod['id']}" title="Informace o závodu"><< Přejít zpět na závod {$zavod['nazev']}, {$zavod['datum']|datum:1:0:0}</a></p>{/if}
+
+{if count($vysledky)}
+{foreach $vysledky as $soutez => $vysledkySouteze}
+{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
+<table class="prehled{if !$iterator->isLast()} zalomit-za{/if}" id="toc-{$soutez|webalize}-{$kategorie|webalize}">
+	<caption>{block|texy:true}Výsledky kategorie <span class="{$kategorie|webalize}">{$kategorie}</span> v soutěži **{$soutez}**{/block}</caption>
+<thead>
+	<tr>
+		<th class="poradi">Pořadí</th><th>Družstvo</th><th class="body" colspan="2">Získané body</th>
+	</tr>
+</thead>
+<tbody>
+{foreach $vysledkyKategorie as $vysledek}
+{? $pocetRadku = (isset($vysledek['lepsi']) ? count($vysledek['lepsi']) : 0)+(isset($vysledek['horsi']) ? count($vysledek['horsi']) : 0)+1; }
+	<tr>
+		<td class="poradi">{$vysledek['poradi']}.</td>
+		<td><a href="{link Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td>
+		<td class="body">{$vysledek['celkem_bodu']}{ifset $vysledek['odkazy']} {foreach $vysledek['odkazy'] as $odkaz}<a href="#odkaz-pod-carou-{$odkaz}" class="odkaz-pod-caru">{$odkaz})</a> {/foreach}{/ifset}</td>
+		<!--td>
+			{* ifset $vysledek['lepsi']}{foreach $vysledek['lepsi'] as $lepsi}<p>Družstvo dosáhlo více lepších umístění než {$lepsi['druzstvo']}. {$vysledek['prubeh']|implode:", "}</p>{/foreach}{/ifset *}
+			{* ifset $vysledek['horsi']}{foreach $vysledek['horsi'] as $lepsi}<p>Družstvo dosáhlo méně lepších umístění než {$lepsi['druzstvo']}. {$vysledek['prubeh']|implode:", "}</p>{/foreach}{/ifset *}
+		</td-->
+	</tr>
+{/foreach}
+</tbody>
+</table>
+{/foreach}
+{/foreach}
+
+{if count($komentare)}
+<h3>Vysvětlivky ke shodným bodům</h3>
+<ol>
+{foreach $komentare as $poznamka}
+	<li id="odkaz-pod-carou-{$poznamka['odkaz']}">Družstvo {$poznamka['druzstvo']['druzstvo']|texy:true} dosáhlo více lepších umístění, než {$poznamka['srovnavane']['druzstvo']|texy:true}. Rozhodlo: {$poznamka['srovnavane']['rozhodujici']}. místo.
+		<ul>
+			<li>{$poznamka['druzstvo']['druzstvo']|texy:true}: {!$poznamka['druzstvo']['prubeh']|implode:"., "|indent:1:" "|texy:true}. místo</li>
+			<li>{$poznamka['srovnavane']['druzstvo']|texy:true}: {!$poznamka['srovnavane']['prubeh']|implode:"., "|indent:1:" "|replace:"".$poznamka['srovnavane']['rozhodujici'].".":" **".$poznamka['srovnavane']['rozhodujici'].".**"|texy:true}. místo</li>
+		</ul>
+
+	</li>
+{/foreach}
+</ol>
+{/if}
+{else}
+	<p class="warning">Z tohoto ročníku nejsou žádné výsledky.</p>
+{/if}

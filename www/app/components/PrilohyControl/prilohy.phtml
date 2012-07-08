@@ -1,0 +1,56 @@
+{snippet prilohy}
+{if $prilohy['muze_editovat']}
+	{widget prilohyForm begin}
+	<table class="prehled">
+		<caption>Přiložené soubory</caption>
+		<thead>
+			<tr>
+				<th colspan="2">Soubor</th><th>Přípona<th>Počet stáhnutí</th><th>Datum přidání</th><th>Správa</th>
+			</tr>
+		</thead>
+		<tbody>
+	{if count($prilohy['prilohy'])}
+		{foreach $prilohy['prilohy'] as $priloha}
+			<tr>
+				<td><a href="{plink Soubory:soubor, $priloha['id']}" title="Stáhnout soubor">{$priloha['nazev']}</a></td>
+				<td>{$control['prilohyForm']['prilohy'][$priloha['id']]['id']->control}{$control['prilohyForm']['prilohy'][$priloha['id']]['nazev']->control}</td>
+				<td class="pripona">{$priloha['pripona']}</td>
+				<td class="pocet-stahnuti">{$priloha['pocet_stahnuti']} &times;</td>
+				<td class="datum">{$priloha['datum_pridani']}</td>
+				<td><a href="{link delete!, $priloha['id']}" title="Smazat" class="delete ajax">Smazat</a></td>
+			</tr>
+		{/foreach}
+	{else}
+			<tr>
+				<td colspan="6">Nebyly přiloženy žádné soubory.</td>
+			</tr>
+	{/if}
+			<tr>
+				<td colspan="6">{if count($prilohy['prilohy'])}{$control['prilohyForm']['save']->control} {/if}{$control['prilohyForm']['addNew']->control}</td>
+			</tr>
+		</tbody>
+	</table>
+	{widget prilohyForm end}
+{else}
+	{if count($prilohy['prilohy'])}
+	<table class="prehled tablesort">
+		<caption>Přiložené soubory</caption>
+		<thead>
+			<tr>
+				<th>Soubor</th><th>Přípona<th>Počet stáhnutí</th><th>Datum přidání</th>
+			</tr>
+		</thead>
+		<tbody>
+	{foreach $prilohy['prilohy'] as $id => $priloha}
+		<tr>
+			<td><a href="{plink Soubory:soubor, $priloha['id']}" title="Stáhnout soubor">{$priloha['nazev']}</a></td>
+			<td class="pripona">{$priloha['pripona']}</td>
+			<td class="pocet-stahnuti">{$priloha['pocet_stahnuti']} &times;</td>
+			<td class="datum">{$priloha['datum_pridani']|datum}</td>
+		</tr>
+	{/foreach}
+		</tbody>
+	</table>
+	{/if}
+{/if}
+{/snippet}

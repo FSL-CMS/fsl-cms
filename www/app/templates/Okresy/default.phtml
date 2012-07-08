@@ -1,0 +1,25 @@
+@{block content}
+
+{if $okresy['muze_pridat']}<p><a href="{plink Okresy:add}" class="add">Přidat nový okres</a></p>{/if}
+
+{if count($okresy['okresy'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Název</th><th>Zkratka</th>{if $okresy['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $okresy['okresy'] as $okres}
+	<tr>
+     	<td>{$okres['nazev']}</td>
+     	<td>{$okres['zkratka']}</td>
+     	{if $okresy['muze_editovat'] == true}<td><a href="{plink edit, $okres['id']}" title="Úprava informací o okresu" class="edit">Upravit</a></td>{/if}
+     	{if $okresy['muze_mazat'] == true}<td><a href="{plink delete!, $okres['id']}" title="Smazání okresu" class="ajax delete">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádná okresy nebyly nalezeny.</p>
+{/if}

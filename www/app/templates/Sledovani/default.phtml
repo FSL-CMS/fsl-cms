@@ -1,0 +1,25 @@
+@{block content}
+
+
+{snippet sledovani}
+{if count($sledovani['sledovani'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Kdo sleduje</th><th>Co sleduje</th>{if $sledovani['muze_mazat'] == true}<th colspan="1">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $sledovani['sledovani'] as $sled}
+	<tr>
+     	<td><a href="{plink Uzivatele:uzivatel, $sled['id_uzivatele']}">{$sled['uzivatel']}</a></td>
+     	<td>{$sled['tabulka']}</td>
+     	{if $sledovani['muze_mazat'] == true}<td><a href="{plink delete!, $sled['id']}" title="Smazání sledování" class="delete ajax">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádná místa nebyla nalezena.</p>
+{/if}
+{/snippet}

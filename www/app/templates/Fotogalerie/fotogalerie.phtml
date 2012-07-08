@@ -1,0 +1,19 @@
+@{block #content}
+
+{widget souvisejici 'fotogalerie', $galerie['id'] }
+
+{include 'galerie.phtml'}
+
+{if !empty($galerie['text'])}
+	{block|texy}{$galerie['text']}{/block}
+{/if}
+
+{snippet galerie}
+{if count($fotky['fotky'])}
+	{foreach $fotky['fotky'] as $fotka}
+		{widget fotka:nahled $fotka}
+	{/foreach}
+{else}
+<p class="warning">V galerii nejsou žádné fotogfafie.{if $fotky['muze_pridavat'] == true} <a href="{plink Fotogalerie:pridatFotky, $galerie['id']}" class="add">Přidat nové!</a>{/if}</p>
+{/if}
+{/snippet}

@@ -1,0 +1,21 @@
+{block content}
+
+<h1>Kontakty</h1>
+
+<table>
+	<thead>
+		<tr>
+			<th>Jméno a příjmení</th><th>Funkce</th><th>Kontakt</th><th>Sbor</th>
+		</tr>
+	</thead>
+     <tbody>
+		{foreach $kontaktniOsoby as $osoba}
+		<tr>
+			<td><a href="{plink Uzivatele:uzivatel, $osoba['id']}">{$osoba['jmeno']} {$osoba['prijmeni']}</a></td>
+               <td>{if $osoba['kategorie'] == 'rada'}{$osoba['funkce']}{else}Pořadatel závodu <a href="{link Zavody:zavod, $osoba['id_zavodu']}">{$osoba['funkce']}, {$osoba['datum_zavodu']|datum:0:0:0}</a>{/if}</td>
+               <td>{!$osoba['kontakt']|texy}</td>
+               <td><a href="{link Sbory:sbor, $osoba['id_sboru']}">{$osoba['sbor']}</a></td>
+		</tr>
+		{/foreach}
+	</tbody>
+</table>

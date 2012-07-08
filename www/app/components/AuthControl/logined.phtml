@@ -1,0 +1,13 @@
+{* Šablona pro ukázání informací o přihlášeném uživateli *}
+
+<table class="login">
+	<tr class="input">
+		<th>Přihlášen</th><td><a href="{plink Uzivatele:uzivatel, $control->uzivatel->id}" title="Informace o uživateli">{$control->uzivatel->jmeno} {$control->uzivatel->prijmeni}</a></td>
+	</tr>
+	<tr class="input">
+		<th>Oprávnění</th><td>{$control->uzivatel->opravneni}</td>
+	</tr>
+	<tr>
+		<td></td><td><a href="{link logout}">Odhlásit se!</a></td>
+	</tr>
+</table>

@@ -1,0 +1,27 @@
+{* Šablona pro statistiku průměrných časů *}
+
+@{block content}
+
+{foreach $nejviceBodovanaDruzstva as $soutez => $foobar}
+{foreach $foobar as $kategorie => $foo}
+<table class="prehled tablesorter">
+     <caption>{block|texy:true}Nejlépe bodovaná družstva v kategorii **{$kategorie}** v soutěži **{$soutez}**{/block}</caption>
+	<thead>
+		<tr>
+			<th>Pořadí</th><th>Družstvo</th><th>Počet bodů</th><th>Počet účastí</th><th>Průměr bodů na závod</th>
+		</tr>
+     </thead>
+     <tbody>
+	{foreach $foo as $druzstva}
+		<tr>
+			<td class="poradi">{$druzstva['poradi']}.</td>
+	          <td><a href="{link Druzstva:druzstvo, $druzstva['id_druzstva']}">{$druzstva['druzstvo']}</a></td>
+	          <td class="body">{$druzstva['celkem_bodu']}</td>
+	          <td class="body">{$druzstva['celkem_zavodu']}</td>
+	          <td class="body">{$druzstva['prumer']}</td>
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{/foreach}
+{/foreach}

@@ -1,0 +1,27 @@
+@{block content}
+
+{if $terce['muze_editovat'] == true}<p><a href="{plink edit}" title="Přidání nových terčů" class="add">Přidat nové terče</a></p>{/if}
+
+{snippet terce}
+{if count($terce['terce'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Majitel</th><th>Typ</th><th>Počet použití</th><th>Informace</th>{if $terce['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $terce['terce'] as $terc}
+	<tr>
+     	<td><a href="{link Sbory:sbor, $terc['id_majitele']}" title="Zobrazit informace o sboru">{$terc['majitel']}</a></td><td>{$terc['typ']}</td><td>{$terc['pocet_pouziti']}&times;</td>
+     	<td><a href="{link Terce:terce, $terc['id']}" title="Zobrazit informace o terčích">informace</a></td>
+     	{if $terce['muze_editovat'] == true}<td><a href="{plink edit, $terc['id']}" title="Úprava informací o terči" class="edit">Upravit</a></td>{/if}
+     	{if $terce['muze_mazat'] == true}<td><a href="{plink delete!, $terc['id']}" title="Smazání terčů" class="ajax delete">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádné terče nebyly nalezeny.</p>
+{/if}
+{/snippet}

@@ -1,0 +1,8 @@
+@{block content}
+
+{include @Clanky.clanek.phtml, 'clanek' => $clanek}
+
+@{widget prilohy}
+
+<h2>Komentáře k článku</h2>
+@{widget diskuze $clanek['id'], "clanky"}

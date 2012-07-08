@@ -1,0 +1,44 @@
+{* Šablona pro výpis stránky s editací ankety *}
+
+@{block content}
+
+{widget editForm begin}
+{widget editForm errors}
+
+<fieldset>
+	<legend>Informace o bodové tabulce</legend>
+	<table>
+		<tbody>
+			<tr>
+				<th>{$control['editForm']['pocet_bodovanych_pozic']->label}</th><td>{$control['editForm']['pocet_bodovanych_pozic']->control}</td>
+			</tr>
+		</tbody>
+	</table>
+</fieldset>
+
+<fieldset>
+	<legend>Bodové hodnocení</legend>
+	{if isset($control['editForm']['body']) && count($control['editForm']['body'])}
+	<table class="prehled">
+		<thead>
+			<tr>
+				<th>Pořadí</th><th>Body</th>
+			</tr>
+		</thead>
+		<tbody>
+			{foreach $control['editForm']['body']->getComponents() as $bod}
+			<tr>
+				<td>{$bod['poradi']->control->class('poradi')}</td>
+				<td>{$bod['body']->control}</td>
+			</tr>
+			{/foreach}
+		</tbody>
+	</table>
+	{else}
+		<p class="warning">Bodové hodnocení bude možno zadat po uložení informací o bodové tabulce.</p>
+	{/if}
+</fieldset>
+
+<p>{$control['editForm']['save']->control} {$control['editForm']['saveAndReturn']->control} {$control['editForm']['cancel']->control}</p>
+
+{widget editForm end}

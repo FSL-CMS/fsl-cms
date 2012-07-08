@@ -1,0 +1,368 @@
+html {margin: 0; padding: 0;}
+body {font: 14px/1.7 Arial, sans-serif; color: #000; margin: 0;	padding: 0;}
+
+a img		{border: 0;}
+
+h1			{font-size: 180%; color: #000; padding-bottom: 0px;}
+h2			{font-size: 135%; font-weight: bold;}
+h3, caption	{font-size: 120%; font-weight: bold;}
+h4			{font-size: 110%; font-weight: bold;}
+
+h2 + ul, h3 + ul,
+h4 + ul			{margin-top: -1em;}
+h2 + p			{margin-top: -0.5em;}
+
+dt	{font-weight: bold;}
+dd ul {margin-top: 0; margin-bottom: 0.5em;}
+dd > p			{margin-top: 0;}
+dd + dt, dd + div	{margin-top: 1.5em;}
+
+strong	{font-weight: bold;}
+
+table h3			{margin: 0; padding: 0;}
+td p			{margin: 0 !important;}
+td p + p		{margin-bottom: 1em;}
+.zapati-tabulky {text-align: center;}
+
+.odkaz-pod-caru	{vertical-align: super; font-size: 80%;}
+.cleaner			{display: block; clear: both;}
+.center			{text-align: center;}
+
+h2 .edit, h3 .edit, h2 .delete, h3 .delete, h2 .add	{font-size: 80%; font-weight: normal;}
+.paginator	{text-align: center; clear: left;}
+.nadpis-zvyrazneny	{color: rgb(218, 37, 29);}
+
+.muzi	{color: #008;}
+.zeny	{color: #800;}
+.veterani	{color: #080;}
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled layoutu stránek */
+#main		{width: 1000px; margin: 0 auto; position: relative; background: #fff;}
+#postrani		{width: 200px; float: left; padding: 20px 0 0 10px; background: #fff;}
+#hlavni-obsah	{width: 715px; float: right; padding: 20px 40px 0 25px; background: #fff; border-left: 1px solid #aaa;}
+#hlavni-obsah h2	{clear: left;}
+#zahlavi		{height: 235px; width: 1000px; position: relative;}
+#patka		{clear: both; margin-left: 20px; padding: 30px 30px 30px 0px;}
+#patka .logo	{float: left; margin-right: 20px;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* styly tabulek */
+/*table	{clear: both; border-collapse: collapse; text-align: center; margin: 0 auto;}*/
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled formulářů */
+form table	{margin-left: 0; margin-right: 0; text-align: left; border: 0;}
+form th		{border-color: #fff; background-color: #aaa;}
+form td		{border: 0px;}
+/*th			{color: #000; background: rgb(141, 205, 199); font-weight: bold;}*/
+/*th, td		{padding: 3px; border: 1px solid #000;}*/
+/*thead		{font-size: 110%; text-align: center; font-size: 110%;}*/
+fieldset table	{margin-bottom: 0 !important;}
+fieldset table + table	{margin-bottom: 1.5em;}
+
+div.ui-datepicker {font-size: 60%;}
+/*input.datepicker, input.datetimepicker {background: transparent url('../images/icons/calendar.png') no-repeat right; border: 1px solid #CCCCCC; padding-right: 20px; padding: 0.2em;}*/
+/* ----------------------------------------------------------------------mp-- */
+
+/* ----------------------------------------------------------------------mp-- */
+/* Tabulka vložená do textu prostřednictvím texy */
+.tabulka-v-textu	{clear: both; border-collapse: collapse; text-align: center; margin: 0 auto;}
+.tabulka-v-textu th	{font-weight: bold;}
+.tabulka-v-textu th,
+.tabulka-v-textu td	{padding: 3px; border: 1px solid #000;}
+/* ----------------------------------------------------------------------mp-- */
+
+/* ----------------------------------------------------------------------mp-- */
+/*
+Tabulka obsahující přehled dat => přehledová tabulka
+- zvýrazněné záhlaví
+- vyznačené sudé/liché řádky
+*/
+table.prehled		{margin: 0 auto; border-collapse: collapse; min-width: 60%;}
+table.prehled tbody tr:nth-child(even) {background: #ccc;}
+table.prehled tbody tr:nth-child(odd) {}
+table.prehled th,
+table.prehled td	{padding: 3px;}
+table.prehled th	{color: #000; background: #aaa; border: 0px; font-weight: bold;}
+table.prehled td	{border: 0px;}
+table.prehled thead	{border-bottom: #000 double 3px; font-size: 110%;}
+table.prehled tbody	{text-align: left;}
+
+table.prehled tbody.barevna tr:nth-child(even)	{background: #fff;}
+table.prehled tbody.barevna tr:nth-child(odd)	{background: #fff;}
+table.prehled tbody.barevna tr.suda	{background: #ccc;}
+
+/* Vlastnosti speciálních sloupců přehledové tabulky */
+table.prehled .datum	{text-align: center;}
+table.prehled .rocnik	{text-align: center;}
+table.prehled .cas		{text-align: center;}
+table.prehled .nejlepsi	{font-weight: bold;}
+table.prehled .poradi	{text-align: center; width: 55px;}
+table.prehled .body		{text-align: center; width: 70px;}
+table.prehled .terce	{text-align: center;}
+table.prehled .pocet-stahnuti {text-align: center;}
+table.prehled .pripona	{text-align: center;}
+table.prehled .ukazatel-prubehu {text-align: center;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Odkaz pro tisk */
+.tisk			{float: right; width: 100px; cursor: pointer; position: relative; top: -4.5em; right: -40px; margin-bottom: 0 !important;}
+.tisk span		{padding-left: 20px; background: url('../images/icons/printer.png') left center no-repeat; margin: 0; cursor: pointer;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Sloupcová úprava */
+.dva-sloupce .sloupec			{width: 48%; float: left;}
+.dva-sloupce .sloupec +.sloupec	{margin-left: 4%;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Styly článků */
+.clanek			{clear: left;}
+.clanek + .clanek	{padding-top: 5px; margin-top: 10px;}
+.clanek-paticka	{clear: both;}
+.clanek-zahlavi	{font-size: 90%; margin-top: -1em; margin-bottom: 0.5em !important;}
+.perex > p		{margin-top: 0;}
+.clanek h2 + h2	{margin-top: -1em;}
+h2 + .perex		{margin-top: -0.5em;}
+
+.sloupec-clanku	{width: 504px; padding-right: 10px; border-right: 1px solid #000;}
+
+.kategorie-clanku		{width: 190px; float: right; margin-left: 10px;}
+.kategorie-clanku ul	{padding-left: 20px;}
+.kategorie-clanku > h4	{margin-top: 0;}
+.aktivni-diskuze		{float: right; width: 400px;}
+.aktivni-diskuze h2		{margin-top: 0;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled diskuzí */
+.diskuze-nastaveni		{text-align: center;}
+.komentar-form			{}
+.vypis-komentaru		{margin-left: 2em;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Přetahování položek */
+.sortable .handle {width: 20px; text-align: center;}
+.handle *	{display: none;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled ročníků a závodů */
+.nezverejneny-rocnik	{text-decoration: line-through;}
+.prehled-rocniku		{text-align: center;}
+.zruseny-zavod *		{text-decoration: line-through;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Odkazy pro vpřed/vzad */
+.relativni-odkazy .predchozi		{float: left; width: 49%; text-align: right;}
+.relativni-odkazy .nasledujici	{float: right; width: 49%;}
+.relativni-odkazy p				{margin: 0 !important;}
+.relativni-odkazy:after			{content:"."; display: block; height: 0; clear: both; visibility: hidden;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled fotek a fotogalerií */
+.fotka img	{display: block;}
+.fotka		{position: relative; width: 800px;}
+.fotka-nahled	{position: relative; width: 180px; height: 135px; float: left; margin-right: 20px; margin-bottom: 20px; text-align: center;}
+.fotka-nahled .odkazy-ve-fotce, .fotka .odkazy-ve-fotce {position: absolute; left: 2px; top: 2px; background: #fff;}
+.fotka-nahled .odkazy-ve-fotce, .fotka .odkazy-ve-fotce a {display: block;}
+.fotka-nahled img	{-moz-box-shadow: 3px 3px 4px #000; -webkit-box-shadow: 3px 3px 4px #000; box-shadow: 3px 3px 4px #000;}
+.fotka-profilova img {-moz-box-shadow: 3px 3px 4px #000; -webkit-box-shadow: 3px 3px 4px #000; box-shadow: 3px 3px 4px #000;}
+.fotka-nahled a	{}
+.fotka-v-clanku	{text-align: center;}
+
+.nahledy img	{width: 120px; height: 90px;}
+
+.odkaz-na-galerii .fotka-profilova	{float: right; width: 200px; height: 130px;}
+
+.fotky-v-textu	{clear: left;}
+
+.video		{text-align: center;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled varovných zpráv */
+.flash		{color: black; background: #FFF9D7; border: 1px solid #E2C822; padding: 1em; margin: 1em 0;}
+.ok			{border: 1px solid #060 !important; color: #060 !important; background: #efd url('../images/icons/accept.png') 0.5em center no-repeat !important; padding-left: 2em !important;}
+.error		{border: 1px solid #f00 !important; background: #fed !important; color: #f00 !important;}
+.warning		{border: 1px solid #E2C822; color: #000; background: #FFF9D7 url('../images/icons/error.png') 0.5em center no-repeat; padding-left: 2em !important;}
+.flash .edit	{border: 1px solid #E2C822; background: #FFF9D7; color: #000;}
+div.ok, div.error, div.warning, div.edit, div.delete,
+p.ok, p.error, p.warning, p.edit, p.delete {padding: 1em;}
+p.edit a		{background: url('../images/icons/pencil.png') left no-repeat; padding-left: 20px;}
+
+/* Varovné zprávy ve formuláři */
+.form-error-message {color: #f00; background: url('../images/icons/error.png') 0.5em center no-repeat; padding-left: 2em;}
+.form-control-error {border: #f00 solid 1px; color: #f00;}
+.form-valid-message {color: #060; background: url('../images/icons/accept.png') 0.5em center no-repeat; padding-left: 2em;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* Vzhled speciálních odkazů */
+a.add			{padding-left: 20px; background: url('../images/icons/add.png') left center no-repeat;}
+a.edit			{padding-left: 20px; background: url('../images/icons/pencil.png') left center no-repeat;}
+a.commentEdit		{padding-left: 20px; background: url('../images/icons/pencil.png') left center no-repeat;}
+a.delete			{padding-left: 20px; background: url('../images/icons/bin.png') left center no-repeat;}
+a.commentAdd		{padding-left: 20px; background: url('../images/icons/comment_add.png') left center no-repeat;}
+a.commentDelete	{padding-left: 20px; background: url('../images/icons/comment_delete.png') left center no-repeat;}
+a.odemknout		{padding-left: 20px; background: url('../images/icons/lock_open.png') left center no-repeat;}
+a.zamknout		{padding-left: 20px; background: url('../images/icons/lock.png') left center no-repeat;}
+a.commentMonitor	{padding-left: 20px; background: url('../images/icons/email_go.png') left center no-repeat;}
+a.nesledovat		{padding-left: 20px; background: url('../images/icons/email_go.png') left center no-repeat;}
+a.zverejnit		{padding-left: 20px; background: url('../images/icons/eye.png') left center no-repeat;}
+a.help			{padding-left: 20px; background: url('../images/icons/help.png') left center no-repeat;}
+a.printer			{padding-left: 20px; background: url('../images/icons/printer.png') left center no-repeat;}
+
+a.aktualni-odkaz	{text-decoration: none;}
+/* ----------------------------------------------------------------------mp-- */
+
+p, div.ok, div.error, table.prehled, fieldset {margin-bottom: 1.5em !important;}
+
+/* ----------------------------------------------------------------------mp-- */
+/* Řazení tabulek */
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	padding-right: 25px;
+}
+table.tablesorter thead tr .header {
+	background-image: url(../js/tablesorter/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../js/tablesorter/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(../js/tablesorter/desc.gif);
+}
+table.tablesorter thead tr .header:hover {
+	background-color: #ddd;
+}
+/* ----------------------------------------------------------------------mp-- */
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* MapaControl */
+#mapa			{}
+.misto-zavodu		{width: 300px; float: right;}
+.misto-zavodu #mapa	{width: 300px; height: 350px;}
+.mala-mapa		{width: 200px; height: 200px; float: right;}
+.vyber-polohy		{width: 550px; height: 400px;}
+.prehled-zavodu	{width: 700px; height: 400px;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* SlideshowControl */
+.slideshow img	{top: 0; left: 0; position: absolute;}
+.slideshow	{z-index: 0; position: relative; height: 235px; width: 1000px; top: 0; left: 0; position: absolute;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* NavigationControl */
+.breadcrumbs				{margin-bottom: 1.5em; line-height: 25px;}
+.breadcrumbs img			{-moz-vertical-align: 20%; padding-left: 5px;}
+.breadcrumbs a				{color: #000 !important;}
+.breadcrumbs a.aktualni-odkaz	{}
+.breadcrumbs .single		{-moz-position: relative; -moz-top: -7px;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* FacebookConnectControl */
+.facebook-login		{display: block; width: 120px; text-align: center; margin: 0 auto;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* PrehledSouteziControl */
+.prehled-soutezi				{width: 100%; margin-bottom: 1.5em;}
+.prehled-soutezi h2				{text-align: center; line-height: 45px; font-size: 20px; -webkit-margin-after: 0px; margin: 0 0 10px 0; padding: 0;}
+.prehled-soutezi h2	+ ul			{margin: 0;}
+.prehled-soutezi h2 strong		{}
+.prehled-soutezi ul				{padding: 0;}
+.prehled-soutezi .zavod			{list-style-type: none; margin: 0; padding: 0; line-height: 30px; height: 30px;}
+.prehled-soutezi .zavod + .zavod	{}
+.prehled-soutezi .zavod a		{display: block; font-weight: bold; width: 100%; margin: 0; padding: 0 0 0 20px; position: relative; text-decoration: none;}
+.prehled-soutezi .zavod a .nazev	{display: block; height: 30px; width: 140px; overflow: hidden;}
+.prehled-soutezi .zavod a .datum	{display: block; width: 40px; position: absolute; top: 0; left: 160px; padding-right: 10px; text-align: right;}
+.prehled-soutezi .byl a			{}
+.prehled-soutezi .zruseny		{text-decoration: line-through;}
+.prehled-soutezi .zavod a:hover	{}
+.prehled-soutezi .je a			{text-decoration: underline;}
+.prehled-soutezi .celkove-vysledky	{text-align: center;}
+.prehled-soutezi .stav			{width: 20px; text-align: center; float: left; font-size: 130%;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* PrehledPoradiControl */
+#prehled-poradi table	{border-collapse: collapse; text-align: center; width: 100%; margin-bottom: 1.5em;}
+#prehled-poradi tbody	{text-align: left;}
+#prehled-poradi td		{padding-bottom: 3px; padding-top: 6px; border: 0px;}
+#prehled-poradi th		{background-color: transparent; color: #000; border: 0px; padding-bottom: 5px;}
+#prehled-poradi th,
+#prehled-poradi td		{text-align: center;}
+#prehled-poradi .datum	{text-align: right; font-weight: bold;}
+#prehled-poradi thead	{font-size: 95%;}
+#prehled-poradi h2		{text-align: center;}
+#prehled-poradi .odkaz-na-vysledky	{text-align: center;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* AuthControl */
+.login td, .login th	{border: 0px;}
+.login input			{width: 140px;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* ----------------------------------------------------------------------mp-- */
+/* PollControl */
+.anketa				{float: left; margin-bottom: 1.5em;}
+.anketa td, .anketa th	{border: 0px;}
+.anketa thead			{font-style: italic; line-height: 1.2;}
+.anketa thead p		{padding: 5px 0; text-align: center;}
+.anketa .otazka		{text-align: left;}
+.anketa .hlasy			{text-align: right;}
+.anketa + .anketa		{margin-left: 25px;}
+.anketa .bar			{height: 10px; background-color: #ccc;}
+.anketa .bar-outline	{border: 1px solid #ddd;}
+/* ----------------------------------------------------------------------mp-- */
+
+
+/* Vzhled odkazů */
+a		{color: #00f;}
+a:visited	{color: #00f;}
+a:hover	{color: #f00;}
+
+a[href^="error:"] {
+	background: red;
+	color: white;
+}
+
+/*.not-logined       {background: #FFCC66; color: #CC3300;}*/

@@ -1,0 +1,14 @@
+{* Šablona s velkou fotkou *}
+
+{snippet $control->fotka['id']}
+{if $control->fotka !== false}
+	<div class="fotka">
+		<div class="odkazy-ve-fotce">
+			{if $control->fotka['muze_smazat']}<a href="{link smazat! $control->fotka['id']}" class="ajax delete">Smazat</a>{/if}
+		</div>
+		<img src="{plink Fotky:fotka, $control->fotka['id']}" width="{$control->fotka['sirka']}" height="{$control->fotka['vyska']}" />
+	</div>
+{else}
+<p>Smazaná fotka.</p>
+{/if}
+{/snippet}

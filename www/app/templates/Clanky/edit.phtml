@@ -1,0 +1,9 @@
+{* Šablona pro výpis stránky s editací článku *}
+
+@{block content}
+
+{widget clanekForm}
+
+@{if $clanek['id'] != 0}
+	@{widget prilohy}
+@{/if}

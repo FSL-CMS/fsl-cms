@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<meta name="description" content="FSL CMS" />
+
+	<title>{$title}</title>
+
+	<!--link href="{$basePath}/images/logo-kl.ico" rel="icon" type="image/x-icon" /-->
+
+	<script type="text/javascript" src="{$basePath}/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/jquery-ui-1.8.19.custom.min.js"></script>
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/themes/smoothness/jquery-ui-1.8.19.custom.css" type="text/css" />
+	<script type="text/javascript" src="{$basePath}/js/jquery.nette.js"></script>
+
+	<script type="text/javascript" src="{$basePath}/js/jquery.rating/jquery.rating.pack.js"></script>
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/js/jquery.rating/jquery.rating.css" type="text/css" />
+
+	<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/timepicker-cs.js"></script>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/js/texyla/css/style.css" type="text/css" />
+	<script type="text/javascript" src="{$basePath}/js/texyla/texyla.js"></script>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/js/chosen/chosen.css" type="text/css" />
+	<script type="text/javascript" src="{$basePath}/js/chosen/chosen.jquery.min.js"></script>
+
+	<script type="text/javascript" src="{$basePath}/js/scripty.js"></script>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/screen.css" type="text/css" />
+	<link rel="stylesheet" media="print" href="{$basePath}/css/print.css" type="text/css" />
+
+	<script type="text/JavaScript" src="{$basePath}/js/jquery.livequery.js"></script>
+	<script type="text/JavaScript" src="{$basePath}/js/nette-ajax-form.js"></script>
+	<script type="text/JavaScript" src="{$basePath}/js/MFUFallbackController.js"></script>
+
+	{!=MultipleFileUpload::getHead()}
+
+	<script type="text/JavaScript" src="{$basePath}/js/LiveFormValidation.js"></script>
+
+	<script type="text/JavaScript" src="{$basePath}/js/jquery.tablesorter.min.js"></script>
+
+	<script type="text/JavaScript" src="{$basePath}/js/jquery.cycle.lite.min.js"></script>
+
+	<script type="text/JavaScript" src="{$basePath}/js/jquery.pnotify/jquery.pnotify.min.js"></script>
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/js/jquery.pnotify/jquery.pnotify.default.css" type="text/css" />
+
+	<script type="text/JavaScript" src="{$basePath}/js/jquery.nette.dependentselectbox.js"></script>
+
+	<script type="text/javascript" src="{$basePath}/js/ImageUploader/ImageUploader.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/ImageUploader/jquery.filedrop.js"></script>
+
+	<!-- fancybox pro fotky -->
+	<script type="text/javascript" src="{$basePath}/js/jquery.fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/jquery.fancybox/jquery.fancybox-1.3.4.js"></script>
+	<link rel="stylesheet" type="text/css" href="{$basePath}/js/jquery.fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+
+	<!-- Obrázek pro sdílení na FB -->
+	<!-- meta property="og:image" content="{$basePath}/liga/images/logo.png" -->
+</head>
+
+<body>
+	<div id="main">
+		<div id="zahlavi">
+			<div id="hlavicka">
+				<a href="{$basePath}/" title="Hlavní stránka" class="hlavni-odkaz">FSL CMS</a>
+				<h3>Menu</h3>
+				<ul id="menu">
+					{foreach $menu as $odkaz}
+					{if $odkaz['id'] !== NULL}<li class="{$odkaz['class']}"><a href="{link $odkaz['odkaz'], $odkaz['id']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}<span></span></a></li>{else}<li class="{$odkaz['class']}"><a href="{link $odkaz['odkaz']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}<span></span></a></li>{/if}
+					{/foreach}
+				</ul>
+				<a href="Homepage:" class="hlavni-stranka"></a>
+			</div>
+		</div>
+
+		<div id="hlavni-obsah">
+			{widget navigation:breadcrumbsLinks}
+
+			<p class="tisk"><span>Tisk</span></p>
+
+			{widget aktualni}
+
+			<h1>{$nadpis}</h1>
+
+			{snippet flashes}
+				{foreach $flashes as $flash}<p class="flash pnotify {$flash->type}">{!$flash->message|texy:true}</p>{/foreach}
+			{/snippet}
+
+			@{include #content}
+			<span class="cleaner"></span>
+		</div>
+
+		<div id="postrani">
+			@{widget souteze}
+			{widget poradi}
+
+			<div>
+			@{widget anketa}
+			<span class="cleaner"></span>
+			</div>
+
+			@{ifCurrent Sprava:login}
+			@{else}
+				@{widget auth}
+			@{/if}
+
+			<span class="cleaner"></span>
+		</div>
+		<div id="patka">
+			<h3>FSL CMS</h3>
+			<p class="menu"><a href="{plink Clanky:}">Články</a> | {foreach $menu as $odkaz}
+				{if $odkaz['id'] !== NULL}<a href="{link $odkaz['odkaz'], $odkaz['id']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{else}<a href="{link $odkaz['odkaz']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{/if} |
+				{/foreach} <a href="{plink Sprava:}">Správa</a></p>
+			<p><a href="http://fslcms.milanpala.cz/">FSL CMS</a> &copy; 2007 &ndash; {$aktualniRok}</p>
+		</div>
+	</div>
+</body>
+</html>

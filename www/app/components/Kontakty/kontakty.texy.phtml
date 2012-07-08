@@ -1,0 +1,8 @@
+{* Šablona s hodnotícím formulářem *}
+
+**Kontakty**
+
+| Jméno a příjmení | Funkce | Kontakt | Sbor
+{foreach $kontaktniOsoby as $osoba}
+|"{$osoba['jmeno']} {$osoba['prijmeni']}":{plink Uzivatele:uzivatel, $osoba['id']}"> |{if $osoba['kategorie'] == 'rada'}{$osoba['funkce']}{else}Pořadatel závodu "{$osoba['funkce']}, {$osoba['datum_zavodu']|datum:0:0:0}":{plink Zavody:zavod, $osoba['id_zavodu']}{/if} |{!$osoba['kontakt']}||"{$osoba['sbor']}":{plink Sbory:sbor, $osoba['id_sboru']}
+{/foreach}

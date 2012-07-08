@@ -1,0 +1,25 @@
+{* Šablona pro statistiku pořádaných závodů *}
+
+@{block content}
+
+<table class="prehled">
+	<thead>
+		{foreach $poradaneZavody_zahlavi as $radek}
+		<tr>
+			{foreach $radek as $bunka}
+			<th>{$bunka}</th>
+			{/foreach}
+		</tr>
+		{/foreach}
+	</thead>
+	<tbody>
+	{foreach $poradaneZavody as $rok => $vLetech}
+	<tr>
+		<td>{$rok}</td>
+		{foreach $vLetech as $soutez => $foo}
+		<td class="center">{$foo['pocet']}</td>
+		{/foreach}
+	</tr>
+	{/foreach}
+	</tbody>
+</table>

@@ -1,0 +1,7 @@
+/www/libs/Nette
+/www/libs/dibi
+/www/data/*
+/www/temp/*
+/www/log/*
+/www/nbproject/
+/www/app/components/MultipleFileUpload/Models/SQLite/database.*

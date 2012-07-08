@@ -1,0 +1,18 @@
+<table class="prehled">
+	<thead>
+		<tr>
+			<th>Ročník</th><th>Závod</th><th>Datum</th><th>Terče</th><th>Výsledky</th>
+		</tr>
+	</thead>
+	<tbody>
+{foreach $zavody['zavody'] as $zavod}
+	<tr{if $zavod['zruseno']} class="zruseny-zavod"{/if}>
+		<td class="rocnik">{$zavod['rocnik']}.</td>
+		<td><a href="{plink Zavody:zavod, $zavod['id']}">{$zavod['nazev']}</a></td>
+		<td class="datum">{$zavod['datum']|datum:0:0:0}</td>
+		<td class="terce">{$zavod['terce']}</td>
+		<td class="center">{if $zavod['vysledky'] == 1}&check;{/if}</td>
+	</tr>
+{/foreach}
+	</tbody>
+</table>

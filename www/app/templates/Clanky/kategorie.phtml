@@ -1,0 +1,15 @@
+{block content}
+
+{if $clanky['muze_pridavat']}<p><a href="{link Clanky:edit}" title="Přidat nový článek" class="add">Přidat nový článek</a></p>{/if}
+
+{widget vp}
+
+{if count($clanky['clanky'])}
+	{foreach $clanky['clanky'] as $clanek}
+		<div class="clanek{if !empty($clanek->cssstyl)} clanek-{$clanek->cssstyl}{/if}">{include @Clanky.clanek.phtml, 'clanek' => $clanek, 'fulltext' => false}</div>
+	{/foreach}
+{else}
+	<p>V této kategorii nejsou žádné články.</p>
+{/if}
+
+{widget vp}

@@ -1,0 +1,26 @@
+@{block content}
+
+{if $druzstva['muze_pridavat'] == true}<p><a href="{plink Druzstva:add}" class="add">Přidat nové družstvo</a></p>{/if}
+
+{if count($druzstva['druzstva'])}
+<table class="prehled tablesorter">
+	<thead>
+		<tr>
+		     <th>Družstvo</th><th>Okres</th><th>Kategorie</th><th>Účasti na závodech</th>{if $druzstva['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+		</tr>
+	</thead>
+	<tbody>
+	{foreach $druzstva['druzstva'] as $druzstvo}
+		<tr>
+	     	<td><a href="{plink Druzstva:druzstvo, $druzstvo['id']}" title="Informace o družstvu">{$druzstvo['nazev']}</a></td>
+	     	<td>{$druzstvo['okres']}</td>
+	     	<td>{$druzstvo['kategorie']}</td>
+	     	<td>{$druzstvo['pocet_zavodu']}</td>
+	     	{if $druzstva['muze_editovat'] == true || $druzstva['muze_smazat'] == true}{if $druzstva['muze_editovat'] == true}<td><a href="{plink Druzstva:edit, $druzstvo['id']}" title="Úprava informací o sboru" class="edit">Upravit</a></td>{/if}{if $druzstva['muze_smazat'] == true}<td><a href="{plink Druzstva:delete, $druzstvo['id']}" title="Smazání družstva" class="delete">Smazat</a></td>{/if}{/if}
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádné sbory nebyly nalezeny.</p>
+{/if}

@@ -1,0 +1,31 @@
+{* Šablona pro statistiku nejrychlejších časů *}
+
+@{block content}
+
+{widget toc}
+
+{foreach $nejrychlejsiCasy as $soutez => $foobar}
+	{foreach $foobar as $kategorie => $foo}
+		{foreach $foo as $terce => $bar}
+<table class="prehled tablesorter zkraceni">
+     <caption>{block|texy:true}Nejrychlejší časy v kategorii **{$kategorie}** na **{$terce} terče** v soutěži **{$soutez}**{/block}</caption>
+     <thead>
+		<tr>
+			<th class="poradi">Pořadí</th><th>Družstvo</th><th class="rocnik">Ročník</th><th class="cas">Čas</th><th>Závod</th>
+		</tr>
+     </thead>
+     <tbody>
+ 	{foreach $bar as $casy}
+		<tr>
+			<td class="poradi">{$casy['poradi']}.</td>
+	          <td><a href="{plink Druzstva:druzstvo, $casy['id_druzstva']}">{$casy['druzstvo']}</a></td>
+	          <td class="rocnik">{$casy['rok']}</td>
+	          <td class="cas">{$casy['vysledny_cas']}</td>
+			<td><a href="{plink Zavody:zavod, $casy['id_zavodu']}">{$casy['obec']}</a></td>
+		</tr>
+	{/foreach}
+     </tbody>
+</table>
+		{/foreach}
+	{/foreach}
+{/foreach}

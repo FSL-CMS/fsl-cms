@@ -1,0 +1,27 @@
+{* Šablona s formulářem na zaslání přihlašovacích údajů *}
+{extends none}
+<h2>Obnovení zapomenutého hesla</h2>
+
+{snippet boxFlashes}
+	{foreach $flashes as $flash}<p class="flash pnotify {$flash->type}">{!$flash->message|texy:true}</p>{/foreach}
+{/snippet}
+
+<ol>
+	<li>Napište e-mail zadaný při registraci.</li>
+	<li>Bude Vám vytvořeno dočasné heslo, které Vám přijde na zadaný e-mail.</li>
+	<li>Po přihlášení si budete moc heslo změnit.</li>
+</ol>
+
+{snippet obnoveniHesla}
+{widget zapomenuteUdajeForm begin}
+{widget zapomenuteUdajeForm errors}
+<table>
+	<tr>
+		<td>{$control['zapomenuteUdajeForm']['email']->label}</td><td>{$control['zapomenuteUdajeForm']['email']->control}</td>
+	</tr>
+	<tr>
+		<td></td><td>{$control['zapomenuteUdajeForm']['send']->control}</td>
+	</tr>
+</table>
+{widget zapomenuteUdajeForm end}
+{/snippet}

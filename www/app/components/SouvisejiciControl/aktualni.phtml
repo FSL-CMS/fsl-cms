@@ -1,0 +1,8 @@
+{* Šablona pro výpis souvisejícího odkazu *}
+
+{snippet}
+{if isset($souvisejici['souvisejici']) && count($souvisejici['souvisejici'])}
+{foreach $souvisejici['souvisejici'] as $id => $souv }
+	{if $souv['souvisejiciTabulka'] == 'clanky'}<li>Článek: <a href="{plink Clanky:clanek, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a></li>{/if}
+{/foreach}
+{/if}

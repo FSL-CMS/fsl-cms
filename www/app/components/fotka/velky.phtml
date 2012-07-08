@@ -1,0 +1,13 @@
+{* Šablona s velkou fotkou *}
+
+{snippet $control->fotka['id']}
+{if $control->fotka !== false}
+	<div class="fotka-v-clanku">
+		<a href="{plink Fotky:fotka, $control->fotka['id']}" title="Velká fotka" class="zvetsenina" rel="galerie">
+			<img src="{plink Fotky:fotka, $control->fotka['id']}" width="{$control->fotka['sirka']}" height="{$control->fotka['vyska']}" />
+		</a>
+	</div>
+{else}
+<p>Smazaná fotka.</p>
+{/if}
+{/snippet}

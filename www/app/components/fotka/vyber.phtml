@@ -1,0 +1,12 @@
+{* Šablona s náhledem fotky *}
+
+{if $control->fotka !== false}
+	<div class="fotka-nahled">
+		<div class="odkazy-ve-fotce">
+			<input type="checkbox" name="vyberFotek" value="{$control->fotka['id']}" />
+		</div>
+		<img src="{plink Fotky:nahled, $control->fotka['id']}" width="{$control->fotka['sirka']}" height="{$control->fotka['vyska']}" />
+	</div>
+{else}
+	<p>Smazaná fotka.</p>
+{/if}

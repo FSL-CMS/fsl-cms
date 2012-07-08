@@ -1,0 +1,30 @@
+{* Šablona pro statistiku průměrných časů *}
+
+@{block content}
+
+{foreach $vitezoveRocniku as $soutez => $vitezoveVsoutezi}
+<table class="prehled">
+	<caption>Vítězové soutěže <strong>{$soutez}</strong></caption>
+	<thead>
+{foreach $zahlavi[$soutez] as $radky}
+	<tr>
+		{foreach $radky as $radek}
+		<th colspan="{$radek['sirka']}" rowspan="{$radek['vyska']}">{$radek['nazev']|zvetsPrvni}</th>
+		{/foreach}
+	</tr>
+	{/foreach}
+</thead>
+<tbody>
+	{foreach $vitezoveVsoutezi as $sezona => $foo}
+	<tr>
+		<td class="rocnik">{$sezona}</td>
+		{foreach $foo as $kategorie => $druzstvo}
+			<td class="druzstvo">{ifset $druzstvo['id_druzstva']}<a href="{plink Druzstva:druzstvo, $druzstvo['id_druzstva']}">{$druzstvo['druzstvo']}</a>{/if}</td>
+		{/foreach}
+	</tr>
+	{/foreach}
+</tbody>
+</table>
+{/foreach}
+
+{* widget grafy array(450, 620, 'Statistiky:grafVitezoveRocniku') *}

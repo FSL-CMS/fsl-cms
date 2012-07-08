@@ -1,0 +1,32 @@
+{* Šablona pro statistiku průměrných časů *}
+
+@{block content}
+
+{if count($prumerneCasySezon)}
+{foreach $prumerneCasySezon as $soutez => $casySouteze}
+<table class="prehled">
+	<caption>{block|texy:true}Průměrné časy sezón soutěže **{$soutez}**{/block}</caption>
+	<thead>
+	{foreach $prumerneCasySezon_zahlavi[$soutez] as $radky}
+	<tr>
+		{foreach $radky as $radek}
+		<th colspan="{$radek['sirka']}" rowspan="{$radek['vyska']}">{$radek['nazev']|zvetsPrvni}</th>
+		{/foreach}
+	</tr>
+	{/foreach}
+	</thead>
+	<tbody>
+	{foreach $casySouteze as $sezona => $foo}
+	<tr>
+		<td class="rocnik">{$sezona}</td>
+		{for $i=0; $i<$prumerneCasySezon_oddilu[$soutez]; $i++}
+		{if isset($foo[$i]) }<td class="cas{if isset($foo[$i]['maximum']) && $foo[$i]['maximum'] == true} nejlepsi{/if}">{$foo[$i]['prumer']}</td>{else}<td></td>{/if}
+		{/for}
+	</tr>
+	{/foreach}
+	</tbody>
+</table>
+{/foreach}
+{else}
+	<p class="warning">Nebyly zadány žádné výsledky.</p>
+{/if}

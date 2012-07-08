@@ -1,0 +1,7 @@
+#php_flag register_globals off
+#php_flag magic_quotes_gpc off
+#php_flag magic_quotes_runtime off
+
+
+RewriteEngine on
+RewriteRule ^(.*)$ /document_root/$1 [L] # pro localhost zakomentovat

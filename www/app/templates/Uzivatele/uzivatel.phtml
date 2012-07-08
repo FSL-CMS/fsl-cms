@@ -1,0 +1,18 @@
+@{block content}
+
+<h2>Informace o uživateli {if $uzivatel['muze_editovat'] == true}<a href="{plink Uzivatele:edit, $uzivatel['id']}" title="Úprava informací o uživateli" class="edit">upravit</a>{/if}</h2>
+<dl>
+	<dt>Jméno</dt><dd>{$uzivatel['jmeno'].' '.$uzivatel['prijmeni']}</dd>
+     <dt>Sbor</dt><dd><a href="{plink Sbory:sbor $uzivatel['id_sboru']}" title="Informace o sboru">{$uzivatel['sbor']} (okres {$uzivatel['okres']})</a></dd>
+	<dt>Počet komentářů</dt><dd>{$uzivatel['pocet_komentaru']}</dd>
+	{if !empty($uzivatel['kontakt'])}<dt>Kontakt</dt><dd>{!$uzivatel['kontakt']|texy}</dd>{/if}
+</dl>
+
+{if count($uzivatel['clanky'])}
+<h2>Články uživatele</h2>
+<ul>
+{foreach $uzivatel['clanky'] as $clanek}
+	<li><a href="{plink Clanky:clanek, $clanek->id}" title="Přejít na článek">{$clanek->nazev}</a>, {$clanek->datum_pridani|datum:0:0:0}</li>
+{/foreach}
+</ul>
+{/if}

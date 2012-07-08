@@ -1,0 +1,33 @@
+@{block content}
+
+{if $kategorie['muze_pridat'] == true}<p><a href="{plink Kategorie:edit}" class="add">Přidat novou kategorii</a></p>{/if}
+
+{if count($kategorie['kategorie'])}
+{widget kategorieForm begin}
+<table class="prehled">
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Kategorie</th>{if $kategorie['muze_editovat'] == true || $kategorie['muze_smazat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>	
+<tbody class="sortable">
+	{foreach $kategorie['kategorie'] as $kat}
+		<tr>
+	     	<td class="handle">↕</td>
+	     	<td>{$control['kategorieForm'][$kat['id']]['id']->control} {$control['kategorieForm'][$kat['id']]['poradi']->control->class('poradi')}</td>
+	     	<td>{$kat['nazev']}</a></td>
+	     	{if $kategorie['muze_editovat'] == true}<td><a href="{plink edit, $kat['id']}" title="Úprava kategorie" class="edit">Upravit</a></td>{/if}
+			{if $kategorie['muze_smazat'] == true}<td><a href="{plink delete!, $kat['id']}" title="Odstranění kategorie" class="delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+<tbody>
+	<tr>
+		<th colspan="5">{$control['kategorieForm']['save']->control}</th>
+	</tr>
+</tbody>
+</table>
+{widget kategorieForm end}
+{else}
+	<p class="warning">Žádné kategorie nebyly nalezeny.</p>
+{/if}

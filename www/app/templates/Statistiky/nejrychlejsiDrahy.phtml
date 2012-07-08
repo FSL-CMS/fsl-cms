@@ -1,0 +1,32 @@
+{* Šablona pro statistiku nejrychlejších drah *}
+
+@{block content}
+
+{if count($nejrychlejsiDrahyByCas)}
+{foreach $nejrychlejsiDrahyByCas as $soutez => $foobar}
+	{foreach $foobar as $kategorie => $foo}
+		{foreach $foo as $terce => $bar}
+		<table class="prehled tablesorter">
+			<caption>Nejrychlejší dráhy v kategorii <span class="{$kategorie|webalize}">{$kategorie}</span> na {block|texy:true}**{$terce} terče** v soutěži **{$soutez}**{/block}</caption>
+			<thead>
+				<tr>
+					<th>Pořadí</th><th>Místo</th><th>Průměrný čas</th><th>Počet platných časů</th>
+				</tr>
+			</thead>
+			<tbody>
+			{foreach $bar as $draha}
+				<tr>
+					<td class="poradi">{$draha['poradi']}.</td>
+					<td>{$draha['obec']}</td>
+					<td class="cas">{$draha['cas']}</td>
+					<td class="body">{$draha['pocet']}</td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+		{/foreach}
+	{/foreach}
+{/foreach}
+{else}
+	<p>Neproběhly žádné závody.</p>
+{/if}

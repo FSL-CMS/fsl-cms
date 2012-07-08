@@ -1,0 +1,27 @@
+@{block content}
+
+{if $sbory['muze_pridavat'] == true}<p><a href="{plink Sbory:add}" class="add">Přidat nový sbor</a></p>{/if}
+
+{if count($sbory['sbory'])}
+<table class="prehled tablesorter">
+	<thead>
+		<tr>
+		     <th>Sbor</th><th>Okres</th>{if $sbory['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+		</tr>
+	</thead>
+	<tbody>
+	{foreach $sbory['sbory'] as $sbor}
+		<tr>
+	     	<td><a href="{link Sbory:sbor, $sbor['id']}" title="Informace o sboru">{$sbor['nazev']}</a></td>
+	     	<td>{$sbor['okres']}</td>
+	     	{if $sbory['muze_editovat'] == true || $sbory['muze_smazat'] == true}
+	     		{if $sbory['muze_editovat'] == true}<td><a href="{plink Sbory:edit, $sbor['id']}" title="Úprava informací o sboru" class="edit">Upravit</a></td>{/if}
+	     		{if $sbory['muze_smazat'] == true}<td><a href="{plink Sbory:delete, $sbor['id']}" title="Smazání sboru" class="delete">Smazat</a></td>{/if}
+	     	{/if}
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádné sbory nebyly nalezeny.</p>
+{/if}

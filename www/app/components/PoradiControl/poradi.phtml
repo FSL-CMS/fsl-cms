@@ -1,0 +1,29 @@
+<div id="prehled-poradi">
+{if count($vysledky)}
+{foreach $vysledky as $soutez => $vysledkySouteze}
+	<h2>{block|texy:true}Výsledky soutěže **{$soutez}**{/block}</h2>
+	{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
+	<table>
+		<caption>Kategorie <span class="{$kategorie|webalize}">{$kategorie}</span></caption>
+		<thead>
+			<tr>
+				<th>Pořadí</th><th>Družstvo</th><th>Body</th>
+			</tr>
+		</thead>
+		<tbody>
+	{foreach $vysledkyKategorie as $vysledek}
+			<tr>
+				<th class="poradi">{$vysledek['poradi']}.</th>
+				<td><a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td>
+				<th class="body">{$vysledek['celkem_bodu']}</th>
+			</tr>
+	{/foreach}
+			<tr>
+				<td colspan="3" class="odkaz-na-vysledky"><a href="{plink Rocniky:aktualniVysledky}#toc-{$soutez|webalize}-{$kategorie|webalize}">celé pořadí</a></td>
+			</tr>
+		</tbody>
+	</table>
+	{/foreach}
+{/foreach}
+{/if}
+</div>

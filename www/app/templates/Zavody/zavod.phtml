@@ -1,0 +1,103 @@
+@{block content}
+
+{* Odkazy na předchozí a následující závody *}
+<div class="relativni-odkazy">
+	{if !empty($predchozi)}<div class="predchozi"><p><img src="{$baseUri}images/sipka-vlevo.png" /> předchozí závod : <a href="{plink Zavody:zavod, $predchozi['id']}" title="Předchozí závod">{$predchozi['nazev']}</a></p><p>{$predchozi['datum']|datum:1:1:0}</p></div>{/if}
+	{if !empty($nasledujici)}<div class="nasledujici"><p><a href="{plink Zavody:zavod, $nasledujici['id']}" title="Následující závod">{$nasledujici['nazev']}</a> : následující závod <img src="{$baseUri}images/sipka-vpravo.png" /></p><p>{$nasledujici['datum']|datum:1:1:0}</p></div>{/if}
+</div>
+
+{* Odkaz na editaci závodu *}
+
+{* Informace o závodu *}
+<h2>Informace o závodu{if $zavod['muze_editovat'] == true} <a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">upravit informace o závodu</a>{/if}</h2>
+
+{widget mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
+
+{if $zavod['zruseno'] == true}<p class="warning">Tento závod byl zrušen.</p>{/if}
+<dl>
+	<dt>Datum</dt><dd>{$zavod['datum']|datum:1:1:0}</dd>
+
+	<dt>Pořadatel{if $zavod['muze_editovat']} [<a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">změnit</a>]{/if}</dt>
+	{foreach $zavod['poradatele'] as $poradatel}
+		<dd><a href="{plink Sbory:sbor, $poradatel['id']}" title="Informace o sboru">{$poradatel['nazev']} (okres {$poradatel['okres']})</a></dd>
+		{if $zavod['muze_editovat']}<dd><a href="{plink Sbory:edit, $poradatel['id']}" class="edit">Upravit informace o tomto sboru</a></dd>{/if}
+	{/foreach}
+
+	<dt>Místo konání{if $zavod['muze_editovat']} [<a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">změnit</a>]{/if}</dt>
+	<dd>{$zavod['misto']} (okres {$zavod['okres']})</dd>
+	{if $zavod['muze_editovat']}<dd><a href="{plink Sportoviste:edit, $zavod['id_mista']}" class="edit">Upravit informace o tomto sportovišti</a></dd>{/if}
+
+	{if !empty($zavod['popis'])}<dt>Popis areálu</dt>{if $zavod['muze_editovat']}<dd><a href="{plink Sportoviste:edit, $zavod['id_mista']}" class="edit">Upravit informace o tomto sportovišti</a></dd>{/if}<dd>{!$zavod['popis']|texy}</dd>{/if}
+
+	{if count($zavod['poradatele'])}
+	<dt>Kontakt</dt>
+	{foreach $zavod['poradatele'] as $poradatel}
+		{if $zavod['muze_editovat']}<dd><a href="{plink Sbory:edit, $poradatel['id']}" class="edit">Změnit kontaktní osobu sboru {$poradatel['nazev']}</a></dd>{/if}
+		{if !empty($poradatel['kontakt_kontakt'])}{if $zavod['muze_editovat']}<dd><a href="{plink Uzivatele:edit, $poradatel['kontakt_id']}" class="edit">Upravit následující kontaktní informace</a></dd>{/if}
+		<dd>{!$poradatel['kontakt_jmeno'].' '.$poradatel['kontakt_prijmeni']."\n ".$poradatel['kontakt_email']."\n ".$poradatel['kontakt_kontakt']|texy}</dd>{/if}
+	{/foreach}
+	{/if}
+
+	<dt>Terče{if $zavod['muze_editovat']} [<a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">vybrat jiné terče</a>]{/if}</dt>
+	{if $zavod['muze_editovat']}<dd><a href="{plink Terce:edit, $zavod['id_tercu']}" title="Úprava informací o terčích" class="edit">změnit informace o terčích</a></dd>{/if}
+	<dd><a href="{plink Terce:terce, $zavod['id_tercu']}" title="Informace o terčích">{$zavod['terce']} ({$zavod['majitel_tercu']})</a></dd>
+
+	{if count($zavod['dosavadniRekordy'])}
+	<dt>Dosavadní rekordy platné do začátku závodu</dt>
+{foreach $zavod['dosavadniRekordy'] as $soutez => $foo}
+	<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+	{foreach $foo as $rekord}
+		<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+	{/foreach}</ul></dd>
+{/foreach}
+{/if}
+{if count($zavod['rekordy'])}
+<dt>Aktuální rekordy</dt>
+{foreach $zavod['rekordy'] as $soutez => $foo}
+	<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+	{foreach $foo as $rekord}
+		<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+	{/foreach}</ul></dd>
+{/foreach}
+{/if}
+
+	<dt>Bodové tabulky</dt>
+		<dd><a href="{plink Rocniky:vysledkyPredZavodem, $zavod['id']}" title="Průběžný stav bodů před začátkem závodů">Bodová tabulka před závodem</a></dd>
+		{if !empty($nasledujici)}<dd><a href="{plink Rocniky:vysledkyPredZavodem, $nasledujici['id']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{else}<dd><a href="{plink Rocniky:vysledky, $zavod['rocnik']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{/if}
+
+{if count($predchoziKola)}
+	<dt>Jiná kola pořádaná tímto sborem</dt>
+	{foreach $predchoziKola as $kolo}
+		<dd{if $kolo['zruseno']} class="zruseny-zavod"{/if}><a href="{plink Zavody:zavod, $kolo['id']}" title="Přejdi na závod">{$kolo['nazev']} {$kolo['datum']|substr:0:10|datum:0:0:0}</a> ({$kolo['terce']} terče)</dd>
+	{/foreach}
+{/if}
+
+{if !empty($zavod['text'])}
+	<dt>Poznámka</dt><dd>{!$zavod['text']|texy}</dd>
+{/if}
+<dt id="toc-materialy-pro-tisk">Materiály pro pořadatele soutěží určené pro tisk</dt>
+	<dd><a class="printer" href="{plink Zavody:pripravaProKomentatora, $zavod['id']}">Informace o soutěži a soutěžních družstvech pro komentátora</a></dd>
+	<dd><a class="printer" href="{plink Zavody:startovniPoradi, $zavod['id']}">Startovní pořadí</a></dd>
+	<dd><a class="printer" href="{plink Zavody:vysledky, $zavod['id']}">Výsledky</a></dd>
+{if $zavod['muze_hodnotit']}
+	<dt>Ohodnoťte pořádání závodu</dt><dd>{widget hodnoceni $zavod['id']}</dd>
+{/if}
+{widget souvisejici "zavody", $zavod['id']}
+
+</dl>
+
+@{widget prilohy "zavody", $zavod['id']}
+
+{if $zavod['ustream_stav'] == 'ano'}<h2>Video přenos</h2><p class="ok">Z toho závodu je plánován živý video přenos.</p>{/if}
+
+{if $vysledky['muze_editovat'] == true || count($vysledky['vysledky'])}
+	<h2>Výsledky ze závodu{if $vysledky['muze_editovat'] == true && count($vysledky['vysledky'])} <a href="{plink Zavody:pridatVysledky, $zavod['id']}" title="Přidání výsledků k závodu" class="edit">upravit</a>{/if}</h2>
+{/if}
+
+{include 'vysledky.phtml', 'vysledky' => $vysledky, 'zavod' => $zavod}
+
+{if count($startovni_poradi)}<h2 id="toc-startovni-poradi">Startovní pořadí</h2>{/if}
+{include 'startovniPoradi.phtml', 'startovni_poradi' => $startovni_poradi, 'zavod' => $zavod}
+
+<h2>Komentáře k závodu</h2>
+@{widget diskuze $zavod->id, "zavody"}

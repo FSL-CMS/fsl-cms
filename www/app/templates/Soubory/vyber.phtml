@@ -1,0 +1,10 @@
+{if count($soubory['soubory'])}
+<form id="vyber-z-galerie">
+	<div>
+	{foreach $soubory as $soubor}
+		{widget fotka:vyber $soubor}
+	{/foreach}
+	</div>
+	<input type="submit" value="Použít vybrané fotografie" />
+</form>
+{/if}

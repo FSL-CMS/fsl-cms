@@ -1,0 +1,19 @@
+<div class="breadcrumbs">
+<form method="get">
+	&raquo;
+	{? $i = 0; }
+	{foreach $items as $item}
+		{if $iterator->isLast()}
+			<a href="{plink $item->url}">{$item->label}</a>
+		{else}
+			{if count($items) > 4 && $i > 0 && $i < 3}
+				<span class="single">&hellip;</span> &raquo;
+			{else}
+				<a href="{plink $item->url}" class="single">{$item->label}</a>
+				&raquo;
+			{/if}
+		{/if}
+		{? $i++; }
+	{/foreach}
+</form>
+</div>

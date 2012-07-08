@@ -1,0 +1,49 @@
+@{block content}
+
+{snippet pridatVysledekForm}
+{widget pridatVysledekForm}
+{/snippet}
+
+{snippet vysledky}
+{if count($vysledky['vysledky'])}
+<h2>Výsledky ze závodu</h2>
+{if empty($zavod['vystaveni_vysledku'])}<p class="warning flash">Výsledky nejsou zveřejněny.</p>{else}<p class="flash ok">Výsledky jsou zveřejněny.</p>{/if}
+{widget vysledkyForm begin}
+<p>{$control['vysledkyForm']['save']->control} {$control['vysledkyForm']['vyhodnot']->control} {$control['vysledkyForm']['zverejnit']->control}</p>
+<!--p>{$control['vysledkyForm']['platne_body']->label} {$control['vysledkyForm']['platne_body']->control} {$control['vysledkyForm']['platne_casy']->label} {$control['vysledkyForm']['platne_casy']->control}</p-->
+{foreach $vysledky['vysledky'] as $soutez => $kategorieSouteze}
+	{foreach $kategorieSouteze as $kategorie => $vysledkyKategorie}
+<table class="prehled">
+	<caption>{block|texy:true}Výsledky kategorie *{$kategorie}* v soutěži *{$soutez}*{/block}</caption>
+	<thead>
+		<tr>
+			<th rowspan="2">Pořadí</th><th rowspan="2">Družstvo</th><th rowspan="2">Lepší čas</th><th rowspan="2">Výsledný čas</th><th rowspan="2">Získané body</th><th colspan="2">Platné</th>{if $vysledky['muze_mazat']}<th rowspan="2">Správa</th>{/if}
+		</tr>
+		<tr>
+			<th>Body</th>
+			<th>Čas</th>
+		</tr>
+	</thead>
+	<tbody>
+{foreach $vysledkyKategorie as $vysledek}
+	<tr>
+	     <td class="poradi">{$vysledek['poradi']}.</td>
+	     <td>{$control['vysledkyForm'][$vysledek['id']]['id_druzstva']->control}</td>
+          <td><p>{$control['vysledkyForm'][$vysledek['id']]['lepsi_terc']->control}</p><p>{$control['vysledkyForm'][$vysledek['id']]['lepsi_cas']->control}</p></td>
+          <td><p>{$control['vysledkyForm'][$vysledek['id']]['specialni_vysledek']->control}</p><p>{$control['vysledkyForm'][$vysledek['id']]['vysledny_cas']->control}</p></td>
+          <td class="body">{$vysledek['body']}</td>
+		<td>{$control['vysledkyForm'][$vysledek['id']]['platne_body']->control}</td>
+		<td>{$control['vysledkyForm'][$vysledek['id']]['platne_casy']->control}</td>
+          {if $vysledky['muze_mazat']}<td><a href="{link smazatVysledek!, 'id_vysledku' => $vysledek['id']}" class="ajax delete">Odstranit</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+	</tr>
+</table>
+{/foreach}
+{/foreach}
+<p>{$control['vysledkyForm']['save']->control} {$control['vysledkyForm']['vyhodnot']->control} {$control['vysledkyForm']['zverejnit']->control}</p>
+{widget vysledkyForm end}
+{/if}
+{/snippet}
+

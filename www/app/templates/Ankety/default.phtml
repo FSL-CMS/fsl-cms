@@ -1,0 +1,28 @@
+@{block content}
+
+{if $ankety['muze_pridavat']}<p><a href="{link Ankety:add}" title="Přidat novou anketu" class="add">Přidat novou anketu</a></p>{/if}
+
+@{if $ankety['muze_editovat']}
+	{if count($ankety['ankety'])}
+	<table class="prehled">
+		<thead>
+		<tr>
+			<th>Anketní otázka</th><th colspan="2">Správa</th>
+		</tr>
+		</thead>
+		<tbody>
+	{foreach $ankety['ankety'] as $anketa}
+		<tr>
+			<td>{$anketa['question']}</td><td><a href="{plink edit, $anketa['id']}" class="edit">Upravit</a></td><td><a href="{plink delete, $anketa['id']}" class="delete">Smazat</a></td>
+		</tr>
+	{/foreach}
+		</tbody>
+	</table>
+	{else}
+	<p class="warning">Nebyly vloženy žádné ankety.</p>
+	{/if}
+@{else}
+	@{foreach $ankety['ankety'] as $anketa}
+		@{widget anketa $anketa['id']}
+	@{/foreach}
+@{/if}

@@ -1,0 +1,44 @@
+{* Šablona pro výpis mapy u stránky závodu *}
+
+@{block #content}
+
+<div class="misto-zavodu">
+	<div id="mapa"></div>
+	<p class="center"><a id="odkaz-na-velkou" href="http://mapy.cz/" target="_blank">Zobrazit na velké mapě</a></p>
+</div>
+
+<script type="text/javascript" src="http://api4.mapy.cz/loader.js"></script>
+<script type="text/javascript">Loader.load();</script>
+
+
+<script lang="text/javascript">
+var center = SMap.Coords.fromPP({$stred['delka']}, {$stred['sirka']});
+var m = new SMap(JAK.gel("mapa"), center, 13);
+
+var layer = new SMap.Layer.Marker();
+m.addLayer(layer);
+layer.enable();
+
+{foreach $body as $bod}
+	var marker = new SMap.Marker(SMap.Coords.fromPP({$bod['delka']}, {$bod['sirka']}), {$bod['id']});
+	layer.addMarker(marker);
+{/foreach}
+
+m.addDefaultLayer(SMap.DEF_OPHOTO);
+m.addDefaultLayer(SMap.DEF_OPHOTO0203);
+m.addDefaultLayer(SMap.DEF_OPHOTO0406);
+m.addDefaultLayer(SMap.DEF_TURIST);
+m.addDefaultLayer(SMap.DEF_HISTORIC);
+m.addDefaultLayer(SMap.DEF_BASE).enable();
+
+var layerSwitch = new SMap.Control.Layer();
+layerSwitch.addDefaultLayer(SMap.DEF_BASE);
+layerSwitch.addDefaultLayer(SMap.DEF_OPHOTO);
+layerSwitch.addDefaultLayer(SMap.DEF_TURIST);
+layerSwitch.addDefaultLayer(SMap.DEF_OPHOTO0406);
+layerSwitch.addDefaultLayer(SMap.DEF_OPHOTO0203);
+layerSwitch.addDefaultLayer(SMap.DEF_HISTORIC);
+m.addControl(layerSwitch,{ left:"8px", top:"9px"});
+
+$('#odkaz-na-velkou').attr('href', 'http://mapy.cz/#x='+center.toWGS84()[0]+'&y='+center.toWGS84()[1]+'&z=15&t=s&d=user_'+center.toWGS84()[0]+'%2C'+center.toWGS84()[1]+'%2CZávod {!$nazev}~_1');
+</script>

@@ -1,0 +1,65 @@
+@{block #content}
+
+<h2>Informace o družstvu{if $druzstvo['muze_editovat']} <a href="{plink Druzstva:edit, $druzstvo['id']}" title="Smazat družstvo" class="edit">Upravit družstvo</a>{/if}</h2>
+
+<dl>
+	<dt>Sbor</dt><dd><a href="{link Sbory:sbor, $druzstvo['id_sboru']}">{$druzstvo['sbor']}</a></dd>
+     <dt>Kategorie</dt><dd>{$druzstvo['kategorie']}</dd>
+     <!--dt>Počet účastí na závodech</dt><dd>{$druzstvo['pocet_zavodu']}</dd>
+     <dt>Počet získaných bodů</dt><dd>{$druzstvo['pocet_bodu']}</dd-->
+</dl>
+
+{widget souvisejici, 'druzstva', $druzstvo['id']}
+
+<h2 id="toc-vyznacne-casy-sezon">Význačné časy sezón</h2>
+<table class="prehled">
+	<thead>
+{foreach $vyznacneCasySezon_zahlavi as $radky}
+	<tr>
+		{foreach $radky as $radek}
+		<th colspan="{$radek['sirka']}" rowspan="{$radek['vyska']}">{$radek['nazev']}</th>
+		{/foreach}
+	</tr>
+	{/foreach}
+	</thead>
+	<tbody>
+	{foreach $vyznacneCasySezon as $sezona => $foo}
+	<tr>
+		<td class="rok">{$sezona}</td>
+		{for $i=0; $i<$vyznacneCasySezon_oddilu; $i++}
+			{if isset($foo['prumer'][$i]) }<td class="cas">{$foo['prumer'][$i]['prumer']}</td>{else}<td></td>{/if}
+		{/for}
+		{for $i=0; $i<$vyznacneCasySezon_oddilu; $i++}
+			{if isset($foo['rekord'][$i]) }<td class="cas">{$foo['rekord'][$i]['rekord']}</td>{else}<td></td>{/if}
+		{/for}
+	</tr>
+	{/foreach}
+	</tbody>
+</table>
+
+<h2 id="toc-casy-druzstva">Časy družstva</h2>
+{foreach $casyDruzstva as $soutez => $foo}
+	<table class="prehled">
+		<caption>{block|texy:true}Soutěž **{$soutez}**{/block}</caption>
+		<thead>
+			<tr>
+				<th>Rok</th><th colspan="{$casyDruzstvaPocetZavodu}">Časy na soutěžích</th>
+			</tr>
+		</thead>
+		<tbody>
+	{foreach $casyDruzstva[$soutez] as $sezona => $bar}
+		<tr>
+			<th>{$sezona}</th>
+		{foreach $casyDruzstva[$soutez][$sezona] as $zavod => $foobar}
+			{if !empty($foobar)}<td class="cas"><a href="{plink Zavody:zavod $foobar['id_zavodu']}" title="Přejít na závod {$foobar['zavod']}, {$foobar['datum']|datum}">{$foobar['vysledny_cas']|vyslednyCas}</a></td>{else}<td class="center">&mdash;</td>{/if}
+		{/foreach}
+		</tr>
+	{/foreach}
+		</tbody>
+	</table>
+{/foreach}
+
+{* widget grafy array(600, 400, 'Druzstva:grafPrumerneCasySezon', $druzstvo['id']) *}
+
+<h2>Komentáře k družstvu</h2>
+@{widget diskuze $druzstvo['id'], "druzstva"}

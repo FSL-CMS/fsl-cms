@@ -1,0 +1,29 @@
+@{block content}
+
+{if $funkceRady['muze_editovat'] == true}<p><a href="{plink edit}" class="add">Přidat novou funkci</a></p>{/if}
+
+{if count($funkceRady['funkceRady'])}
+{widget funkceRadyForm begin}
+<table class="prehled">
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Funkce</th>{if $funkceRady['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>	
+<tbody class="sortable">
+	{foreach $funkceRady['funkceRady'] as $funkce}
+		<tr>
+	     	<td class="handle">↕</td>
+	     	<td>{$control['funkceRadyForm'][$funkce['id']]['id']->control} {$control['funkceRadyForm'][$funkce['id']]['poradi']->control->class('poradi')}</td>
+	     	<td>{$funkce['nazev']}</a></td>
+	     	{if $funkceRady['muze_editovat'] == true}<td><a href="{plink edit, $funkce['id']}" title="Úprava funkce" class="edit">Upravit</a></td>{/if}
+	     	{if $funkceRady['muze_mazat'] == true}<td><a href="{link delete!, $funkce['id']}" title="Smazání funkce" class="delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+</table>
+{$control['funkceRadyForm']['save']->control}
+{widget funkceRadyForm end}
+{else}
+	<p class="warning">Žádné funkce rady nebyly nalezeny.</p>
+{/if}

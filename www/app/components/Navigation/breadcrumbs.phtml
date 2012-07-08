@@ -1,0 +1,27 @@
+<div class="breadcrumbs">
+<form method="get">
+	&raquo;
+	{? $i = 0; }
+	{foreach $items as $item}
+		{if $iterator->isLast()}
+			{if count($item->getParent()->getComponents()) == 0}
+				<a href="{plink $item->url}">{$item->label}</a>
+			{else}
+				<select class="aktualni-odkaz">{foreach $item->getParent()->getComponents() as $comp}<option value="{$comp->url}"{if $comp->url == $item->url} selected="selected"{/if}>{$comp->label}</option>{/foreach}</select>
+			{/if}
+		{else}
+			{if count($items) > 4 && $i > 0 && $i < 3}
+			<span class="single">&hellip;</span> &raquo;
+			{else}
+				{if count($item->getParent()->getComponents()) == 1}
+					<a href="{plink $item->url}" class="single">{$item->label}</a>
+				{else}
+					<select>{foreach $item->getParent()->getComponents() as $comp}<option value="{$comp->url}"{if $comp->url == $item->url} selected="selected"{/if}>{$comp->label}</option>{/foreach}</select>
+				{/if}
+				&raquo;
+			{/if}
+		{/if}
+		{? $i++; }
+	{/foreach}
+</form>
+</div>

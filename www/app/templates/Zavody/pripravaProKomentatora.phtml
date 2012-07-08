@@ -1,0 +1,44 @@
+@{block content}
+
+{if count($zavod['rekordy'])}
+<dl>
+	<dt>Dosavadní rekordy závodu na {$zavod['terce']} terče</dt>
+	{foreach $zavod['rekordy'] as $rekord}
+		<dd><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}</a>, {$rekord['datum']|datum:0:0:0}</dd>
+	{/foreach}
+</dl>
+{/if}
+
+{if count($informace)}
+<p>Všechny časy jsou udávané v sekundách a to na {$zavod['terce']} terče.</p>
+{foreach $informace as $soutez => $foo}
+{foreach $informace[$soutez] as $kategorie => $bar}
+<table class="prehled zalomit-za">
+	<caption>{$soutez} - {$kategorie}</caption>
+	<thead>
+	<tr>
+		<th rowspan="2">SP</th><th rowspan="2">Družstvo</th><th rowspan="2">Okres</th><th colspan="2">Letošní</th><th rowspan="2">Rekord</th><th colspan="2" rowspan="2">Průběžné umístění</th><th colspan="2" rowspan="2">Traťový rekord</th>
+	</tr>
+	<tr>
+		<th>rekord</th><th>průměr</th>
+	</tr>
+	</thead>
+{foreach $informace[$soutez][$kategorie] as $id_druzstva => $druzstvo}
+	<tr>
+		<td class="poradi">{$druzstvo['poradi']}.</td>
+		<td>{$druzstvo['druzstvo']}</td>
+		<td>{$druzstvo['zkratka_okresu']}</td>
+		<td class="cas">{ifset $druzstvo['letosniRekord']}{$druzstvo['letosniRekord']|vyslednyCas}{/ifset}</td>
+		<td class="cas">{ifset $druzstvo['letosniPrumer']}{$druzstvo['letosniPrumer']|vyslednyCas}{/ifset}</td>
+		<td class="cas">{ifset $druzstvo['rekord']['rekord']}{$druzstvo['rekord']['rekord']|vyslednyCas} (<a href="{plink Zavody:zavod, $druzstvo['rekord']['id_zavodu']}">{$druzstvo['rekord']['zavod']}, {$druzstvo['rekord']['rok']}</a>){/if}</td>
+		{ifset $druzstvo['prubezneUmisteni']}<td class="poradi">{$druzstvo['prubezneUmisteni']['poradi']}.</td><td>({$druzstvo['prubezneUmisteni']['celkem_bodu']} bodů)</td>{else}<td colspan="2"></td>{/if}
+		{ifset $druzstvo['tratovyRekord']['vysledny_cas']}<td class="cas">{$druzstvo['tratovyRekord']['vysledny_cas']|vyslednyCas}</td><td>({$druzstvo['tratovyRekord']['datum']|substr:0:4})</td>{else}<td colspan="2"></td>{/if}
+	</tr>
+{/foreach}
+</table>
+{/foreach}
+{/foreach}
+{else}
+	<h2>Informace o přihlášených soutěžních družstvech</h2>
+	<p class="warning">Nejsou přihlášená žádná družstva.</p>
+{/if}

@@ -1,0 +1,27 @@
+@{block content}
+
+{if $uzivatele['muze_pridavat'] == true}<p><a href="{plink add}" class="add">Přidat nového uživatele</a></p>{/if}
+
+{if count($uzivatele['uzivatele'])}
+<table class="prehled">
+<thead>
+	<tr>
+	     <th>Jméno a příjmení</th><th>Sbor</th><th>Email</th><th>Oprávnění</th>{if $uzivatele['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>	
+<tbody>
+	{foreach $uzivatele['uzivatele'] as $uzivatel}
+		<tr>
+	     	<td><a href="{plink Uzivatele:uzivatel, $uzivatel['id']}" title="Informace o uživateli">{$uzivatel['jmeno']} {$uzivatel['prijmeni']}</a></td>
+	     	<td><a href="{plink Sbory:sbor, $uzivatel['id_sboru']}" title="Profil sboru">{$uzivatel['sbor']}</a></td>
+	     	<td>{!$uzivatel['email']|texy:true}</td>
+	     	<td>{$uzivatel['opravneni']}</a></td>
+	     	{if $uzivatele['muze_editovat'] == true}<td><a href="{plink edit, $uzivatel['id']}" title="Úprava uživatele" class="edit">Upravit</a></td>{/if}
+	     	{if $uzivatel['muze_mazat'] == true}<td><a href="{plink delete, $uzivatel['id']}" title="Smazání uživatele" class="delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+</table>
+{else}
+	<p class="warning">Žádné uzivately sborů nebyly nalezeny.</p>
+{/if}

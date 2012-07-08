@@ -1,0 +1,26 @@
+@{block #content}
+
+{if $diskuze['muze_pridavat'] == true}
+	<p><a href="{plink Diskuze:zeptatse, $tema['id']}" title="Založit novou diskuzi" class="add">Založit novou diskuzi!</a></p>
+{else}
+	<!--p class="warning">Novou diskuzi může založit pouze přihlášený uživatel.</p-->
+{/if}
+
+@{if count($forum['diskuze'])}
+	@{foreach $forum['diskuze'] as $disk}
+		<h3><a href="{link Diskuze:diskuze, $disk['id_diskuze']}">{$disk['tema_diskuze']}</a>{if $disk['muze_smazat'] == true} <a href="{plink Diskuze:smazat, $disk['id_diskuze']}" title="Smazat diskuzi" class="delete">Smazat</a>{/if}</h3>
+
+		{* Související odkaz *}
+		{widget souvisejici 'diskuze', $disk['id_diskuze']}
+
+		<ul>
+			<li>Diskuze založena {$disk['datum_pridani']|datum:1:1:1} uživatelem <a href="{plink Uzivatele:uzivatel, $disk['posledni']['id_autora']}" title="Informace o autorovi">{$disk['autor']}</a>.</li>
+			{if $disk['pocet_komentaru'] != 1}<li>Poslední komentář přidán {$disk['posledni']['datum_pridani']|datum:1:1:1} uživatelem <a href="{plink Uzivatele:uzivatel, $disk['posledni']['id_autora']}" title="Informace o autorovi">{$disk['posledni']['autor']}</a>.</li>{/if}
+			<li>Počet komentářů: {$disk['pocet_komentaru']}</li>
+		</ul>
+
+		@{widget diskuze:nastaveni $disk['id_diskuze']}
+	@{/foreach}
+@{else}
+	<p class="warning">Ve fóru není zatím žádná diskuze.</p>
+@{/if}

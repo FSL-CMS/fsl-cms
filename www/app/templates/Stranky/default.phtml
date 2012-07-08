@@ -1,0 +1,28 @@
+@{block content}
+
+{if $stranky['muze_editovat'] == true}<p><a href="{plink edit}" class="add">Přidat novou stránku</a></p>{/if}
+
+{if count($stranky['stranky'])}
+{widget strankyForm begin}
+<table>
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Název</th>{if $stranky['muze_editovat'] == true}<th>Správa</th>{/if}
+	</tr>
+</thead>	
+<tbody class="sortable">
+	{foreach $stranky['stranky'] as $stranka}
+		<tr>
+	     	<td class="handle">↕</td>
+	     	<td>{$control['strankyForm'][$stranka['id']]['id']->control} {$control['strankyForm'][$stranka['id']]['poradi']->control->class('poradi')}</td>
+	     	<td>{$stranka['nazev']}</a></td>
+	     	{if $stranky['muze_editovat'] == true}<td><a href="{plink edit, $stranka['id']}" title="Úprava stranky" class="edit">Upravit</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+</table>
+{$control['strankyForm']['save']->control}
+{widget strankyForm end}
+{else}
+	<p class="warning">Žádné stránky nebyly nalezeny.</p>
+{/if}

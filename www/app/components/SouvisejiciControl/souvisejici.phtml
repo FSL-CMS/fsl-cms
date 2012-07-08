@@ -1,0 +1,55 @@
+{* Šablona pro výpis souvisejícího odkazu *}
+
+{snippet}
+{if isset($souvisejici['souvisejici']) && count($souvisejici['souvisejici'])}
+{if $souvisejici['rodic'] == 'zavody' || $souvisejici['rodic'] == 'terce'}
+<dt>Související</dt>
+{foreach $souvisejici['souvisejici'] as $id => $souv }
+	{if $souv['souvisejiciTabulka'] == 'zavody'}<dd>Závod: <a href="{plink Zavody:zavod, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>, {$souv['souvisejici']['datum']|datum}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'clanky'}<dd>Článek: <a href="{plink Clanky:clanek, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>, {$souv['souvisejici']['datum_zverejneni']|datum:1:0:0}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</dd>{/if}
+	{if $souv['souvisejiciTabulka'] == 'sbory'}<dd>Sbor: <a href="{plink Sbory:sbor, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</dd>{/if}
+	{if $souv['souvisejiciTabulka'] == 'druzstva'}<dd>Družstvo: <a href="{plink Druzstva:druzstvo, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</dd>{/if}
+	{if $souv['souvisejiciTabulka'] == 'terce'}<dd>Terče: <a href="{plink Terce:terce, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</dd>{/if}
+	{if $souv['souvisejiciTabulka'] == 'fotogalerie'}<dd>Fotogalerie: <a href="{plink Fotogalerie:fotogalerie, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</dd>{/if}
+{/foreach}
+{else} {if $souvisejici['rodic'] != 'forum'}
+<h2>Související</h2>
+<ul>
+{foreach $souvisejici['souvisejici'] as $id => $souv }
+	{if $souv['souvisejiciTabulka'] == 'zavody'}<li>Závod: <a href="{plink Zavody:zavod, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>, {$souv['souvisejici']['datum']|datum}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+	{if $souv['souvisejiciTabulka'] == 'clanky'}<li>Článek: <a href="{plink Clanky:clanek, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>, {$souv['souvisejici']['datum_zverejneni']|datum:1:0:0}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+	{if $souv['souvisejiciTabulka'] == 'sbory'}<li>Sbor: <a href="{plink Sbory:sbor, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+	{if $souv['souvisejiciTabulka'] == 'druzstva'}<li>Družstvo: <a href="{plink Druzstva:druzstvo, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+	{if $souv['souvisejiciTabulka'] == 'terce'}<li>Terče: <a href="{plink Terce:terce, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+	{if $souv['souvisejiciTabulka'] == 'fotogalerie'}<li>Fotogalerie: <a href="{plink Fotogalerie:fotogalerie, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}</li>{/if}
+{/foreach}
+</ul>
+{/if} {/if}
+
+{/if}
+{if $souvisejici['muze_pridavat'] && $souvisejici['rodic'] != 'diskuze' && $souvisejici['rodic'] != 'forum'}
+{if !isset($souvisejici['souvisejici']) || !count($souvisejici['souvisejici'])}
+	<p class="warning">Zatím nejsou uvedeny žádné související položky.</p>
+{/if}
+{control pridatSouvisejiciForm begin}
+<fieldset><legend>Přidat novou související položku</legend>{$control['pridatSouvisejiciForm']['souvisejici']->control}
+		<span><span>{$control['pridatSouvisejiciForm']['souvisejici_submit']->control}</span></span>
+		{$control['pridatSouvisejiciForm']['id_souvisejiciho']->control}
+		{$control['pridatSouvisejiciForm']['save']->control}
+		</fieldset>
+	{control pridatSouvisejiciForm end}
+{/if}
+{/snippet}
+
+{if isset($souvisejici['souvisejici']) && count($souvisejici['souvisejici'])}
+{if $souvisejici['rodic'] == 'forum'}
+&nbsp;&nbsp;&nbsp;&rarr; <small>{foreach $souvisejici['souvisejici'] as $id => $souv }
+	{if $souv['souvisejiciTabulka'] == 'zavody'}<a href="{plink Zavody:zavod, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>, {$souv['souvisejici']['datum']|datum:0:0:0}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'clanky'}<a href="{plink Clanky:clanek, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']|truncate:25}</a>, {$souv['souvisejici']['datum_zverejneni']|datum:0:0:0}{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'sbory'}<a href="{plink Sbory:sbor, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'druzstva'}<a href="{plink Druzstva:druzstvo, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'terce'}<a href="{plink Terce:terce, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+	{if $souv['souvisejiciTabulka'] == 'fotogalerie'}<a href="{plink Fotogalerie:fotogalerie, $souv['souvisejici']['id']}">{$souv['souvisejici']['nazev']}</a>{if $souvisejici['muze_smazat']} <a href="{link delete! $souv['id']}" class="ajax delete">Odstranit</a>{/if}{/if}
+{/foreach}</small>
+{/if}
+{/if}

@@ -1,0 +1,31 @@
+@{block content}
+
+<p class="nastaveni"><a href="{plink Temata:add}" class="add">Přidat nové téma</a></p>
+
+{if count($temata['temata'])}
+{widget temataForm begin}
+<table class="prehled">
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Název</th>{if $temata['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>
+<tbody class="sortable">
+	{foreach $temata['temata'] as $tema}
+		<tr>
+	     	<td class="handle">↕</td>
+	     	<td>{$control['temataForm'][$tema['id']]['id']->control} {$control['temataForm'][$tema['id']]['poradi']->control->class('poradi')}</td>
+	     	<td>{$tema['nazev']}</td>
+	     	{if $temata['muze_editovat'] == true}<td><a href="{plink edit, $tema['id']}" title="Úprava tématu" class="edit">Upravit</a></td>{/if}
+	     	{if $temata['muze_mazat'] == true}<td><a href="{plink delete!, $tema['id']}" title="Smazat téma" class="delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+		<tr>
+			<th colspan="5">{$control['temataForm']['save']->control}</th>
+		</tr>
+</tbody>
+</table>
+{widget temataForm end}
+{else}
+	<p class="warning">Žádná témata nebyla nalezena.</p>
+{/if}

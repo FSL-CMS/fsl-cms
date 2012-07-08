@@ -1,0 +1,10 @@
+{if count($odkazy)}
+<div class="toc">
+<h2>Na stránce naleznete:</h2>
+<ul>
+{foreach $odkazy as $odkaz => $nadpis}
+	<li><a href="#{$odkaz}">{$nadpis}</a></li>
+{/foreach}
+</ul>
+</div>
+{/if}

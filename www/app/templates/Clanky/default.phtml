@@ -1,0 +1,34 @@
+@{block content}
+
+{if $clanky['muze_pridavat']}<p><a href="{plink Clanky:add}" title="Přidat nový článek" class="add">Přidat nový článek</a></p>{/if}
+
+{if count($kategorieClanku)}
+<div class="kategorie-clanku">
+<h4>Kategorie článků</h4>
+<ul>
+{foreach $kategorieClanku as $odkaz}
+	<li><a href="{plink Clanky:kategorie, $odkaz['id']}">{$odkaz['text']}</a> ({$odkaz['pocet_clanku']}&times;)</li>
+{/foreach}
+</ul>
+</div>
+{/if}
+
+<div class="sloupec-clanku">
+{if count($clanky['nezverejnene'])}
+	<h2>Nezveřejněné články</h2>
+	{foreach $clanky['nezverejnene'] as $clanek}
+		<div class="clanek{if !empty($clanek->cssstyl)} clanek-{$clanek->cssstyl}{/if}">{include @Clanky.clanek.phtml, 'clanek' => $clanek, 'fulltext' => false}</div>
+	{/foreach}
+	<h2>Zveřejněné články</h2>
+{/if}
+
+{if count($clanky['clanky'])}
+	{foreach $clanky['clanky'] as $clanek}
+		<div class="clanek{if !empty($clanek->cssstyl)} clanek-{$clanek->cssstyl}{/if}">{include @Clanky.clanek.phtml, 'clanek' => $clanek, 'fulltext' => false}<span class="cleaner"></span></div>
+	{/foreach}
+{else}
+	<p>Nebyly přidány žádné články.</p>
+{/if}
+
+{widget vp}
+</div>

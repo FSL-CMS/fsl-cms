@@ -1,0 +1,73 @@
+@{block content}
+
+<h2>Informace o sboru {if $sbor['muze_editovat'] == true}<a href="{plink Sbory:edit, $sbor['id']}" class="edit">upravit</a>{/if}</h2>
+
+<dl>
+	<dt>Název sboru</dt><dd>{$sbor->nazev}</dd>
+	<dt>Okres</dt><dd>{$sbor->okres}</dd>
+	{if isset($sbor['kontakt_id']) || isset($sbor['kontakt_kontakt'])}<dt>Kontaktní informace</dt><dd><a href="{plink Uzivatele:uzivatel, $sbor['kontakt_id']}">{$sbor['kontakt_jmeno'].' '.$sbor['kontakt_prijmeni']}</a></dd><dd>{!$sbor['kontakt_email']|texy:true}</dd><dd>{!$sbor['kontakt_kontakt']|texy}</dd>{/if}
+</dl>
+
+{widget souvisejici "sbory", $sbor['id']}
+
+<h2>Soutěže pořádané tímto sborem</h2>
+{if count($zavody['zavody'])}
+	{include '../Zavody/zavody.rocnik.phtml'}
+{else}
+<p>Sbor nepořádal žádné závody.</p>
+{/if}
+
+{if count($terce)}
+<h2>Používané terče tohoto sboru</h2>
+<table class="prehled">
+	<thead>
+		<tr>
+			<th>Typ</th><th>Počet použití</th>
+		</tr>
+	</thead>
+	<tbody>
+{foreach $terce as $terc}
+	<tr>
+     	<td class="druzstvo"><a href="{link Terce:terce, $terc['id']}" title="Zobrazit informace o terčích">{$terc['typ']}</a></td><td>{$terc['pocet_pouziti']}&times;</td>
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{/if}
+
+<h2>Družstva sboru</h2>
+{if count($druzstva)}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th rowspan="2">Družstvo</th><th colspan="2">Počet</th>
+	</tr>
+	<tr>
+		<th>získaných bodů</th><th>zúčastněných závodů</th>
+	</tr>
+	</thead>
+	<tbody>
+{foreach $druzstva as $druzstvo}
+	<tr>
+     	<td><a href="{link Druzstva:druzstvo, $druzstvo['id']}">{$druzstvo['kategorie']} {$druzstvo['poddruzstvo']}</a></td>
+		<td class="body">{$druzstvo['pocet_bodu']}</td>
+		<td class="body">{$druzstvo['pocet_zavodu']}</td>
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+<p>Sbor nevlastní žádné terče.</p>
+{/if}
+
+{if count($sbor['uzivatele'])}
+<h2>Registrovaní členové a fanoušci sboru</h2>
+<ul>
+{foreach $sbor['uzivatele'] as $uzivatel}
+	<li><a href="{plink Uzivatele:uzivatel, $uzivatel['id']}">{$uzivatel['jmeno']} {$uzivatel['prijmeni']}</a></li>
+{/foreach}
+</ul>
+{/if}
+
+<h2>Komentáře ke sboru</h2>
+@{widget diskuze $sbor['id'], "sbory"}

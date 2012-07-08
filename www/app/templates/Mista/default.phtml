@@ -1,0 +1,31 @@
+@{block content}
+
+@{if $mista['muze_pridat'] == true}
+	{snippet editForm}
+	{widget editForm}
+	{/snippet}
+@{/if}
+
+{snippet mista}
+{if count($mista['mista'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Obec</th><th>Okres</th>{if $mista['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $mista['mista'] as $misto}
+	<tr>
+     	<td>{$misto['obec']}</a></td>
+     	<td>{$misto['okres']}</td>
+     	{if $mista['muze_editovat'] == true}<td><a href="{plink edit, $misto['id']}" title="Úprava informací o místu" class="edit">Upravit</a></td>{/if}
+     	{if $mista['muze_mazat'] == true}<td><a href="{plink delete!, $misto['id']}" title="Smazání místa" class="delete">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+<p class="warning">Žádná místa nebyla nalezena.</p>
+{/if}
+{/snippet}

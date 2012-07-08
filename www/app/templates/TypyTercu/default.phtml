@@ -1,0 +1,32 @@
+@{block content}
+
+{if $typyTercu['muze_pridat']}<p><a href="{plink add}" class="add">Přidat nový typ</a></p>{/if}
+
+{snippet typyTercu}
+{if count($typyTercu['typyTercu'])}
+{widget typyTercuForm begin}
+<table class="prehled">
+	<caption>Přehled typů terčů</caption>
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Název</th>{if $typyTercu['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>	
+<tbody class="sortable">
+	{foreach $typyTercu['typyTercu'] as $typTercu}
+		<tr>
+			<td class="handle">↕</td>
+			<td>{$control['typyTercuForm'][$typTercu['id']]['id']->control} {$control['typyTercuForm'][$typTercu['id']]['poradi']->control->class('poradi')}</td>
+			<td>{$typTercu['nazev']}</a></td>
+			{if $typyTercu['muze_editovat'] == true}<td><a href="{plink edit, $typTercu['id']}" title="Úprava typu terčů" class="edit">Upravit</a></td>{/if}
+			{if $typyTercu['muze_mazat'] == true}<td><a href="{plink delete!, $typTercu['id']}" title="Smazat typu terčů" class="ajax delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+</table>
+{$control['typyTercuForm']['save']->control}
+{widget typyTercuForm end}
+{else}
+	<p class="warning">Žádné typy terčů nebyly nalezeny.</p>
+{/if}
+{/snippet}

@@ -1,0 +1,38 @@
+@{block #content}
+
+{if $diskuze['muze_pridavat'] == true}
+	<p><a href="{plink Diskuze:zeptatse}" class="add">Založit nové téma!</a></p>
+{else}
+	<!--p class="warning">Novou diskuzi může založit pouze přihlášený uživatel.</p-->
+{/if}
+
+@{if count($forum['diskuze'])}
+	<table class="prehled">
+		<thead>
+			<tr><th>Diskuze</th><!--th>Autor, datum</th--><th>Komentáře</th><th>Poslední komentář</th></tr>
+		</thead>
+		<tbody class="barevna">
+	{? $i = 0; }
+	@{foreach $forum['diskuze'] as $disk}
+			<tr{if $i%2} class="suda"{/if}>
+				<td><h3><a href="{link Diskuze:diskuze, $disk['id_diskuze']}"{if $disk['zamknuto'] == true} class="zamknout"{/if}>{$disk['tema_diskuze']}</a>{if $disk['muze_smazat'] == true} <a href="{plink Diskuze:smazat, $disk['id_diskuze']}" title="Smazat diskuzi" class="delete">Smazat</a>{/if}</h3><div>&rarr; <small><a href="{plink Forum:forum, $disk['id_tematu']}">{$disk['tema']}</a></small><br />{widget souvisejici 'diskuze', $disk['id_diskuze']}</div></td>
+
+				{* Související odkaz *}
+				{* widget souvisejici 'diskuze', $disk['id_diskuze'] *}
+
+				<!--td>{$disk['datum_pridani']|datum:0:0:0} (<a href="{plink Uzivatele:uzivatel, $disk['posledni']['id_autora']}" title="Informace o autorovi">{$disk['autor']}</a>)</td-->
+				<td class="center">{$disk['pocet_komentaru']}</td>
+				<td>{$disk['posledni']['datum_pridani']|datum:0:0:0}<br /><a href="{plink Uzivatele:uzivatel, $disk['posledni']['id_autora']}" title="Informace o autorovi">{$disk['posledni']['autor']}</a></td>
+			</tr>
+			<!--tr{if $i%2} class="suda"{/if}>
+				<td colspan="3"><small>&rarr; <a href="{plink Forum:forum, $disk['id_tematu']}">{$disk['tema']}</a></small></td>
+			<!--tr{if $i%2} class="suda"{/if}>
+				<td colspan="3">{widget souvisejici 'diskuze', $disk['id_diskuze']}</td>
+			</tr-->
+			{? $i++; }
+	@{/foreach}
+		</tbody>
+	</table>
+@{else}
+	<p class="warning">Ve fóru není zatím žádná diskuze.</p>
+@{/if}

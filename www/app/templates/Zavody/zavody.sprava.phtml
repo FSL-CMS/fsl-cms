@@ -1,0 +1,22 @@
+<table class="prehled">
+	<caption>{$caption}</caption>
+	<thead>
+	<tr>
+		<th rowspan="2">Pořadatel (okres)</th><th rowspan="2">Terče</th><th colspan="4">Správa</th>
+	</tr>
+	<tr>
+		{if $zavody['muze_editovat'] == true}<th colspan="2">Závodu</th>{/if}{if $zavody['muze_editovat'] == true}<th>Výsledků</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+	{foreach $zavody['zavody'] as $zavod}
+	<tr>
+		<td><p><a href="{plink Zavody:zavod, $zavod['id']}" title="Informace o závodu">{$zavod['nazev']}</a> ({$zavod['okres']})</p><p>{$zavod['datum']|datum:0:0:0}</p></td>
+		<td>{$zavod['terce']}</td>
+		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:edit, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Upravit informace o závodu" class="edit">Upravit</a></td>{/if}
+		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:delete, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Odstranit závod" class="delete ajax">Smazat</a></td>{/if}
+		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:vysledky, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Upravit výsledky" class="edit">Upravit</a></td>{/if}
+	</tr>
+	{/foreach}
+	</tbody>
+</table>

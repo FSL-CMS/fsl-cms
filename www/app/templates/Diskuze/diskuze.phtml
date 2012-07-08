@@ -1,0 +1,7 @@
+{* Šablona pro výpis diskuzí *}
+
+@{block #content}
+
+{if $user->isAllowed('diskuze', 'edit')}{widget editForm}{/if}
+
+@{widget diskuze $diskuze['id']}

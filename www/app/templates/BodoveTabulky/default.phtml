@@ -1,0 +1,22 @@
+@{block content}
+
+{if $bodoveTabulky['muze_pridavat']}<p><a href="{plink BodoveTabulky:add}" title="Přidat novou bodovou tabulku" class="add">Přidat novou bodovou tabulku</a></p>{/if}
+
+{if count($bodoveTabulky['bodoveTabulky'])}
+<table class="prehled">
+	<thead>
+		<tr>
+			<th>Počet bodovaných míst</th><th>Body</th><th colspan="2">Správa</th>
+		</tr>
+	</thead>
+	<tbody>
+{foreach $bodoveTabulky['bodoveTabulky'] as $tabulka}
+	<tr>
+		<td>{$tabulka['pocet_bodovanych_pozic']}</td><td>{foreach $tabulka['body'] as $bod}{$bod['body']}, {/foreach}</td><td><a href="{plink edit, $tabulka['id']}" class="edit">Upravit</a></td><td><a href="{plink delete!, $tabulka['id']}" class="delete">Smazat</a></td>
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádné bodové hodnocení nebylo zatím zadáno.</p>
+{/if}

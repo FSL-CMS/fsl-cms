@@ -1,0 +1,12 @@
+@{block #content}
+
+{include 'galerie.phtml'}
+
+<li><a href="{plink Fotogalerie:fotogalerie, $galerie['id']}">Přejít zpět do fotogalerie</a></li> 
+
+{if $fotka['muze_editovat']}<li><a href="{plink Fotky:edit, $fotka['id']}" title="Upravit fotku">Upravit fotku</a></li>{/if}
+</ul>
+
+{widget fotka $fotka}
+
+<p>Nahrál: <a href="{plink Uzivatele:uzivatel, $fotka['id_autora']}">{$fotka['autor']}</a>, {$fotka['datum_pridani']|datum:1:0:0}.</p>

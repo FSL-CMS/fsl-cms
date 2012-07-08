@@ -1,0 +1,129 @@
+html {margin: 0; padding: 0;}
+body {font: 16px/1.5 Calibri, "Geneva CE", lucida, sans-serif; color: #000;}
+
+h1			{font-size: 180%; color: #000; font-family: Cambria; padding-bottom: 0px;}
+h2			{font-size: 135%; font-weight: bold;}
+h3, caption	{font-size: 120%; font-weight: bold;}
+h4			{font-size: 110%; font-weight: bold;}
+
+#ajax-spinner {display: none;}
+div.flash {display: none;}
+div.ok, div.error, div.warning, div.edit, div.delete,
+p.ok, p.error, p.warning, p.edit, p.delete {display: none;}
+
+
+a img	{border: 0;}
+
+h4 + ul		{margin-top: -1em;}
+h2 + p, h2 + .perex	{margin-top: -0.5em;}
+
+dt	{font-weight: bold;}
+
+strong	{font-weight: bold;}
+
+.zalomit-za	{page-break-after: always;}
+
+/* styly tabulek */
+table	{clear: both; border-collapse: collapse; text-align: center; margin: 0 auto;}
+form table{margin-left: 0; margin-right: 0; text-align: left; border: 0;}
+form th	{border-color: #fff;}
+form td	{border: 0px;}
+th		{color: #000; font-weight: bold;}
+th, td	{padding: 3px; border: 1px solid #000;}
+thead	{font-size: 110%; text-align: center; font-size: 110%;}
+
+table.prehled		{margin: 0 auto; border-collapse: collapse;}
+/*table.prehled tbody tr:nth-child(even) {background: #ccc;}*/
+table.prehled tbody tr:nth-child(odd) {}
+table.prehled th	{color: #000; background: #eee;}
+table.prehled td	{}
+table.prehled thead	{border-bottom: #000 double 3px;}
+table.prehled tbody	{text-align: left;}
+
+td p			{margin: 0 !important;}
+td p + p		{margin-bottom: 1em;}
+.zapati-tabulky {text-align: center;}
+table.prehled .datum	{text-align: center;}
+table.prehled .rocnik	{text-align: center;}
+table.prehled .cas		{text-align: center;}
+table.prehled .nejlepsi	{font-weight: bold;}
+table.prehled .poradi	{text-align: center; width: 55px;}
+table.prehled .body		{text-align: center; width: 70px;}
+table.prehled .terce	{text-align: center;}
+table.prehled .pocet-stahnuti	{text-align: center;}
+table.prehled .pripona	{text-align: center;}
+table.prehled .ukazatel-prubehu	{text-align: center;}
+
+/* stylování hlavních částí */
+#pozadi-cisla	{}
+#main		{}
+#postrani		{display: none;}
+#hlavni-obsah	{margin-top: 0;}
+#zahlavi		{display: none;}
+#patka		{display: none;}
+/*#hlavni-obsah	{margin-top: 170px;}
+#patka		{position: absolute; top: 0; width: 100%; height: 150px;}
+#patka .logo	{float: left; margin-right: 20px;}
+#patka .menu	{display: none;}*/
+
+/* drobečková navigace */
+.breadcrumbs				{display: none;}
+
+.tisk	{display: none;}
+
+.cleaner                {display: block; clear: both;}
+
+.clanek			{clear: left;}
+.clanek + .clanek	{padding-top: 5px; margin-top: 10px; border-top: 3px solid #000;}
+.clanek-paticka	{clear: both;}
+.clanek-zahlavi	{font-size: 90%; margin-top: -1em; margin-bottom: 0.5em !important;}
+.perex > p		{margin-top: 0;}
+.clanek h2 + h2	{margin-top: -1em;}
+
+.kalendarni-datum		{display: none;}
+
+.login td, .login th	{border: 0px;}
+
+table.anketa			{width: 100%;}
+.anketa td, .anketa th	{border: 0px;}
+.anketa thead			{}
+.anketa .otazka		{text-align: left;}
+.anketa .hlasy			{text-align: right;}
+.anketa tbody tr + tr	{border-top: 1px solid #000;}
+
+.kategorie-clanku		{display: none;}
+
+.nezverejneny-rocnik	{text-decoration: line-through;}
+
+.prehled-rocniku		{display: none;}
+
+h2 .edit, h3 .edit, h2 .delete, h3 .delete	{font-size: 80%; font-weight: normal;}
+
+.relativni-odkazy	{display: none;}
+
+.paginator	{display: none;}
+
+dd > p		{margin-top: 0;}
+dd + dt		{margin-top: 1.5em;}
+
+.center		{text-align: center;}
+
+.vypis-komentaru {margin-left: 2em;}
+
+.zruseny-zavod *	{text-decoration: line-through;}
+
+.fotka img	{display: block;}
+.fotka		{position: relative; width: 800px;}
+.fotka-nahled	{position: relative; width: 180px; height: 135px; float: left; margin-right: 15px; margin-bottom: 20px; text-align: center;}
+.fotka-nahled .odkazy-ve-fotce, .fotka .odkazy-ve-fotce {position: absolute; left: 2; top: 2; background: #fff;}
+.fotka-nahled .odkazy-ve-fotce, .fotka .odkazy-ve-fotce a {display: block;}
+.fotka-nahled img	{}
+.fotka-nahled a	{}
+
+.odkaz-na-galerii .fotka	{float: left; width: 200px; height: 250px;}
+
+.video		{text-align: center;}
+
+a, a:visited, a:hover	{color: #000; text-decoration: none;}
+
+/*.not-logined       {background: #FFCC66; color: #CC3300;}*/

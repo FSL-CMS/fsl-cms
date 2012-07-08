@@ -1,0 +1,38 @@
+{* Šablona pro výpis diskuzí *}
+
+@{block #content}
+
+<div id="mapa-{$id}" class="mala-mapa"></div>
+
+<script type="text/javascript" src="http://api4.mapy.cz/loader.js"></script>
+<script type="text/javascript">Loader.load();</script>
+
+
+<script lang="text/javascript">
+var center = SMap.Coords.fromPP({$stred['delka']}, {$stred['sirka']});
+var m = new SMap(JAK.gel("mapa-{$id}"), center, 7);
+m.addDefaultLayer(SMap.DEF_BASE).enable();
+//m.addDefaultControls();
+
+var layer = new SMap.Layer.Marker();
+m.addLayer(layer);
+layer.enable();
+
+var body = new Array;
+
+{foreach $body as $bod}
+	body.push(SMap.Coords.fromPP({$bod['delka']}, {$bod['sirka']}));
+	var marker = new SMap.Marker(SMap.Coords.fromPP({$bod['delka']}, {$bod['sirka']}), {$bod['id']}, { title: {$bod['nazev']}});
+	layer.addMarker(marker);
+{/foreach}
+
+if( body.length > 1)
+{
+	var novyZoom = 7;
+	var novyStred = m.computeCenterZoom(body, false);
+	if( novyStred[0] != Infinity ) novyZoom = novyStred[1]-1;
+	m.setCenterZoom(novyStred[0], novyZoom);
+}
+
+m.addDefaultLayer(SMap.DEF_BASE).enable();
+</script>

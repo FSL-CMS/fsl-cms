@@ -1,0 +1,12 @@
+@{block content}
+
+{snippet prilohy}
+<h2>Přiložit nové soubory</h2>
+{widget nahraniSouboruForm begin}
+<fieldset>
+	<legend>Soubory k nahrání</legend>
+		{$control['nahraniSouboruForm']['upload']->control}
+		{$control['nahraniSouboruForm']['save']->control}
+</fieldset>
+{widget nahraniSouboruForm end}
+{/snippet}

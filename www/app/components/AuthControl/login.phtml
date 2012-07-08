@@ -1,0 +1,29 @@
+{* Šablona s přihlašovacím formulářem *}
+
+{snippet flashes}
+	{foreach $flashes as $flash}<p class="flash pnotify {$flash->type}">{!$flash->message|texy:true}</p>{/foreach}
+{/snippet}
+
+{snippet}
+{widget loginForm begin}
+<table class="login">
+	<tr class="input">
+		<th>{$control['loginForm']['login']->label}</th>
+		<td>{$control['loginForm']['login']->control}</td>
+	</tr>
+	<tr class="input">
+		<th>{$control['loginForm']['heslo']->label}</th>
+		<td>{$control['loginForm']['heslo']->control}</td>
+	</tr>
+	<tr>
+		<td></td><td>{$control['loginForm']['save']->control}</td>
+	</tr>
+	<tr>
+		<td></td><td><a href="{plink Uzivatele:add}" title="Registrovat nového uživatele" class="add">Registrovat se</a></td>
+	</tr>
+	<tr>
+		<td></td><td><a href="{plink Uzivatele:zapomenuteUdaje}" class="help fancybox">Zapomenuté heslo</a></td>
+	</tr>
+</table>
+{widget loginForm end}
+{/snippet}

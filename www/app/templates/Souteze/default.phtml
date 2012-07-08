@@ -1,0 +1,33 @@
+@{block content}
+
+{if $souteze['muze_editovat'] == true}<p><a href="{plink add}" class="add">Přidat novou soutěž</a></p>{/if}
+
+{if count($souteze['souteze'])}
+{widget soutezeForm begin}
+<table class="prehled">
+<thead>
+	<tr>
+	     <th colspan="2">Pořadí</th><th>Název</th>{if $souteze['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
+	</tr>
+</thead>
+<tfoot>
+	<tr>
+		<td colspan="2">{$control['soutezeForm']['save']->control}</td>
+	</tr>
+</tfoot>
+<tbody class="sortable">
+	{foreach $souteze['souteze'] as $soutez}
+		<tr>
+	     	<td class="handle">↕</td>
+	     	<td>{$control['soutezeForm'][$soutez['id']]['id']->control} {$control['soutezeForm'][$soutez['id']]['poradi']->control->class('poradi')}</td>
+	     	<td>{$soutez['nazev']}</a></td>
+	     	{if $souteze['muze_editovat'] == true}<td><a href="{plink edit, $soutez['id']}" title="Úprava soutěže" class="edit">Upravit</a></td>{/if}
+			{if $souteze['muze_mazat'] == true}<td><a href="{link delete!, $soutez['id']}" title="Smazání soutěže" class="delete">Smazat</a></td>{/if}
+		</tr>
+	{/foreach}
+</tbody>
+</table>
+{widget soutezeForm end}
+{else}
+	<p class="warning">Žádné soutěže nebyly nalezeny.</p>
+{/if}

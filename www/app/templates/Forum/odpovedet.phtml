@@ -1,0 +1,15 @@
+{block content}
+
+{if isset($diskuze) && count($diskuze)}
+	{foreach $diskuze['diskuze'] as $disk}
+
+<h2>Odpověď v diskuzi: {$disk['tema_diskuze']}</h2>
+{widget komentarForm}
+
+		<h3>{$disk['tema']}</h3>
+          
+          {* Související odkaz *}
+		{widget souvisejici "diskuze", $disk  }
+		
+	{/foreach}
+{/if}

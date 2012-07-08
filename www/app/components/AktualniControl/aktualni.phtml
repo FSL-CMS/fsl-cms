@@ -1,0 +1,15 @@
+{if count($aktualniZavody)}
+<div id="aktualni">
+	<h1>Čeká nás</h1>
+	{widget mapa:malaMapa, $polohy}
+	{foreach $aktualniZavody as $zavod}
+	<h3><a href="{plink Zavody:zavod, $zavod['id']}" title="Přejít na závod {$zavod['nazev']}">{$zavod['nazev']}</a>, {$zavod['datum']|datum}</h3>
+	<ul>
+		<li>{$zavod['terce']} terče</li>
+		<li>{if $zavod['prihlasovani'] == 'je'}přihlašování na soutěž běží, <a href="{plink Zavody:zavod, $zavod['id']}#toc-startovni-poradi">přihlaste se!</a>{elseif $zavod['prihlasovani'] == 'bude'}přihlašování začne {$zavod['datum_prihlasovani_od']|datum}{else}přihlašování skončilo {$zavod['datum_prihlasovani_do']|datum}{/if}</li>
+		{widget souvisejici:aktualni "zavody", $zavod['id']}
+	</ul>
+	{/foreach}
+<span class="cleaner"></span>
+</div>
+{/if}
