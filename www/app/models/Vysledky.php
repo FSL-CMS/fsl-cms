@@ -168,7 +168,7 @@ class Vysledky extends BaseModel
 			->rightJoin('[rocniky] ON [rocniky].[id] = [zavody].[id_rocniku]')
 			->where('[vysledky].[platne_body] = %i', self::POUZE_PLATNE_BODY)
 			->groupBy('[rocniky].[id], [kategorie].[id], [druzstva].[id], [souteze].[id]')
-			->orderBy('[rocniky].[rok] DESC, [souteze].[poradi] [kategorie].[id], [celkem_bodu] DESC');
+			->orderBy('[rocniky].[rok] DESC, [souteze].[poradi], [kategorie].[id], [celkem_bodu] DESC');
 	}
 
 	/**
