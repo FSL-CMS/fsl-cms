@@ -41,7 +41,7 @@ class Ucasti extends BaseModel
 			->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
 			//->leftJoin('[bodove_tabulky] ON [bodove_tabulky].[id] = [ucasti].[id_bodove_tabulky]')
 			->where('[ucasti].[id_zavodu] = %i', $id)
-			//->orderBy('[souteze].[poradi], [kategorie].[poradi]')
+			->orderBy('[souteze].[poradi], [kategorie].[poradi]')
 			;
 	}
 	
