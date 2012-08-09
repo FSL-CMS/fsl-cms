@@ -36,13 +36,13 @@ class Vysledky extends BaseModel
 	public function findAll()
 	{
 		return $this->connection
-			->select('[vysledky].[umisteni] AS [poradi], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[id], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [vysledky].[id_zavodu]')
+			->select('[vysledky].[umisteni] AS [poradi], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[id], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [ucasti].[id_zavodu]')
 			->from($this->table)
 			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
 			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
 			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
-			//->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
-			->leftJoin('[zavody] ON [zavody].[id] = [vysledky].[id_zavodu]')
+			->leftJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
+			->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
 			//->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
 			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
 			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
@@ -51,8 +51,8 @@ class Vysledky extends BaseModel
 		}
 
 	/**
-	 * Nalezne výsledky jednoho závody
-	 * @param int $id závodu
+	 * Nalezne vsšechny výsledky jednoho závody.
+	 * @param int $id ID závodu
 	 * @return DibiFluent
 	 */
 	public function findByZavod($id)
@@ -60,15 +60,15 @@ class Vysledky extends BaseModel
 		return $this->connection
 			->select('[vysledky].[umisteni] AS [poradi], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[id], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [souteze].[nazev] AS [soutez], [ucasti].[id] AS [id_ucasti], [ucasti].[id_souteze]')
 			->from($this->table)
-			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
-			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
-			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
+			->rightJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
+			->rightJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
+			->rightJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
 			->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
-			->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
-			->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->where('[vysledky].[id_zavodu] = %u', $id)
+			->rightJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
+			->rightJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
+			->rightJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+			->rightJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+			->where('[ucasti].[id_zavodu] = %u', $id)
 			->orderBy('[souteze].[poradi], [kategorie].[poradi], [vysledky].[umisteni], [vysledky].[body]');
 	}
 
@@ -130,7 +130,7 @@ class Vysledky extends BaseModel
 	 * Vrátí výsledky ročníky platné před začátkem uvedeného závodu
 	 * @param int $id ID ročníku
 	 * @param int $id_zavodu ID závodu
-	 * @return type
+	 * @return DibiFluent
 	 */
 	public function findByRocnikAndZavod($id, $id_zavodu)
 	{
@@ -141,11 +141,11 @@ class Vysledky extends BaseModel
 	 * Vrátí výsledky ročníky platné po skončení uvedeného závodu
 	 * @param int $id ID ročníku
 	 * @param int $id_zavodu ID závodu
-	 * @return type
+	 * @return DibiFluent
 	 */
 	public function findByRocnikAndZavodAfter($id, $id_zavodu)
 	{
-		return $this->findByRocnik($id)->where('[zavody].[id] <= (SELECT [datum] FROM [zavody] WHERE [id] = %i)', $id_zavodu);
+		return $this->findByRocnik($id)->where('[zavody].[datum] <= (SELECT [datum] FROM [zavody] WHERE [id] = %i)', $id_zavodu);
 	}
 
 	/**
@@ -199,7 +199,8 @@ class Vysledky extends BaseModel
 		$prehled = $this->connection
 			->select('[druzstva].[id_kategorie], [zavody].[id_tercu]')
 			->from('[vysledky]')
-			->leftJoin('[zavody] ON [zavody].[id] = [vysledky].[id_zavodu]')
+			->leftJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
+			->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
 			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
 			->groupBy('[druzstva].[id_kategorie], [zavody].[id_tercu]');
 		//Debug::dump($prehled->fetchAssoc('id_kategorie,id_tercu'));
@@ -207,7 +208,8 @@ class Vysledky extends BaseModel
 		$spolecne = array('
 			SELECT [mista].[id], [mista].[obec], COUNT([sbory].[id]) AS [pocet], [kategorie].[nazev] AS [kategorie], [typy_tercu].[nazev] AS [typ], [kategorie].[poradi] AS [kategorie_poradi], [typy_tercu].[poradi] AS [typy_tercu_poradi]
 			FROM [vysledky]
-		 	LEFT JOIN [zavody] ON [vysledky].[id_zavodu] = [zavody].[id]
+		 	LEFT JOIN [ucasti] ON [vysledky].[id_ucasti] = [ucasti].[id]
+		 	LEFT JOIN [zavody] ON [ucasti].[id_zavodu] = [zavody].[id]
 		 	LEFT JOIN [poradatele] ON [poradatele].[id_zavodu] = [zavody].[id]
 		 	LEFT JOIN [sbory] ON [sbory].[id] = [poradatele].[id_sboru]
 			LEFT JOIN [mista] ON [zavody].[id_mista] IS NOT NULL AND [zavody].[id_mista] = [mista].[id] OR [zavody].[id_mista] IS NULL AND [sbory].[id_mista] = [mista].[id]
@@ -228,7 +230,8 @@ class Vysledky extends BaseModel
 				$nejlepsi = $this->connection->query('
 					SELECT [vysledky].[id]
 					FROM [vysledky]
-					LEFT JOIN [zavody] ON [zavody].[id] = [vysledky].[id_zavodu]
+					LEFT JOIN [ucasti] ON [vysledky].[id_ucasti] = [ucasti].[id]
+					LEFT JOIN [zavody] ON [ucasti].[id_zavodu] = [zavody].[id]
 					LEFT JOIN [druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]
 					WHERE [druzstva].[id_kategorie] = %i', $tmp['id_kategorie'], ' AND [zavody].[id_tercu] = %i', $tmp['id_tercu'], ' AND [vysledky].[vysledny_cas] < %i', self::HRANICE_PLATNYCH_CASU, '
 					ORDER BY [vysledky].[vysledny_cas]
@@ -271,7 +274,7 @@ class Vysledky extends BaseModel
 	public function nejlepsiCasy()
 	{
 		$prehled = $this->connection
-			->select('[druzstva].[id_kategorie], [zavody].[id_tercu], [ucasti].[id_souteze]')
+			->select('[druzstva].[id_kategorie], [terce].[id_typu], [ucasti].[id_souteze]')
 			->from('[vysledky]')
 			->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
 			->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
@@ -279,15 +282,16 @@ class Vysledky extends BaseModel
 			->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
 			->leftJoin('[typy_tercu] ON [typy_tercu].[id] = [terce].[id_typu]')
 			->groupBy('[ucasti].[id_souteze], [druzstva].[id_kategorie], [typy_tercu].[id]');
-
+//print_r($prehled->fetchAll());
 		$spolecne = array('
-			SELECT [vysledky].[id], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ",[mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [rocniky].[rok], [vysledky].[vysledny_cas], [typy_tercu].[nazev] AS [typ], [kategorie].[nazev] AS [kategorie], [vysledky].[id_druzstva], [kategorie].[poradi] AS [kategorie_poradi], [typy_tercu].[poradi] AS [typy_tercu_poradi], [zavody].[id] AS [id_zavodu], [zavody].[datum], [mista_poradatel].[obec], [souteze].[nazev] AS [soutez], [ucasti].[id_souteze]
+			SELECT [vysledky].[id], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ",[mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [rocniky].[rok], [vysledky].[vysledny_cas], [typy_tercu].[nazev] AS [typ], [kategorie].[nazev] AS [kategorie], [vysledky].[id_druzstva], [kategorie].[poradi] AS [kategorie_poradi], [typy_tercu].[poradi] AS [typy_tercu_poradi], [zavody].[id] AS [id_zavodu], [zavody].[datum], [mista_poradatel].[obec], [souteze].[nazev] AS [soutez], [ucasti].[id_souteze], [souteze].[poradi] AS [souteze_poradi]
 			FROM [vysledky]
 		 	LEFT JOIN [ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]
 			LEFT JOIN [zavody] ON [ucasti].[id_zavodu] = [zavody].[id]
 			LEFT JOIN [souteze] ON [souteze].[id] = [ucasti].[id_souteze]
 			LEFT JOIN [rocniky] ON [rocniky].[id] = [zavody].[id_rocniku]
-			LEFT JOIN [sbory] [poradatel] ON [poradatel].[id] = [zavody].[id_poradatele]
+			LEFT JOIN [poradatele] ON [poradatele].[id_zavodu] = [zavody].[id]
+			LEFT JOIN [sbory] [poradatel] ON [poradatel].[id] = [poradatele].[id_sboru]
 			LEFT JOIN [mista] [mista_poradatel] ON [mista_poradatel].[id] = [poradatel].[id_mista]
 
 			LEFT JOIN [druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]
@@ -308,9 +312,10 @@ class Vysledky extends BaseModel
 				->from($this->table)
 				->leftJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
 				->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
+				->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
 				->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
 				->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
-				->where('[ucasti].[id_souteze] = %i', $tmp['id_souteze'], 'AND [druzstva].[id_kategorie] = %i', $tmp['id_kategorie'], ' AND [zavody].[id_tercu] = %i', $tmp['id_tercu'], ' AND [vysledky].[vysledny_cas] < %i', self::HRANICE_PLATNYCH_CASU, 'AND [vysledky].[platne_casy] = %i', self::POUZE_PLATNE_CASY)
+				->where('[ucasti].[id_souteze] = %i', $tmp['id_souteze'], 'AND [druzstva].[id_kategorie] = %i', $tmp['id_kategorie'], ' AND [terce].[id_typu] = %i', $tmp['id_typu'], ' AND [vysledky].[vysledny_cas] < %i', self::HRANICE_PLATNYCH_CASU, 'AND [vysledky].[platne_casy] = %i', self::POUZE_PLATNE_CASY)
 				->orderBy('[vysledky].[vysledny_cas]')
 				->limit(100)
 				->execute();
@@ -320,7 +325,7 @@ class Vysledky extends BaseModel
 			$kompletni[] = 'UNION';
 		}
 		array_pop($kompletni); // odstraní posledí "UNION"
-		$kompletni[] = 'ORDER BY [kategorie_poradi], [typy_tercu_poradi], [vysledny_cas] ASC';
+		$kompletni[] = 'ORDER BY [souteze_poradi], [kategorie_poradi], [typy_tercu_poradi], [vysledny_cas] ASC';
 
 		return $this->connection->query($kompletni);
 	}
@@ -328,7 +333,7 @@ class Vysledky extends BaseModel
 	public function nejviceBodovanaDruzstva()
 	{
 		return $this->connection
-			->select('[druzstva].[id], [druzstva].[id] AS [id_druzstva], CONCAT_WS( " ", [typy_sboru].[zkratka], [mista].[obec], [druzstva].[poddruzstvo] ) AS [druzstvo], [kategorie].[nazev] AS [kategorie], SUM([vysledky].[body]) AS [celkem_bodu], COUNT([vysledky].[id_zavodu]) AS [celkem_zavodu], AVG([vysledky].[body]) AS [prumer], GROUP_CONCAT([vysledky].[body]) AS [body], [souteze].[nazev] AS [soutez], [ucasti].[id_souteze]')
+			->select('[druzstva].[id], [druzstva].[id] AS [id_druzstva], CONCAT_WS( " ", [typy_sboru].[zkratka], [mista].[obec], [druzstva].[poddruzstvo] ) AS [druzstvo], [kategorie].[nazev] AS [kategorie], SUM([vysledky].[body]) AS [celkem_bodu], COUNT([zavody].[id]) AS [celkem_zavodu], AVG([vysledky].[body]) AS [prumer], GROUP_CONCAT([vysledky].[body]) AS [body], [souteze].[nazev] AS [soutez], [ucasti].[id_souteze]')
 			->from('[vysledky]')
 			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
    			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
@@ -412,7 +417,8 @@ class Vysledky extends BaseModel
 				->rightJoin('[typy_tercu] ON [typy_tercu].[id] = [terce].[id_typu]')
 				->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
 				->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
-				->leftJoin('[sbory] [poradatel] ON [poradatel].[id] = [zavody].[id_poradatele]')
+				->leftJoin('[poradatele] ON [poradatele].[id_zavodu] = [ucasti].[id_zavodu]')
+				->leftJoin('[sbory] [poradatel] ON [poradatel].[id] = [poradatele].[id_sboru]')
 				->leftJoin('[mista] [mista_poradatele] ON [mista_poradatele].[id] = [poradatel].[id_mista]')
 				->where('[vysledky].[vysledny_cas] < %i', self::HRANICE_PLATNYCH_CASU, ' AND [druzstva].[id] = %i', $id, ' AND [vysledky].[platne_casy] = %i', self::POUZE_PLATNE_CASY, 'AND [vysledky].[vysledny_cas] = '.$minimum['rekord']); // %f je pro float, potřebuji decimal
 		}

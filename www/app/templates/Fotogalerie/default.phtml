@@ -1,11 +1,12 @@
 {block content}
 
-{if $galerie['muze_pridavat']}<p><a href="{link Fotogalerie:add}" class="add">Přidat novou galerii</a></p>{/if}
+{if $galerie['muze_pridavat']}<p class="config"><a href="{link Fotogalerie:add}" class="add">Přidat novou galerii</a></p>{/if}
 
 {if count($galerie['galerie'])}
 	{foreach $galerie['galerie'] as $jednaGalerie}
 		<div class="odkaz-na-galerii">
-			<h2><a href="{plink Fotogalerie:fotogalerie, $jednaGalerie['id']}">{$jednaGalerie['nazev']}</a> {if $jednaGalerie['muze_editovat']}<a href="{plink Fotogalerie:edit, $jednaGalerie['id']}" class="edit">Upravit</a>{/if} {if $jednaGalerie['muze_editovat']}<a href="{plink delete!, $jednaGalerie['id']}" class="delete">Smazat</a>{/if} {if $jednaGalerie['muze_editovat']}<a href="{plink Fotogalerie:pridatFotky, $jednaGalerie['id']}" class="add">Přidat fotky do galerie</a>{/if}</h2>
+			<h2><a href="{plink Fotogalerie:fotogalerie, $jednaGalerie['id']}">{$jednaGalerie['nazev']}</a></h2>
+			{if $jednaGalerie['muze_editovat']}<p class="config">{if $jednaGalerie['muze_editovat']}<a href="{plink Fotogalerie:edit, $jednaGalerie['id']}" class="edit">Upravit</a>{/if} {if $jednaGalerie['muze_editovat']}<a href="{plink delete!, $jednaGalerie['id']}" class="delete">Smazat</a>{/if} {if $jednaGalerie['muze_editovat']}<a href="{plink Fotogalerie:pridatFotky, $jednaGalerie['id']}" class="add">Přidat fotky do galerie</a>{/if}</p>{/if}
 			{widget fotka:profilova, $jednaGalerie['id_fotky']}
 			<dl>
 				<dt>Datum zveřejnění</dt>
@@ -18,6 +19,8 @@
 					<dd>{$jednaGalerie['pocet_zhlednuti']}&times;</dd>
 				{if $jednaGalerie['typ'] == 'interni'}<dt>Počet fotografií</dt>
 					<dd>{$jednaGalerie['pocet_fotografii']}</dd>{/if}
+				{if $jednaGalerie['typ'] == 'rajce'}<dt>Počet fotografií</dt>
+					<dd>galerie je vložená ze serveru Rajče.cz</dd>{/if}
 			</dl>
 			{if !empty($jednaGalerie['text'])}
 				{block|texy}{$jednaGalerie['text']|truncate:50}{/block}

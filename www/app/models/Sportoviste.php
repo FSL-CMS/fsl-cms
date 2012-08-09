@@ -31,7 +31,7 @@ class Sportoviste extends BaseModel
 	{
 		return $this->findAll()->where('%n.[id] = %i', $this->table, $id);
 	}
-	
+
 	public function findAll()
 	{
 		return $this->connection
@@ -40,8 +40,8 @@ class Sportoviste extends BaseModel
 		     ->leftJoin('[mista] ON [mista].[id] = [sportoviste].[id_mista]')
 			->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
 		     ->orderBy('[obec]');
-	}	
-	
+	}
+
 	public function findAllToSelect()
 	{
 		return $this->findAll()->select('CONCAT([mista].[obec], " (", [okresy].[zkratka], ")") AS [nazev]');
@@ -51,14 +51,15 @@ class Sportoviste extends BaseModel
 	{
 		return $this->findAll()->where('[okresy].[id] = %i', $id);
 	}
-	
+
 	public function muzeEditovat($id, $id_uzivatele)
 	{
 		return (bool)$this->connection
 			->select('IF(COUNT([uzivatele].[id])=0,0,1)')
 			->from($this->table)
 			->rightJoin('[zavody] ON [zavody].[id_mista] = %n.[id]', $this->table)
-			->rightJoin('[sbory] ON [sbory].[id] = [zavody].[id_poradatele]')
+			->rightJoin('[poradatele] ON [poradatele].[id_zavodu] = [zavody].[id]')
+			->rightJoin('[sbory] ON [sbory].[id] = [poradatele].[id_sboru]')
 			->leftJoin('[uzivatele] ON [uzivatele].[id] = [sbory].[id_spravce] OR [uzivatele].[id] = [sbory].[id_kontaktni_osoby]')
 			->where('[sportoviste].[id] = %i', $id, 'AND [uzivatele].[id] = %i', $id_uzivatele)
 			->fetchSingle()

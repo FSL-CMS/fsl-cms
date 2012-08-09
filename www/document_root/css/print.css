@@ -21,6 +21,7 @@ dt	{font-weight: bold;}
 
 strong	{font-weight: bold;}
 
+.zalomit-pred	{page-break-before: always;}
 .zalomit-za	{page-break-after: always;}
 
 /* styly tabulek */

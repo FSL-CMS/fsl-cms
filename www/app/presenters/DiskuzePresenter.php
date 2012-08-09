@@ -79,7 +79,7 @@ class DiskuzePresenter extends BasePresenter
 		$temataModel = new Temata();
 
 		DependentSelectBox::$disableChilds = false;
-
+		$form->addGroup('Nový dotaz');
 		$form->addSelect('id_tematu', 'Téma diskuze', $temataModel->findAllToSelect()->fetchPairs('id','nazev'));
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Související', $form['id_tematu'], array($this, 'getSouvisejici'));
 		$form->addText('nazev', 'Název diskuze', 40)

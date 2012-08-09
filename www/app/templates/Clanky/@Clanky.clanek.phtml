@@ -4,11 +4,7 @@
 {if $fulltext == false}{if $clanek['cssstyl'] == 'rada'}<h2><strong>Oznámení rady</strong></h2>{/if}{/if}
 {if $fulltext == false}<p class="clanek-zahlavi">Vystavil: <a href="{plink Uzivatele:uzivatel, $clanek['id_autora']}" title="Informace o autorovi">{$clanek['autor']}</a>, komentáře: {$clanek['pocet_komentaru']}, přečteno: {$clanek['pocet_cteni']}&times;{if $clanek['posledni_aktualizace'] != ''}, <b>aktualizováno</b>{/if}</p>{/if}
 
-{if $fulltext == true && ($clanek['muze_smazat'] == true || $clanek['muze_editovat'] == true)}<p>{if $clanek['muze_editovat'] == true}<a href="{link Clanky:edit, $clanek['id']}" title="Upravit tento článek" class="edit">Upravit článek</a>{/if}{if $clanek['muze_smazat'] == true} <a href="{plink delete!, $clanek['id']}" title="Smazat tento článek" class="delete">Smazat článek!</a>{/if}</p>{/if}
-
-<div class="boxik-u-clanku">
-{ifset $clanek['datum']}<div class="kalendarni-datum"><span class="den">{$clanek['datum']['den']}</span><span class="mesic">{$clanek['datum']['mesic']}</span><span class="rok">{$clanek['datum']['rok']}</span></div>{/if}
-</div>
+{if $fulltext == true && ($clanek['muze_smazat'] == true || $clanek['muze_editovat'] == true)}<p class="config">{if $clanek['muze_editovat'] == true}<a href="{link Clanky:edit, $clanek['id']}" title="Upravit tento článek" class="edit">Upravit článek</a>{/if}{if $clanek['muze_smazat'] == true} <a href="{plink delete!, $clanek['id']}" title="Smazat tento článek" class="delete">Smazat článek!</a>{/if}</p>{/if}
 
 {if $fulltext == true}
 	<div class="perex">{!$clanek['perex']|texy}</div>
@@ -22,4 +18,4 @@
 	{widget souvisejici "clanky", $clanek['id']}
 {/if}
 
-{if $fulltext == true}<p class="clanek-paticka">Vystavil: <a href="{plink Uzivatele:uzivatel, $clanek['id_autora']}" title="Informace o autorovi">{$clanek['autor']}</a> {ifset $clanek['datum']}{$clanek['datum_zverejneni']|datum:1:1:1}{else}, nezveřejněno{/if}, přečteno: {$clanek['pocet_cteni']}&times;</p>{/if}
+{if $fulltext == true}<p class="clanek-paticka">Vystavil: <a href="{plink Uzivatele:uzivatel, $clanek['id_autora']}" title="Informace o autorovi">{$clanek['autor']}</a> {ifset $clanek['datum_zverejneni']}{$clanek['datum_zverejneni']|datum:1:1:1}{else}, nezveřejněno{/if}, přečteno: {$clanek['pocet_cteni']}&times;</p>{/if}

@@ -7,9 +7,9 @@
 <table class="prehled">
 <thead>
 	<tr>
-	     <th colspan="2">Pořadí</th><th>Kategorie</th>{if $kategorie['muze_editovat'] == true || $kategorie['muze_smazat'] == true}<th colspan="2">Správa</th>{/if}
+	     <th colspan="2">Pořadí</th><th>Kategorie</th>{if $kategorie['muze_editovat'] == true || $kategorie['muze_smazat'] == true}<th colspan="2" class="center">Správa</th>{/if}
 	</tr>
-</thead>	
+</thead>
 <tbody class="sortable">
 	{foreach $kategorie['kategorie'] as $kat}
 		<tr>
@@ -21,11 +21,11 @@
 		</tr>
 	{/foreach}
 </tbody>
-<tbody>
+<tfoot>
 	<tr>
 		<th colspan="5">{$control['kategorieForm']['save']->control}</th>
 	</tr>
-</tbody>
+</tfoot>
 </table>
 {widget kategorieForm end}
 {else}

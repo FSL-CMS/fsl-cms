@@ -28,7 +28,14 @@
 
 {/if}
 {if $souvisejici['muze_pridavat'] && $souvisejici['rodic'] != 'diskuze' && $souvisejici['rodic'] != 'forum'}
-{if !isset($souvisejici['souvisejici']) || !count($souvisejici['souvisejici'])}
+	{if !isset($souvisejici['souvisejici']) || !count($souvisejici['souvisejici'])}
+		{if $souvisejici['rodic'] == 'zavody' || $souvisejici['rodic'] == 'terce'}
+			<dt>Související</dt>
+		{else}
+			{if $souvisejici['rodic'] != 'forum'}
+			<h2>Související</h2>
+			{/if}
+		{/if}
 	<p class="warning">Zatím nejsou uvedeny žádné související položky.</p>
 {/if}
 {control pridatSouvisejiciForm begin}

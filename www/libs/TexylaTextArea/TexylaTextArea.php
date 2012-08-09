@@ -10,26 +10,26 @@ class TexylaTextArea extends /*Nette\Forms\*/TextArea
 	 */
 	public function __construct($label = NULL, $cols = NULL, $rows = NULL)
 	{
-		if( $cols === NULL ) $cols = 75;
+		if( $cols === NULL ) $cols = 65;
 		if( $rows === NULL ) $rows = 10;
 		parent::__construct($label, $cols, $rows);
 	}
 
-	
+
 	/**
 	 * Generates control's HTML element.
 	 * @return Html
 	 */
 	public function getControl()
-	{		
+	{
 		$presenter = $this->getParent()->getParent();
-		
+
 		$control = parent::getControl();
 		$control->class = 'texyla';
 
 		$el = Html::el();
 		$el->add($control);
-		$el->add('		
+		$el->add('
 <script type="text/javascript">
 $.texyla.setDefaults({
 	texyCfg: "guestbook",
@@ -51,8 +51,8 @@ $.texyla.setDefaults({
 	],
 	bottomLeftToolbar: []
 });
-</script>');		
-		
+</script>');
+
 		return $el;
 	}
 

@@ -193,11 +193,11 @@ class ClankyPresenter extends BasePresenter
 
 		$form->addGroup('Uložit');
 		$form->addCheckbox('saveAsUpdated', 'Označit článek jako aktualizovaný')->setOption('description', 'Datum a čas uložení bude uveden jako datum aktualizace článku.');
-		$form->addSubmit('cancel', 'Zrušit')
-			   ->setValidationScope(FALSE);
-		;
+
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
+		$form->addSubmit('cancel', 'Zrušit')
+			->setValidationScope(FALSE);
 
 		$form->addGroup('Publikace na sociálních sítích');
 		$fb = $form->addContainer('facebook');

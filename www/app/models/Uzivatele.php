@@ -45,7 +45,8 @@ class Uzivatele extends BaseModel implements IAuthenticator
 			(SELECT [uzivatele].[id], [uzivatele].[jmeno], [uzivatele].[prijmeni], [uzivatele].[kontakt], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru], "poradatel" AS [kategorie], CONCAT_WS(" ", [poradatel_mista].[obec]) AS [funkce], 10000 AS [funkce_poradi], [zavody].[id] AS [id_zavodu], [zavody].[datum] AS [datum_zavodu], [uzivatele].[email]
 			FROM zavody
 
-			LEFT JOIN [sbory] [poradatel_sbory] ON [poradatel_sbory].[id] = [zavody].[id_poradatele]
+			LEFT JOIN [poradatele] ON [poradatele].[id_zavodu] = [zavody].[id]
+			LEFT JOIN [sbory] [poradatel_sbory] ON [poradatel_sbory].[id] = [poradatele].[id_sboru]
 			RIGHT JOIN [uzivatele] ON [uzivatele].[id] = [poradatel_sbory].[id_kontaktni_osoby]
 			LEFT JOIN [mista] [poradatel_mista] ON [poradatel_mista].[id] = [poradatel_sbory].[id_mista]
 			LEFT JOIN [okresy] ON [okresy].[id] = [poradatel_mista].[id_okresu]

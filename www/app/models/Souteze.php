@@ -34,12 +34,12 @@ class Souteze extends BaseModel
 			->from($this->table)
 			->orderBy('[poradi]');
 	}
-	
+
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
 	}
-	
+
 	public function findByObdobiZavodu($id)
 	{
 		return $this->findAll()->where('[platnost_od] <= (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i) AND ([platnost_do] >= (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i) OR [platnost_do] IS NULL)', $id, $id);
@@ -49,7 +49,7 @@ class Souteze extends BaseModel
 	{
 		if( isset($data['platnost_do']) && $data['platnost_do'] == '0000-00-00 00:00:00' || empty($data['platnost_do']) ) { unset($data['platnost_do']); $data['platnost_do%sql'] = 'NULL'; }
 	}
-	
+
 	public function insert(array $data)
 	{
 		try
@@ -65,7 +65,7 @@ class Souteze extends BaseModel
 		{
 			if( $e->getCode() == 1062 ) throw new AlreadyExistException('Typ terčů již existuje.');
 			else throw $e;
-		}	
+		}
 	}
 
 	public function update($id, array $data)
@@ -79,7 +79,7 @@ class Souteze extends BaseModel
 		{
 			if( $e->getCode() == 1062 ) throw new AlreadyExistException('Typ terčů již existuje.');
 			else throw $e;
-		}		
+		}
 	}
 
 	public function delete($id)
@@ -93,7 +93,7 @@ class Souteze extends BaseModel
 		{
 			if( $e->getCode() == 1451 ) throw new RestrictionException('Soutěž nelze smazat.');
 			else throw $e;
-		}		
+		}
 	}
-	
+
 }

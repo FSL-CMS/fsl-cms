@@ -1,6 +1,6 @@
 @{block content}
 
-{if $ankety['muze_pridavat']}<p><a href="{link Ankety:add}" title="Přidat novou anketu" class="add">Přidat novou anketu</a></p>{/if}
+{if $ankety['muze_pridavat']}<p class="config"><a href="{link Ankety:add}" title="Přidat novou anketu" class="add">Přidat novou anketu</a></p>{/if}
 
 @{if $ankety['muze_editovat']}
 	{if count($ankety['ankety'])}

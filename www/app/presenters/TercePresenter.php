@@ -15,33 +15,30 @@
  */
 class TercePresenter extends BasePresenter
 {
-	/** @persistent */
-	public $backlink = '';
-	
 	protected $model;
-	
+
 	public function startup()
 	{
 		$this->model = new Terce;
 		parent::startup();
 	}
-	
-	public function actionEdit($id = 0)
+
+	public function actionEdit($id = 0, $backlink = NULL)
 	{
 		parent::actionEdit($id);
 	}
-	
+
 	/**
 	 * Připraví výpis všech terčů
 	 */
 	public function renderDefault()
 	{
 		$this->template->terce = array();
-		
+
 		$this->template->terce['muze_editovat'] = $this->user->isAllowed('terce', 'edit');
 		$this->template->terce['muze_mazat'] = $this->user->isAllowed('terce', 'delete');
 		$this->template->terce['terce'] = $this->model->findAll();
-		
+
 		$this->setTitle('Terče používané na závodech');
 	}
 
@@ -77,26 +74,30 @@ class TercePresenter extends BasePresenter
 		$this->setView('edit');
 	}
 
-	public function renderEdit($id = 0)
+	public function renderEdit($id = 0, $backlink = NULL)
 	{
 		if( $id != 0 )
 		{
 			$zDB = $this->model->find($id)->fetch();
 			$this['editForm']->setDefaults($zDB);
 		}
-		
+
+		if($backlink !== NULL) $this['editForm']['backlink']->setValue($backlink);
+
 		if( $id == 0 ) $this->setTitle('Přidání terčů');
 		else $this->setTitle('Úprava terčů');
 	}
-	
-	public function createComponentEditForm()
+
+	public function createComponentEditForm($name)
 	{
-		$form = new RequestButtonReceiver($this, 'editForm');
+		$form = new RequestButtonReceiver($this, $name);
 		$typyTercu = new TypyTercu;
 		$sbory = new Sbory;
-		
+
 		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-		
+
+		$form->addHidden('backlink');
+
 		$form->addGroup('Informace o terčích');
 		$form->addSelect('id_typu', 'Typ terčů', $typyTercu->findAllToSelect()->fetchPairs('id', 'nazev'))
 			->addRule(Form::FILLED, 'Je nutné vyplnit typ terčů.')
@@ -104,24 +105,24 @@ class TercePresenter extends BasePresenter
 		$form->addSelect('id_majitele', 'Majitel', $sbory->findAlltoSelect()->fetchPairs('id', 'nazev'))
 			->addRule(Form::FILLED, 'Je nutné vybrat majitele terčů.')
 			->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
-		$form->addAdminTexylaTextArea('text', 'Popis terčů');			
+		$form->addAdminTexylaTextArea('text', 'Popis terčů');
 
-		$form->setCurrentGroup(NULL);			
-			
+		$form->addGroup(null);
+
 		$form->addSubmit('save', 'Uložit');
+		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 	}
-	
+
 	public function editFormSubmitted(AppForm $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
 		{
-			$this->redirect('Terce:default');
 		}
 		elseif($form['save']->isSubmittedBy())
 		{
@@ -138,7 +139,6 @@ class TercePresenter extends BasePresenter
 					$this->model->update($id, $dataDoDb);
 				}
 				$this->flashMessage('Informace o terčích byly uloženy.');
-				$this->redirect('Terce:terce', $id);
 			}
 			catch(DibiException $e)
 			{
@@ -149,8 +149,21 @@ class TercePresenter extends BasePresenter
 			{
 				$this->flashMessage('Terče již existují.', 'warning');
 			}
-		} 		
-	}  	
+		}
+
+		if($form['save']->isSubmittedBy())
+		{
+			$this->redirect('edit', $id, $form['backlink']->value);
+		}
+		else
+		{
+			$this->getApplication()->restoreRequest($form['backlink']->value);
+			RequestButtonHelper::redirectBack();
+
+			if($id != 0) $this->redirect('terce', $id);
+			else $this->redirect('add');
+		}
+	}
 
 	public function handleDelete($id)
 	{
@@ -171,6 +184,6 @@ class TercePresenter extends BasePresenter
 
 		if( $this->isAjax() ) $this->invalidateControl('terce');
 		else $this->redirect('this');
-	}	
-	
+	}
+
 }

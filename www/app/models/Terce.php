@@ -85,19 +85,21 @@ class Terce extends BaseModel
 	{
 		// vyhledá nejlepší čas pro každou kategorii
 		$vysledky = $this->connection->query('
-			SELECT MIN([vysledky].[vysledny_cas]) AS [vysledny_cas], [id_kategorie]
+			SELECT MIN([vysledky].[vysledny_cas]) AS [vysledny_cas], [druzstva].[id_kategorie]
 			FROM [vysledky]
 			LEFT JOIN [druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]
-			LEFT JOIN [zavody] ON [zavody].[id] = [vysledky].[id_zavodu]
+			LEFT JOIN [ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]
+			LEFT JOIN [zavody] ON [zavody].[id] = [ucasti].[id_zavodu]
 			WHERE [zavody].[platne_casy] = 1 AND [vysledky].[vysledny_cas] < 500 AND [id_tercu] = %u', $id, '
 			GROUP BY [zavody].[id_tercu], [druzstva].[id_kategorie]
 		');
 
 		$spolecne = array('
-			SELECT [sbory].[id], CONCAT([typy_sboru].[zkratka], " ", [druzstva_mista].[obec], " ", [druzstva].[poddruzstvo]) AS [druzstvo], [kategorie].[nazev] AS [kategorie], [vysledky].[vysledny_cas], CONCAT( [poradatel_mista].[obec] ) AS [poradatel], [poradatel].[id] AS [id_poradatele], [poradatel_okresy].[nazev] AS [okres], [vysledky].[id_zavodu], [vysledky].[id_druzstva]
+			SELECT [sbory].[id], CONCAT([typy_sboru].[zkratka], " ", [druzstva_mista].[obec], " ", [druzstva].[poddruzstvo]) AS [druzstvo], [kategorie].[nazev] AS [kategorie], [vysledky].[vysledny_cas], CONCAT( [poradatel_mista].[obec] ) AS [poradatel], [poradatel].[id] AS [id_poradatele], [poradatel_okresy].[nazev] AS [okres], [ucasti].[id_zavodu], [vysledky].[id_druzstva]
 			FROM [vysledky]
 
-			LEFT JOIN [zavody] ON [zavody].[id] = [vysledky].[id_zavodu]
+			LEFT JOIN [ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]
+			LEFT JOIN [zavody] ON [zavody].[id] = [ucasti].[id_zavodu]
 			LEFT JOIN [poradatele] ON [poradatele].[id_zavodu] = [zavody].[id]
 			LEFT JOIN [sbory] [poradatel] ON [poradatel].[id] = [poradatele].[id_sboru]
 			LEFT JOIN [mista] [poradatel_mista] ON [poradatel_mista].[id] = [poradatel].[id_mista]

@@ -87,7 +87,7 @@ class StartovniPoradi extends BaseModel
                ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
                ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
 
-			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
+			->rightJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
 			->rightJoin('[ucasti] ON [ucasti].[id_zavodu] = [startovni_poradi].[id_zavodu] AND [ucasti].[id_kategorie] = [druzstva].[id_kategorie]')
 			->orderBy('[kategorie].[poradi], [startovni_poradi].[poradi]');
 	}

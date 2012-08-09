@@ -15,17 +15,26 @@ class AdminTexylaTextArea extends /*Nette\Forms\*/TextArea
 		parent::__construct($label, $cols, $rows);
 	}
 
-	
+
 	/**
 	 * Generates control's HTML element.
 	 * @return Html
 	 */
 	public function getControl()
-	{		
+	{
 		$presenter = $this->getParent()->getParent();
-		
+
 		$control = parent::getControl();
 		$control->class = 'texyla';
+
+		$zavodyModel = new Zavody;
+		$zavody = $zavodyModel->findAllToSelect();
+
+		$options = '';
+		foreach($zavody as $v)
+		{
+			$options .= '<option value="'.$v->id.'">'.$v->nazev.', '.datum::date($v->datum, 0, 0, 0).'</option>';
+		}
 
 		$el = Html::el();
 		$el->add($control);
@@ -99,13 +108,15 @@ $.texyla.setDefaults({
 		null,
 		"blockquote",
 		null,
-		{type: "label", text: "Ostatní"}, ["sup", "sub", "acronym", "hr"]
-	]	
+		{type: "label", text: "Ostatní"}, ["sup", "sub", "acronym", "hr"],
+		null,
+		{type: "label", text: "Vložit speciální obsah"}, ["prubezneVysledky"]
+	]
 });
 
 </script>
-');
-		
+<select class="odkazy-na-zavody">'.$options.'</select>' );
+
 		return $el;
 	}
 

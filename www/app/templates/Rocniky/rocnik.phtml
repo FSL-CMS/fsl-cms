@@ -14,7 +14,7 @@
 <p><a href="{plink Pravidla:pravidla, $rocnik['id_pravidel']}">Pravidla ročníku {$rocnik['rok']}</a></p>
 
 {if count($zavody['zavody'])}
-	{if $zavody['muze_editovat'] == true}<p class="config"><a href="{plink Zavody:add}" title="Přidat nový závod" class="add">Přidat nový závod</a></p>{/if}
+	{if $zavody['muze_editovat'] == true}<p class="config"><a href="{plink Zavody:add, $rocnik->id}" title="Přidat nový závod" class="add">Přidat nový závod</a></p>{/if}
 {if $zavody['muze_editovat'] == false}
 	{include '../Zavody/zavody.zavody.phtml'}
 {else}

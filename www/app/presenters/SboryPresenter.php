@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála
  */
 
-
-
 /**
  * Presenter sborů
  *
@@ -15,10 +13,6 @@
  */
 class SboryPresenter extends BasePresenter
 {
-
-	/** @persistent */
-	public $backlink = '';
-
 	protected $model;
 
 	protected function startup()
@@ -39,20 +33,19 @@ class SboryPresenter extends BasePresenter
 		$this->setTitle('Sbory, které se účastnily závodů nebo pořádaly soutěž');
 	}
 
-	public function actionEdit($id = 0)
+	public function actionEdit($id = 0, $backlink = NULL)
 	{
-		if( $id != 0 && !($sbor = $this->model->find($id)->fetch()) ) throw new BadRequestException();
+		if($id != 0 && !($sbor = $this->model->find($id)->fetch())) throw new BadRequestException();
 
 		$backlink = $this->getApplication()->storeRequest();
-		if( ($this->user === NULL || !$this->user->isLoggedIn()) ) $this->redirect('Sprava:login', $backlink);
+		if(($this->user === NULL || !$this->user->isLoggedIn())) $this->redirect('Sprava:login', $backlink);
 
-		if( !$this->user->isAllowed('sbory', 'edit') && !$this->jeAutor($sbor['id_kontaktni_osoby']) && !$this->jeAutor($sbor['id_spravce']) )  throw new ForbiddenRequestException();
-
+		if(!$this->user->isAllowed('sbory', 'edit') && !$this->jeAutor($sbor['id_kontaktni_osoby']) && !$this->jeAutor($sbor['id_spravce'])) throw new ForbiddenRequestException();
 	}
 
 	public function actionAdd()
 	{
-		if( $this->user === NULL || !$this->user->isAllowed('sbory', 'add') ) throw new ForbiddenRequestException();
+		if($this->user === NULL || !$this->user->isAllowed('sbory', 'add')) throw new ForbiddenRequestException();
 
 		$this->setView('edit');
 	}
@@ -64,11 +57,11 @@ class SboryPresenter extends BasePresenter
 			$this->model->delete($id);
 			$this->flashMessage('Sbor byl úspěšně smazán.');
 		}
-		catch(RestrictionException $e)
+		catch (RestrictionException $e)
 		{
 			$this->flashMessage($e->getMessage(), 'warning');
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
 			$this->flashMessage('Nepodařilo se smazat sbor.', 'error');
 			Debug::processException($e, true);
@@ -78,9 +71,9 @@ class SboryPresenter extends BasePresenter
 
 	public function actionSbor($id = 0)
 	{
-		if( empty($id) ) $this->redirect('default');
+		if(empty($id)) $this->redirect('default');
 
-		if( !($sbor = $this->model->find($id)->fetch()) ) throw new BadRequestException();
+		if(!($sbor = $this->model->find($id)->fetch())) throw new BadRequestException();
 	}
 
 	public function renderSbor($id)
@@ -96,95 +89,108 @@ class SboryPresenter extends BasePresenter
 		$terce = new Terce;
 		$this->template->terce = $terce->findByMajitel($id);
 
-          $druzstva = new Druzstva;
+		$druzstva = new Druzstva;
 		$this->template->druzstva = $druzstva->findBySbor($id);
 
 		$uzivateleModel = new Uzivatele();
 		$this->template->sbor['uzivatele'] = $uzivateleModel->findBySbor($id);
 
-		$this->setTitle('Sbor '.$this->template->sbor['nazev']);
-  	}
+		$this->setTitle('Sbor ' . $this->template->sbor['nazev']);
+	}
 
 	public function renderEdit($id = 0, $backlink = NULL)
 	{
-		if( $id != 0 ) $this['sborForm']->setDefaults($this->model->find($id)->fetch());
+		if($id != 0) $this['editForm']->setDefaults($this->model->find($id)->fetch());
+
+		if($backlink !== NULL) $this['editForm']['backlink']->setValue($backlink);
 
 		$this->setTitle('Úprava informací o sboru');
 	}
 
-	public function createComponentSborForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new RequestButtonReceiver;
+		$form = new RequestButtonReceiver($this, $name);
 		$uzivatele = new Uzivatele;
 		$mista = new Mista;
 		$backlink = $this->getApplication()->storeRequest();
 
 		$typy_sboru = $this->model->findTypytoSelect()->fetchPairs('id', 'nazev');
 
+		$form->addHidden('backlink');
+
 		$form->addGroup('Informace o sboru');
 		$form->addSelect('id_typu', 'Typ sboru', $typy_sboru)
-			->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'TypySboru:add'));
+			   ->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'TypySboru:add'));
 		$form->addText('privlastek', 'Přívlastek sboru');
-          $form->addSelect('id_mista', 'Obec', $mista->findAllToSelect()->fetchPairs('id', 'nazev'))
-			->addRule(Form::FILLED, 'Je nutné vybrat místo sboru.')
-			->setOption('description', $form->addRequestButton('addMista', 'Přidat novou', 'Mista:add'));
+		$form->addSelect('id_mista', 'Obec', $mista->findAllToSelect()->fetchPairs('id', 'nazev'))
+			   ->addRule(Form::FILLED, 'Je nutné vybrat místo sboru.')
+			   ->setOption('description', $form->addRequestButton('addMista', 'Přidat novou', 'Mista:add'));
 
 		$vsichniUzivatele = $uzivatele->findAllToSelect()->fetchPairs('id', 'uzivatel');
 		$form->addGroup('Kontaktní informace');
 		$form->addSelect('id_kontaktni_osoby', 'Kontaktní osoba', array('0' => 'žádná kontaktní osoba') + $vsichniUzivatele)
-			->setOption('description', $form->addRequestButton('addKontaktniOsoby', 'Přidat novou', 'Uzivatele:add'));
+			   ->setOption('description', $form->addRequestButton('addKontaktniOsoby', 'Přidat novou', 'Uzivatele:add'));
 
 		$form->addSelect('id_spravce', 'Správce sboru', array('0' => 'pouze kontaktní osoba') + $vsichniUzivatele)
-			->setOption('description', $form->addRequestButton('addSpravceSboru', 'Přidat novou', 'Uzivatele:add'));
+			   ->setOption('description', $form->addRequestButton('addSpravceSboru', 'Přidat novou', 'Uzivatele:add'));
 
 
 		$form->addGroup('Uožení');
 
 		$form->addSubmit('save', 'Uložit');
+		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
 		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(FALSE);
+			   ->setValidationScope(FALSE);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'sborFormSubmitted');
-
-		return $form;
+		$form->onSubmit[] = array($this, 'editFormSubmitted');
 	}
 
-	public function sborFormSubmitted(AppForm $form)
+	public function editFormSubmitted(AppForm $form)
 	{
 		$id = (int) $this->getParam('id');
 
-		if( $form['cancel']->isSubmittedBy() )
+		if($form['cancel']->isSubmittedBy())
 		{
+
 		}
-		elseif( $form['save']->isSubmittedBy() )
+		elseif($form['save']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			try
 			{
-				if( $id == 0 )
+				$dataDoDB = array('id_typu' => $form['id_typu']->value, 'id_mista' => $form['id_mista']->value, 'privlastek' => $form['privlastek']->value, 'id_kontaktni_osoby' => $form['id_kontaktni_osoby']->value, 'id_spravce' => $form['id_spravce']->value);
+				if($id == 0)
 				{
-					$this->model->insert($form->getValues());
+					$this->model->insert($dataDoDB);
 					$id = $this->model->lastInsertedId();
 				}
-				else $this->model->update($id, $form->getValues());
+				else $this->model->update($id, $dataDoDB);
 
 				$this->flashMessage('Údaje o sboru byly úspěšně uloženy.');
 			}
-			catch(AlreadyExistException $e)
+			catch (AlreadyExistException $e)
 			{
 				$this->flashMessage('Ukládaný sbor již existuje.', 'warning');
 			}
-			catch(DibiException $e)
+			catch (DibiException $e)
 			{
 				$this->flashMessage('Údaje o sboru se nepodařilo uložit.', 'error');
 				Debug::processException($e, true);
 			}
 		}
 
-		$this->getApplication()->restoreRequest($this->backlink);
+		if($form['save']->isSubmittedBy())
+		{
+			$this->redirect('Sbory:edit', $id, $form['backlink']->value);
+		}
+		else
+		{
+			$this->getApplication()->restoreRequest($form['backlink']->value);
+			RequestButtonHelper::redirectBack();
 
-		if($id != 0) $this->redirect('Sbory:sbor', $id);
-		else $this->redirect('Sbory:add');
+			if($id != 0) $this->redirect('Sbory:sbor', $id);
+			else $this->redirect('Sbory:add');
+		}
 	}
 
 }

@@ -17,7 +17,7 @@ class AnketyPresenter extends BasePresenter
 {
 
 	protected $model;
-	
+
 	protected function startup()
 	{
 		$this->model = new Ankety;
@@ -30,34 +30,34 @@ class AnketyPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->ankety = array();
-		
+
 		$this->template->ankety['ankety'] = $this->model->findAll();
 		$this->template->ankety['muze_pridavat'] = $this->user->isAllowed('ankety', 'add');
 		$this->template->ankety['muze_editovat'] = $this->user->isAllowed('ankety', 'edit');
-		
+
 		$this->setTitle('Ankety');
 	}
 
 	public function actionAnketa($id = 0)
 	{
 		if( $id == 0 ) $this->redirect('default');
-		
+
 		if( !$this->model->find($id)->fetch() ) throw new BadRequestException('Anketa nebyl nalezen.');
-		
+
 		$this->redirect('default#anketa-'.$id);
 	}
-	
+
 	public function actionEdit($id = 0)
 	{
 		if( $id == 0 ) $this->redirect('add');
-		
+
 		if( !$this->user->isLoggedIn() )
 		{
 			$backlink = $this->getApplication()->storeRequest();
 			$this->flashMessage('Nejste přihlášen.');
 			$this->forward('Sprava:login', $backlink);
 		}
-		
+
 		if( $id != 0 && !$this->model->find($id)->fetch() ) throw new BadRequestException('Anketa nebyla nalezen.');
 	}
 
@@ -77,7 +77,7 @@ class AnketyPresenter extends BasePresenter
 			$anketa += current($anketa['answers']);
 		}
 		if( $id != 0) $this['editForm']->setDefaults($anketa);
-		
+
 		if( $id == 0 ) $this->setTitle('Přidání nové ankety');
 		else $this->setTitle('Úprava ankety');
 	}
@@ -117,12 +117,12 @@ class AnketyPresenter extends BasePresenter
 
 		if( $id == 0 ) $form['zverejneni']->setDefaultValue('ihned');
 		else $form['zverejneni']->setDefaultValue('ponechat');
-		
+
 		$form->addGroup('Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(FALSE);;
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
+		$form->addSubmit('cancel', 'Zrušit')
+			->setValidationScope(FALSE);;
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 
@@ -143,7 +143,7 @@ class AnketyPresenter extends BasePresenter
 			$data = $form->getValues();
 
 			$dataDoDB = array( 'question' => $data['question'] );
-			
+
 			try
 			{
 				if( $data['zverejneni'] == 'ulozit' || $form['addNext']->isSubmittedBy() ) $dataDoDB['datum_zverejneni%sn'] = '';
@@ -162,7 +162,7 @@ class AnketyPresenter extends BasePresenter
 				{
 					$this->model->update( $id, $dataDoDB );
 				}
-				
+
 				foreach($data['answers'] as $idod => $odpoved)
 				{
 					if( intval($idod) == 0 && !empty($odpoved['answer']) ) $this->model->pridejOdpoved($id, $odpoved);
@@ -175,7 +175,7 @@ class AnketyPresenter extends BasePresenter
 				$this->flashMessage('Nepodařilo se uložit anketu.', 'error');
 				Debug::processException($e, true);
 			}
-			
+
 			if( !empty($data['souvisejici']) && !empty($data['souvisejici']['souvisejici']) )
 				{
 					$dataDoDB = array('rodic' => 'ankety', 'id_rodice' => $id);
@@ -191,13 +191,13 @@ class AnketyPresenter extends BasePresenter
 						$this->flashMessage('Nepodařilo se uložit související položku.', 'error');
 						Debug::processException($e, true);
 					}
-				}			
+				}
 
 			if( $form['saveAndReturn']->isSubmittedBy() ) $this->redirect('Ankety:anketa', $id);
 			else $this->redirect('Ankety:edit', $id);
 		}
 	}
-	
+
 	public function actionDelete($id)
 	{
 		try
@@ -211,7 +211,7 @@ class AnketyPresenter extends BasePresenter
 		}
 		$this->redirect('Ankety:default');
 	}
-	
+
 	public function handleSmazOdpoved($id, $id_odpovedi)
 	{
 		try
@@ -223,7 +223,7 @@ class AnketyPresenter extends BasePresenter
 		{
 			$this->flahMessage('Odpověď se nepodařilo odstranit.', 'error');
 		}
-		
+
 		$this->redirect('this');
 	}
 

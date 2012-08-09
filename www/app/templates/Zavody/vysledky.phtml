@@ -33,5 +33,5 @@
 		{/foreach}
 	{/foreach}
 {else}
-	{if $vysledky['muze_editovat'] == true}<p><a href="{plink Zavody:pridatVysledky, $zavod['id']}" title="Přidání výsledků k závodu" class="add">Přidat nové výsledky k závodu</a></p>{/if}
+	{if $vysledky['muze_editovat'] == true}<p class="config"><a href="{plink Zavody:pridatVysledky, $zavod['id']}" title="Přidání výsledků k závodu" class="add">Přidat nové výsledky k závodu</a></p>{/if}
 {/if}

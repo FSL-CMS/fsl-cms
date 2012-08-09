@@ -17,9 +17,9 @@ class SoutezePresenter extends SecuredPresenter
 {
 	/** @persistent */
 	public $backlink = '';
-	
+
 	protected $model = NULL;
-	
+
 	protected function startup()
 	{
 		$this->model = new Souteze;
@@ -29,40 +29,40 @@ class SoutezePresenter extends SecuredPresenter
 	public function actionAdd()
 	{
 		if( $this->user === NULL || !$this->user->isAllowed('souteze', 'add') ) throw new ForbiddenRequestException();
-		
+
 		$this->setView('edit');
-	}	
-	
+	}
+
 	public function renderDefault()
 	{
 		$this->template->souteze = array();
-		
+
 		$this->template->souteze['muze_pridat'] = $this->user->isAllowed('souteze', 'add');
 		$this->template->souteze['muze_editovat'] = $this->user->isAllowed('souteze', 'edit');
 		$this->template->souteze['muze_mazat'] = $this->user->isAllowed('souteze', 'delete');
 		$this->template->souteze['souteze'] = $this->model->findAll();
-		
+
 		$this->setTitle('Přehled soutěží');
 	}
-	
+
 	public function createComponentSoutezeForm($name)
 	{
 		$form = new AppForm($this, $name);
 
 		$form->getElementPrototype()->class('ajax');
-		
+
 		foreach( $this->model->findAll()->fetchAll() as $soutez )
 		{
 			$poradi = $form->addContainer($soutez['id']);
-				
+
 			$poradi->addHidden('id')->setDefaultValue($soutez['id']);
 			$poradi->addText('poradi', 'Pořadí', 4)->setDefaultValue($soutez['poradi']);
 		}
 		$form->addSubmit('save', 'Uložit');
-		
+
 		$form->onSubmit[] = array($this, 'soutezeFormSubmitted');
 	}
-	
+
 	public function soutezeFormSubmitted(AppForm $form)
 	{
 		try
@@ -70,7 +70,7 @@ class SoutezePresenter extends SecuredPresenter
 			$data = $form->getValues();
 			foreach( $data as $poradi )
 			{
-				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );	
+				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );
 			}
 			$this->flashMessage('Pořadí bylo uloženo.', 'ok');
 
@@ -78,10 +78,10 @@ class SoutezePresenter extends SecuredPresenter
 		}
 		catch(DibiException $e)
 		{
-			$this->flashMessage('Údaje o kategoriích se nepodařilo uložit.', 'error');	
-		}	
+			$this->flashMessage('Údaje o kategoriích se nepodařilo uložit.', 'error');
+		}
 	}
-	
+
 	public function renderEdit($id = 0)
 	{
 		$kategorieModel = new Kategorie;
@@ -95,7 +95,7 @@ class SoutezePresenter extends SecuredPresenter
 			$defaultValues['body'] = $this->template->body['body'];
 			$this['editForm']->setValues($defaultValues);
 		}
-		
+
 		if($id == 0) $this->setTitle('Přidání soutěže');
 		else $this->setTitle('Úprava soutěže');
 	}
@@ -107,12 +107,13 @@ class SoutezePresenter extends SecuredPresenter
 		$bodoveTabulkyModel = new BodoveTabulky;
 		$kategorieModel = new Kategorie;
 		$kategorie = $kategorieModel->findAllToSelect()->fetchPairs('id', 'nazev');
-		
+
 		$form->addGroup('Informace o soutěži');
-		$form->addText('nazev', 'Název')
-			->addRule(Form::FILLED, 'Je nutné vyplnit název soutěže.');
+		$form->addText('nazev', 'Název', 50)
+			->addRule(Form::FILLED, 'Je nutné vyplnit název soutěže.')
+			   ->addRule(Form::MAX_LENGTH, 'Název může mít maximálně %d znaků.', 255);
 		$form->addAdminTexylaTextArea('popis', 'Popis soutěže');
-		
+
 		$form->addDateTimePicker('platnost_od', 'Platí od')
 			->setDefaultValue(Datum::$dnes['ted'])
 			->addRule(Form::FILLED, 'Je nutné vyplnit datum počátku platnosti soutěže.');
@@ -129,7 +130,7 @@ class SoutezePresenter extends SecuredPresenter
 			$katCont->addSelect('id_bodove_tabulky', 'Výchozí bodová tabulka', $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id','nazev'));
 			//$katCont->addRequestButton('addBodoveTabulky', 'Přidat novou', 'BodoveTabulky:add');
 		}
-		
+
 		$form->addGroup('Uložení');
 		$form->addSubmit('save', 'Uložit a pokračovat v úpravách');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
@@ -139,10 +140,10 @@ class SoutezePresenter extends SecuredPresenter
 			->setValidationScope(false);
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
-		
+
 		return $form;
 	}
-	
+
 	public function editFormSubmitted(AppForm $form)
 	{
 		$id = (int)$this->getParam('id');
@@ -170,7 +171,7 @@ class SoutezePresenter extends SecuredPresenter
 					$this->model->update($id, $dataDoDb);
 				}
 				$this->flashMessage('Soutěž byla úspěšně uložena.', 'ok');
-				
+
 				$kategorie = $kategorieModel->findBySoutez($id)->fetchAssoc('id,=');
 
 				$kategorie_insert = array();

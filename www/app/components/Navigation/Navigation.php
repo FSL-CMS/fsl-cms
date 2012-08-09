@@ -85,6 +85,23 @@ class Navigation extends Control
 	}
 
 	/**
+	 * Render sitemap
+	 * @param bool $renderChildren
+	 * @param NavigationNode $base
+	 * @param bool $renderHomepage
+	 */
+	public function renderSitemap($renderChildren = true, $base = null, $renderHomepage = true)
+	{
+		$template = $this->createTemplate()
+			   ->setFile(dirname(__FILE__) . "/sitemap.phtml");
+		$template->homepage = $base ? $base : $this->getComponent("homepage");
+		$template->useHomepage = $this->useHomepage && $renderHomepage;
+		$template->renderChildren = $renderChildren;
+		$template->children = $this->getComponent("homepage")->getComponents();
+		$template->render();
+	}
+
+	/**
 	 * Render full menu
 	 */
 	public function render()

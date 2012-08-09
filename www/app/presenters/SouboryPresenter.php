@@ -40,7 +40,7 @@ class SouboryPresenter extends BasePresenter
 		$this->getPresenter()->setLayout(false);
 
 		$this->template->soubory = array();
-		$this->template->soubory['soubory'] = current($this->model->findBySouvisejici($id_souvisejiciho, $souvisejici)->fetchAssoc('id,='));
+		$this->template->soubory['soubory'] = $this->model->findBySouvisejici($id_souvisejiciho, $souvisejici)->fetchAssoc('id,=');
 	}
 
 	public function actionSoubor($id)

@@ -16,7 +16,7 @@
 class SouvisejiciControl extends BaseControl
 {
 	private $model;
-	
+
 	public function __construct(IComponentContainer $parent = NULL, $name = NULL)
 	{
 		parent::__construct($parent, $name);
@@ -46,7 +46,7 @@ class SouvisejiciControl extends BaseControl
 
 		$template->render();
 	}
-	
+
 	public function renderAktualni($souvisejiciTabulka, $id)
 	{
 		$this->model = new Souvisejici();
@@ -80,7 +80,7 @@ class SouvisejiciControl extends BaseControl
 
 		$souvisejiciTabulky = array( 'Druzstva' => 'Družstva', 'Zavody' => 'Závody', 'Fotogalerie' => 'Fotogalerie', 'Clanky' => 'Články' );
 		$form->addGroup('Související položky');
-		$form->addSelect('souvisejici', 'Související skupina', array('' => 'Není určena')+$souvisejiciTabulky);
+		$form->addSelect('souvisejici', 'Související skupina', array('' => 'Vyberte kategorii')+$souvisejiciTabulky);
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Položka', $form['souvisejici'], array($this, "getSouvisejici"));
 
 		$form->addSubmit('save', 'Přidat');
@@ -111,7 +111,7 @@ class SouvisejiciControl extends BaseControl
 				$this->getPresenter()->flashMessage('Nepodařilo se uložit související položku.', 'error');
 				Debug::processException($e, true);
 			}
-			
+
 			/*if( $this->getPresenter()->isAjax() )
 			{
 				//$this->getPresenter()->invalidateControl('souvisejici');
