@@ -23,6 +23,168 @@ abstract class CommonBasePresenter extends Presenter
 	public function __construct()
 	{
 		self::$nazev = Environment::getVariable('name');
+		if(!defined('VERZE_DB')) define('VERZE_DB', 2);
+	}
+
+	protected function startup()
+	{
+		$this->user = Environment::getUser();
+
+		FormContainer::extensionMethod('FormContainer::addRequestButton', array('RequestButtonHelper', 'addRequestButton'));
+		FormContainer::extensionMethod('FormContainer::addRequestButtonBack', array('RequestButtonHelper', 'addRequestButtonBack'));
+
+		$fbconnect = new FacebookConnectControl;
+		$this->addComponent($fbconnect, 'facebookConnect');
+
+		$auth = new AuthControl;
+		$this->addComponent($auth, 'auth');
+
+		$grafy = new GrafyControl;
+		$this->addComponent($grafy, 'grafy');
+
+		$hodnoceni = new HodnoceniControl;
+		$this->addComponent($hodnoceni, 'hodnoceni');
+
+		$foo = new Soubory();
+
+		$fotka = new FotkaControl;
+		$this->addComponent($fotka, 'fotka');
+
+		$kontakty = new KontaktyControl;
+		$this->addComponent($kontakty, 'kontakty');
+
+		$souteze = new SoutezeControl;
+		$this->addComponent($souteze, 'souteze');
+
+		$poradi = new PoradiControl;
+		$this->addComponent($poradi, 'poradi');
+
+		$poll = new LinkPollControl();
+		$poll->setModel(new PollControlModel());
+		$this->addComponent($poll, 'anketa');
+
+		$prilohy = new PrilohyControl;
+		$this->addComponent($prilohy, 'prilohy');
+
+		$videa = new VideoControl;
+		$this->addComponent($videa, 'video');
+
+		$diskuze = new DiskuzeControl($this, 'diskuze');
+		//$this->addComponent($diskuze, 'diskuze');
+
+		$souvisejici = new SouvisejiciControl($this, 'souvisejici');
+		//$this->addComponent($souvisejici, 'souvisejici');
+
+		$mapa = new MapaControl($this, 'mapa');
+		//$this->addComponent($mapa, 'mapa');
+
+		$toc = new TocControl($this, 'toc');
+		$this->addComponent($toc, 'toc');
+
+		$aktualni = new AktualniControl($this, 'aktualni');
+		$this->addComponent($aktualni, 'aktualni');
+
+		$prehledRocniku = new PrehledRocnikuControl($this, 'prehledRocniku');
+		$this->addComponent($prehledRocniku, 'prehledRocniku');
+
+		$imageUploader = new ImageUploaderControl($this, 'imageUploader');
+		$this->addComponent($imageUploader, 'imageUploader');
+
+		$slideshow = new SlideshowControl($this, 'slideshow');
+		$this->addComponent($slideshow, 'slideshow');
+
+		$acl = new Permission;
+
+		$acl->addRole('guest');
+		$acl->addRole('user', 'guest');
+		$acl->addRole('author', 'user');
+		$acl->addRole('admin', 'author');
+
+		$acl->addResource('zavody');
+		$acl->addResource('vysledky');
+		$acl->addResource('clanky');
+		$acl->addResource('startovni_poradi');
+		$acl->addResource('komentare');
+		$acl->addResource('diskuze');
+		$acl->addResource('temata');
+		$acl->addResource('terce');
+		$acl->addResource('uzivatele');
+		$acl->addResource('galerie');
+		$acl->addResource('fotky');
+		$acl->addResource('stranky');
+		$acl->addResource('druzstva');
+		$acl->addResource('sbory');
+		$acl->addResource('kategorie');
+		$acl->addResource('kategorieclanku');
+		$acl->addResource('sprava');
+		$acl->addResource('funkcerady');
+		$acl->addResource('mista');
+		$acl->addResource('rocniky');
+		$acl->addResource('typysboru');
+		$acl->addResource('typytercu');
+		$acl->addResource('okresy');
+		$acl->addResource('ankety');
+		$acl->addResource('soubory');
+		$acl->addResource('sledovani');
+		$acl->addResource('souvisejici');
+		$acl->addResource('sportoviste');
+		$acl->addResource('souteze');
+		$acl->addResource('bodovetabulky');
+		$acl->addResource('pravidla');
+
+		$acl->allow('guest', 'uzivatele', 'add');
+		$acl->allow('guest', 'sbory', 'add');
+		$acl->allow('guest', 'mista', 'add');
+		$acl->allow('guest', 'okresy', 'add');
+
+		$acl->allow('user', 'startovni_poradi', 'add');
+		$acl->allow('user', 'komentare', 'add');
+		$acl->allow('user', 'diskuze', 'add');
+		$acl->allow('user', 'druzstva', 'add');
+		$acl->allow('user', 'sbory', 'add');
+		$acl->allow('user', 'mista', 'add');
+		$acl->allow('user', 'okresy', 'add');
+		$acl->allow('user', 'sportoviste', 'add');
+		$acl->allow('user', 'typysboru', 'add');
+		$acl->allow('user', 'sledovani', 'add');
+
+		$acl->allow('user', 'zavody', NULL, new LigaAssertion());
+
+		$acl->allow('author', 'clanky', Permission::ALL);
+		$acl->allow('author', 'galerie', Permission::ALL);
+		$acl->allow('author', 'fotky', Permission::ALL);
+		$acl->allow('author', 'souvisejici', Permission::ALL);
+
+		$acl->allow('admin', Permission::ALL, Permission::ALL);
+
+		// zaregistrujeme autorizační handler
+		$this->user->setAuthorizationHandler($acl);
+
+		parent::startup();
+
+		$this->checkDbVersion();
+
+		if($this->getPresenter()->getName() != 'Uzivatele' && $this->action != 'edit' && $this->user->isLoggedIn() && (trim($this->user->getIdentity()->getName()) == '' || intval($this->user->getIdentity()->id_sboru) == 0))
+		{
+			$this->flashMessage('Vyplňte údaje o sobě.', 'warning');
+			$this->redirect('Uzivatele:edit', $this->user->getIdentity()->id);
+		}
+	}
+
+	private function checkDbVersion()
+	{
+		if(!defined('VERZE_DB')) throw new DBVersionMismatchException('Není uvedena verze DB v aplikaci.');
+		$verzeDB = dibi::fetchSingle('SELECT verze FROM verze LIMIT 1');
+		if($verzeDB === false || $verzeDB == 0) throw new DBVersionMismatchException('Není uvedena verze DB v aplikaci.');
+
+		if( VERZE_DB > $verzeDB)
+		{
+			if(!($this->presenter instanceof SpravaPresenter)) throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+		}
+		elseif( VERZE_DB < $verzeDB )
+		{
+			throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+		}
 	}
 
 	public function createTemplate()
@@ -321,26 +483,29 @@ abstract class CommonBasePresenter extends Presenter
 			}
 		}
 
-		$navFotogalerie = $nav->add('Fotogalerie', $this->link('Fotogalerie:'));
-		if($presenter == 'Fotogalerie' && $this->getAction() == 'default') $nav->setCurrent($navFotogalerie);
+		$navGalerie = $nav->add('Galerie', $this->link('Galerie:'));
+		if($presenter == 'Galerie' && $this->getAction() == 'default') $nav->setCurrent($navGalerie);
 
-		if($vsechno || in_array($presenter, array('Fotogalerie')))
+		if($vsechno || in_array($presenter, array('Galerie')))
 		{
-			$fotogalerieModel = new Fotogalerie;
-			if($this->user->isAllowed('fotogalerie', 'edit')) $fotogalerieModel->zobrazitNezverejnene();
-			$fotogalerie = $fotogalerieModel->findAll();
-			foreach ($fotogalerie as $fotogal)
+			$galerieModel = new Galerie;
+			if($this->user->isAllowed('galerie', 'edit')) $galerieModel->zobrazitNezverejnene();
+			$galerie = $galerieModel->findAll();
+			foreach ($galerie as $fotogal)
 			{
-				$roc = $navFotogalerie->add($fotogal->nazev, $this->link('Fotogalerie:fotogalerie', $fotogal->id));
-				if($presenter == 'Fotogalerie' && $this->getAction() == 'fotogalerie' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($roc);
+				$roc = $navGalerie->add($fotogal->nazev, $this->link('Galerie:galerie', $fotogal->id));
+				if($presenter == 'Galerie' && $this->getAction() == 'galerie' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($roc);
 
-				if($this->user->isAllowed('fotogalerie', 'edit'))
+				if($this->user->isAllowed('galerie', 'edit'))
 				{
-					$ed = $roc->add('Upravit', $this->link('Fotogalerie:edit', $fotogal->id));
-					if($presenter == 'Fotogalerie' && $this->getAction() == 'edit' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($ed);
+					$ed = $roc->add('Upravit', $this->link('Galerie:edit', $fotogal->id));
+					if($presenter == 'Galerie' && $this->getAction() == 'edit' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($ed);
 
-					$ed = $roc->add('Přidat fotky', $this->link('Fotogalerie:pridatFotky', $fotogal->id));
-					if($presenter == 'Fotogalerie' && $this->getAction() == 'pridatFotky' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($ed);
+					$ed = $roc->add('Přidat fotky', $this->link('Galerie:pridatFotky', $fotogal->id));
+					if($presenter == 'Galerie' && $this->getAction() == 'pridatFotky' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($ed);
+
+					$ed = $roc->add('Přidat videa', $this->link('Galerie:pridatVidea', $fotogal->id));
+					if($presenter == 'Galerie' && $this->getAction() == 'pridatVidea' && $this->getParam('id') == $fotogal->id) $nav->setCurrent($ed);
 				}
 			}
 		}
@@ -388,7 +553,7 @@ abstract class CommonBasePresenter extends Presenter
 					if($presenter == 'Stranky' && $this->getAction() == 'add') $nav->setCurrent($nod1);
 
 					/* $nod2 = $sprava->add('Úprava', $this->link('Stranky:add'));
-				  	if( $presenter == 'Stranky' && $this->getAction() == 'add' ) $nav->setCurrent($nod1); */
+					  if( $presenter == 'Stranky' && $this->getAction() == 'add' ) $nav->setCurrent($nod1); */
 				}
 
 				if($this->user->isAllowed('rocniky', 'edit'))
@@ -499,152 +664,6 @@ abstract class CommonBasePresenter extends Presenter
 				$nod21 = $nod20->add('Úprava', $this->link('Ankety:edit', $this->getParam('id', NULL)));
 				if($presenter == 'Ankety' && $this->getAction() == 'edit') $nav->setCurrent($nod21);
 			}
-		}
-	}
-
-	protected function startup()
-	{
-		$this->user = Environment::getUser();
-
-		FormContainer::extensionMethod('FormContainer::addRequestButton', array('RequestButtonHelper', 'addRequestButton'));
-		FormContainer::extensionMethod('FormContainer::addRequestButtonBack', array('RequestButtonHelper', 'addRequestButtonBack'));
-
-		$fbconnect = new FacebookConnectControl;
-		$this->addComponent($fbconnect, 'facebookConnect');
-
-		$auth = new AuthControl;
-		$this->addComponent($auth, 'auth');
-
-		$grafy = new GrafyControl;
-		$this->addComponent($grafy, 'grafy');
-
-		$hodnoceni = new HodnoceniControl;
-		$this->addComponent($hodnoceni, 'hodnoceni');
-
-		$foo = new Soubory();
-
-		$fotka = new FotkaControl;
-		$this->addComponent($fotka, 'fotka');
-
-		$kontakty = new KontaktyControl;
-		$this->addComponent($kontakty, 'kontakty');
-
-		$souteze = new SoutezeControl;
-		$this->addComponent($souteze, 'souteze');
-
-		$poradi = new PoradiControl;
-		$this->addComponent($poradi, 'poradi');
-
-		$poll = new LinkPollControl();
-		$poll->setModel(new PollControlModel());
-		$this->addComponent($poll, 'anketa');
-
-		$prilohy = new PrilohyControl;
-		$this->addComponent($prilohy, 'prilohy');
-
-		$videa = new VideoControl;
-		$this->addComponent($videa, 'video');
-
-		$diskuze = new DiskuzeControl($this, 'diskuze');
-		//$this->addComponent($diskuze, 'diskuze');
-
-		$souvisejici = new SouvisejiciControl($this, 'souvisejici');
-		//$this->addComponent($souvisejici, 'souvisejici');
-
-		$mapa = new MapaControl($this, 'mapa');
-		//$this->addComponent($mapa, 'mapa');
-
-		$toc = new TocControl($this, 'toc');
-		$this->addComponent($toc, 'toc');
-
-		$aktualni = new AktualniControl($this, 'aktualni');
-		$this->addComponent($aktualni, 'aktualni');
-
-		$prehledRocniku = new PrehledRocnikuControl($this, 'prehledRocniku');
-		$this->addComponent($prehledRocniku, 'prehledRocniku');
-
-		$imageUploader = new ImageUploaderControl($this, 'imageUploader');
-		$this->addComponent($imageUploader, 'imageUploader');
-
-		$slideshow = new SlideshowControl($this, 'slideshow');
-		$this->addComponent($slideshow, 'slideshow');
-
-		//if( $this->getAction() != 'login' )
-		{
-			$acl = new Permission;
-
-			$acl->addRole('guest');
-			$acl->addRole('user', 'guest');
-			$acl->addRole('author', 'user');
-			$acl->addRole('admin', 'author');
-
-			$acl->addResource('zavody');
-			$acl->addResource('vysledky');
-			$acl->addResource('clanky');
-			$acl->addResource('startovni_poradi');
-			$acl->addResource('komentare');
-			$acl->addResource('diskuze');
-			$acl->addResource('temata');
-			$acl->addResource('terce');
-			$acl->addResource('uzivatele');
-			$acl->addResource('fotogalerie');
-			$acl->addResource('fotky');
-			$acl->addResource('stranky');
-			$acl->addResource('druzstva');
-			$acl->addResource('sbory');
-			$acl->addResource('kategorie');
-			$acl->addResource('kategorieclanku');
-			$acl->addResource('sprava');
-			$acl->addResource('funkcerady');
-			$acl->addResource('mista');
-			$acl->addResource('rocniky');
-			$acl->addResource('typysboru');
-			$acl->addResource('typytercu');
-			$acl->addResource('okresy');
-			$acl->addResource('ankety');
-			$acl->addResource('soubory');
-			$acl->addResource('sledovani');
-			$acl->addResource('souvisejici');
-			$acl->addResource('sportoviste');
-			$acl->addResource('souteze');
-			$acl->addResource('bodovetabulky');
-			$acl->addResource('pravidla');
-
-			$acl->allow('guest', 'uzivatele', 'add');
-			$acl->allow('guest', 'sbory', 'add');
-			$acl->allow('guest', 'mista', 'add');
-			$acl->allow('guest', 'okresy', 'add');
-
-			$acl->allow('user', 'startovni_poradi', 'add');
-			$acl->allow('user', 'komentare', 'add');
-			$acl->allow('user', 'diskuze', 'add');
-			$acl->allow('user', 'druzstva', 'add');
-			$acl->allow('user', 'sbory', 'add');
-			$acl->allow('user', 'mista', 'add');
-			$acl->allow('user', 'okresy', 'add');
-			$acl->allow('user', 'sportoviste', 'add');
-			$acl->allow('user', 'typysboru', 'add');
-			$acl->allow('user', 'sledovani', 'add');
-
-			$acl->allow('user', 'zavody', NULL, new LigaAssertion());
-
-			$acl->allow('author', 'clanky', Permission::ALL);
-			$acl->allow('author', 'fotogalerie', Permission::ALL);
-			$acl->allow('author', 'fotky', Permission::ALL);
-			$acl->allow('author', 'souvisejici', Permission::ALL);
-
-			$acl->allow('admin', Permission::ALL, Permission::ALL);
-
-			// zaregistrujeme autorizační handler
-			$this->user->setAuthorizationHandler($acl);
-		}
-
-		parent::startup();
-
-		if($this->getPresenter()->getName() != 'Uzivatele' && $this->action != 'edit' && $this->user->isLoggedIn() && (trim($this->user->getIdentity()->getName()) == '' || intval($this->user->getIdentity()->id_sboru) == 0))
-		{
-			$this->flashMessage('Vyplňte údaje o sobě.', 'warning');
-			$this->redirect('Uzivatele:edit', $this->user->getIdentity()->id);
 		}
 	}
 

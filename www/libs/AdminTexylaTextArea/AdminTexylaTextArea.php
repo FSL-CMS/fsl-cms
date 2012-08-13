@@ -45,7 +45,7 @@ class AdminTexylaTextArea extends /*Nette\Forms\*/TextArea
 	$.texyla.addWindow("img", {
 		createContent: function () {
 			return $(
-				"<div><p><a href='."'".$presenter->link('Fotogalerie:vyber')."'".' class='."'vyber-z-galerie'".'>Vybrat fotku uloženou v galerii</a><br />" +
+				"<div><p><a href='."'".$presenter->link('Galerie:vyber')."'".' class='."'vyber-z-galerie'".'>Vybrat fotku uloženou v galerii</a><br />" +
 					"<a href='."'".$presenter->link('Soubory:vyber', array('souvisejici' => $presenter->getName(), 'id_souvisejiciho' => $presenter->getParam('id', 0)))."'".' class='."'vyber-z-galerie'".'>Vybrat přiložený obrázek</a></p>" +
 				"<table><tbody><tr>" +
 					// Adresa

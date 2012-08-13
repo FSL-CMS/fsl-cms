@@ -1,0 +1,23 @@
+@{block #content}
+
+{widget souvisejici 'galerie', $galerie['id'] }
+
+{include 'nastaveni.phtml'}
+
+{if !empty($galerie['text'])}
+	{block|texy}{$galerie['text']}{/block}
+{/if}
+
+{include 'videa.phtml'}
+
+{if count($fotky['fotky'])}
+	<h2>Fotky</h2>
+	<p>Fotogalerii naleznete na serveru Rajče.cz: <a href="{$galerie['typ_key']}">{$galerie['typ_key']}</a>.</p>
+	{foreach $fotky['fotky'] as $fotka}
+		<div class="fotka-nahled-rajce"><a href="{$rajceStorage}images/{$fotka['soubor']}"  title="Velká fotka" class="zvetsenina" rel="galerie">
+			<img src="{$rajceStorage}thumb/{$fotka['soubor']}" />
+		</a></div>
+	{/foreach}
+{else}
+	<iframe src="{$galerie['typ_key']}?insert=1&bgcolor=" name="hlavni" scrolling="auto" align="middle" width="680" height="850" frameborder="0">Omlouváme se, galerii nelze zobrazit ve Vašem prohlížeči z našich stránek. Můžete přejít na její originální verzi: <a href="{$galerie['typ_key']}">{$galerie['typ_key']}</a></iframe>
+{/if}

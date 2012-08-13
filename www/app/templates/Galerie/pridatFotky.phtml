@@ -1,0 +1,23 @@
+@{block #content}
+
+<!--form id="pridatFotkyForm">
+	<input type="file" multiple>
+	<input type="submit">
+	<div class="nahledy">
+	</div>
+</form-->
+
+{widget imageUploader}
+
+
+{snippet form}
+	{widget pridaniFotekDoAlbaForm begin}
+<fieldset>
+	<legend>Soubory určené k nahrání</legend>
+		{$control['pridaniFotekDoAlbaForm']['upload']->control}
+		{$control['pridaniFotekDoAlbaForm']['save']->control}
+</fieldset>
+		{widget pridaniFotekDoAlbaForm end}
+{/snippet}
+
+

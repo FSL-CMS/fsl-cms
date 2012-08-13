@@ -23,25 +23,25 @@ class Fotky extends BaseSoubory implements IUdrzba
 
 	public function find($id)
 	{
-		return parent::find($id)->select('id_souvisejiciho AS id_fotogalerie');
+		return parent::find($id)->select('id_souvisejiciho AS id_galerie');
 	}
 
 	public function findAll()
 	{
-		return parent::findAll()->where(array('souvisejici' => 'fotogalerie'));
+		return parent::findAll()->where(array('souvisejici' => 'galerie'));
 	}
 
-	public function findBySouvisejici($id, $souvisejici = 'fotogalerie')
+	public function findBySouvisejici($id, $souvisejici = 'galerie')
 	{
-		return parent::findBySouvisejici($id, $souvisejici)->select('id_souvisejiciho AS id_fotogalerie')->orderBy('[soubory].[soubor], [soubory].[pripona]');
+		return parent::findBySouvisejici($id, $souvisejici)->select('id_souvisejiciho AS id_galerie')->orderBy('[soubory].[soubor], [soubory].[pripona]');
 	}
 
-	public function findByFotogalerie($id)
+	public function findByGalerie($id)
 	{
 		return $this->findBySouvisejici($id);
 	}
 
-	public function uloz($id_souvisejiciho, $souvisejici = 'fotogalerie')
+	public function uloz($id_souvisejiciho, $souvisejici = 'galerie')
 	{
 		$fotka = $this->soubor->getImage()->resize(800, 600);
 
@@ -59,17 +59,17 @@ class Fotky extends BaseSoubory implements IUdrzba
 
 	/**
 	 *
-	 * @param type $id ID fotogalerie
+	 * @param int $id ID galerie
 	 * @return type
 	 */
 	public function findRandomFromGalerie($id)
 	{
-		return $this->findByFotogalerie($id)->orderBy('RAND()');
+		return $this->findByGalerie($id)->orderBy('RAND()');
 	}
 
-	public function deleteByFotogalerie($id)
+	public function deleteByGalerie($id)
 	{
-		return parent::delete(NULL)->clause('where', true)->where('[soubory].[souvisejici] = "fotogalerie" AND [soubory].[id_souvisejiciho] = %i', $id)->execute();
+		return parent::delete(NULL)->clause('where', true)->where('[soubory].[souvisejici] = "galerie" AND [soubory].[id_souvisejiciho] = %i', $id)->execute();
 	}
 
 	public function insert(array $data)
@@ -110,7 +110,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 		if( isset($data['soubor']) && isset($data['pripona']) && isset($data['id_souvisejiciho']) )
 		{
 			$urlsModel = new Urls;
-			$url = (array)$urlsModel->findUrlByPresenterAndActionAndParam('Fotogalerie', 'fotogalerie', $data['id_souvisejiciho'])->fetch();
+			$url = (array)$urlsModel->findUrlByPresenterAndActionAndParam('Galerie', 'galerie', $data['id_souvisejiciho'])->fetch();
 			$data['uri'] = $url['url'].$id.'-'.Texy::webalize($data['soubor']).'-'.Texy::webalize($data['pripona']);
 		}
 		return $data;

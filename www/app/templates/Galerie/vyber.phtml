@@ -1,0 +1,19 @@
+{if count($galerie['galerie'])}
+	{foreach $galerie['galerie'] as $jednaGalerie}
+	<div class="odkaz-na-galerii">
+		<h2><a href="{plink Galerie:vyberZgalerie, $jednaGalerie['id']}" class="fancybox">{$jednaGalerie['nazev']}</a></h2>
+		<dl>
+			<dt>Datum zveřejnění</dt>
+			{if $jednaGalerie['datum_zverejneni'] !== NULL}
+			<dd>{$jednaGalerie['datum_zverejneni']|datum}{if !empty($jednaGalerie['datum_aktualizace'])} (Aktualizováno: {$jednaGalerie['datum_aktualizace']|datum}){/if}</dd>
+			{else}
+			<dd>Zatím nezveřejněno.</dd>
+			{/if}
+			<dt>Počet fotografií</dt>
+			<dd>{$jednaGalerie['pocet_fotografii']}</dd>
+		</dl>
+	</div>
+	{/foreach}
+{else}
+	<p class="flash warning">Žádné galerie nebyly nalezeny.</p>
+{/if}

@@ -176,6 +176,12 @@ class Uzivatele extends BaseModel implements IAuthenticator
 	{
 		if( $this->connection->query('SELECT [id] FROM [uzivatele] WHERE [email] = %s', strtolower($data['email']))->fetch() ) throw new RegistredAccountException();
 
+		if( isset($data['id_funkce']) )
+		{
+			$data['id_funkce%in'] = intval($data['id_funkce']);
+			unset($data['id_funkce']);
+		}
+
 		$ret = parent::insert($data)->execute(dibi::IDENTIFIER);
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);

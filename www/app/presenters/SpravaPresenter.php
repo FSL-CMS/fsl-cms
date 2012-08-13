@@ -357,4 +357,32 @@ class SpravaPresenter extends BasePresenter
 		$this->redirect('default');
 	}
 
+	public function actionAktualizaceDB()
+	{
+		$verzeDB = dibi::fetchSingle('SELECT verze FROM verze LIMIT 1');
+
+		if($verzeDB == VERZE_DB)
+		{
+			$this->flashMessage('Verze databází byly shodné.', 'ok');
+			$this->redirect('default');
+		}
+
+		$aktualizaceDBModel = new AktualizaceDB;
+		try
+		{
+			dibi::begin();
+			$aktualizaceDBModel->aktualizuj($verzeDB, VERZE_DB);
+			dibi::commit();
+			$this->flashMessage('Databáze byla aktualizovaná.', 'ok');
+			$this->redirect('default');
+		}
+		catch(DibiException $e)
+		{
+			dibi::rollback();
+			$this->flashMessage('Databázi se nepodařilo aktualizovat.', 'error');
+			Debug::processException($e, true);
+			$this->redirect('default');
+		}
+	}
+
 }

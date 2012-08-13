@@ -837,11 +837,11 @@ class ZavodyPresenter extends BasePresenter
 			   ->addCondition(Form::FILLED)
 			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
 		$form->addText('vysledny_cas', 'Výsledný čas')
-			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-			   ->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
-			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
-			   ->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
+			->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+				->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
+			->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+				->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
+			->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
 		$form['vysledny_cas']->getControlPrototype()->autocomplete('off');
 
 		$form->addGroup('Uložení');

@@ -1,0 +1,16 @@
+<h2>{$title}</h2>
+
+<p><a href="{plink Galerie:vyber}" class="fancybox"><< přejít zpět na výběr galerií</a></p>
+
+<form id="vyber-z-galerie">
+{if count($fotky['fotky'])}
+<div>
+	{foreach $fotky['fotky'] as $fotka}
+		{widget fotka:vyber $fotka}
+	{/foreach}
+</div>
+<input type="submit" value="Použít vybrané fotografie" />
+{else}
+	<p class="warning">V galerii nejsou žádné fotogfafie.{if $fotky['muze_pridavat'] == true} <a href="{plink Galerie:pridatFotky, $galerie['id']}" class="add">Přidat nové!</a>{/if}</p>
+{/if}
+</form>
