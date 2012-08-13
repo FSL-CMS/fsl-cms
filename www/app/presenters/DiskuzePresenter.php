@@ -63,7 +63,7 @@ class DiskuzePresenter extends BasePresenter
 	 */
 	public function renderZeptatse($id = 0, $id_souvisejiciho = NULL)
 	{
-		if( $id != 0) $this['diskuzeForm']['id_tematu']->value = $id;
+		if( $id != 0) $this['editForm']['id_tematu']->value = $id;
 		if( $id_souvisejiciho !== NULL) $this['diskuzeForm']['id_souvisejiciho']->value = $id_souvisejiciho;
 
 		$this->template->diskuze = array();
@@ -95,9 +95,9 @@ class DiskuzePresenter extends BasePresenter
 		$form->getRenderer()->setClientScript(new LiveClientScript($form));
 	}
 
-	public function createComponentEditForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new AppForm($this, 'editForm');
+		$form = new AppForm($this, $name);
 		$form->getElementPrototype()->class('ajax');
 		$temataModel = new Temata();
 
