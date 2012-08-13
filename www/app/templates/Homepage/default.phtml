@@ -1,5 +1,7 @@
 @{block content}
 
+{if $clanky['muze_pridavat']}<p class="config"><a href="{plink Clanky:add}" title="Přidat nový článek" class="add">Přidat nový článek</a></p>{/if}
+
 {if count($clanky['clanky'])}
 	{foreach $clanky['clanky'] as $clanek}
 		<div class="clanek{if !empty($clanek->cssstyl)} clanek-{$clanek->cssstyl}{/if}">{include ../../templates/Clanky/@Clanky.clanek.phtml, 'clanek' => $clanek, 'fulltext' => false}<span class="cleaner"></span></div>
@@ -12,5 +14,5 @@
 
 <div class="dva-sloupce">
 	<div class="sloupec">@{widget anketa}</div>
-	<div class="sloupec">Zřejmě FB blok</div>
+	<div class="sloupec"></div>
 </div>

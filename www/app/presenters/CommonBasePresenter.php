@@ -239,7 +239,7 @@ abstract class CommonBasePresenter extends Presenter
 		$paths = parent::formatTemplateFiles($presenter, $view);
 		foreach ($paths as $key => $path)
 		{
-			$paths_[] = str_replace('templates/', 'mytemplates/', $path);
+			$paths_[] = str_replace('templates/', '../app_custom/templates/', $path);
 		}
 		return array_merge($paths_, $paths);
 	}
@@ -249,7 +249,7 @@ abstract class CommonBasePresenter extends Presenter
 		$paths = parent::formatLayoutTemplateFiles($presenter, $view);
 		foreach ($paths as $key => $path)
 		{
-			$paths_[] = str_replace('templates/', '../app_custom/templates', $path);
+			$paths_[] = str_replace('templates/', '../app_custom/templates/', $path);
 		}
 		return array_merge($paths_, $paths);
 	}

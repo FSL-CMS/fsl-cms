@@ -64,7 +64,7 @@ form td		{border: 0px;}
 fieldset table	{margin-bottom: 0 !important;}
 fieldset table + table	{margin-bottom: 1.5em;}
 
-div.ui-datepicker {font-size: 60%;}
+div.ui-datepicker {font-size: 80%;}
 /*input.datepicker, input.datetimepicker {background: transparent url('../images/icons/calendar.png') no-repeat right; border: 1px solid #CCCCCC; padding-right: 20px; padding: 0.2em;}*/
 
 .odkazy-na-zavody	{display: none;}

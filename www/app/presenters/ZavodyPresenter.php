@@ -304,6 +304,7 @@ class ZavodyPresenter extends BasePresenter
 			$defaults['ucasti'] = $ucastiModel->findByZavod($id)->fetchAssoc('id_souteze,id_kategorie');
 			$defaults['spolecne_startovni_poradi'] = true;
 			$this['editForm']->setValues($defaults);
+			$id_rocniku = $defaults['id_rocniku'];
 			$this['zmenitRocnikForm']->setValues(array('id_rocniku' => $id_rocniku));
 			$this['zmenitRocnikForm']['id_rocniku']->setDisabled();
 			$this['zmenitRocnikForm']['id_rocniku']->setOption('description', 'Chcete-li změnit ročník závodu, je nutné závod smazat a vytvořit nový závod.');
@@ -385,7 +386,7 @@ class ZavodyPresenter extends BasePresenter
 		$form->addRequestButton('addTerce', 'Přidat nové', 'Terce:add');
 		$form->addCheckbox('zruseno', 'Zrušený závod', 'ano');
 
-		$form->addSelect('ustream_stav', 'Video přenos', array('ne' => 'není/nebude', 'ano' => 'bude', 'live' => 'běží živě', 'zaznam' => 'ze záznamu'))
+		/*$form->addSelect('ustream_stav', 'Video přenos', array('ne' => 'není/nebude', 'ano' => 'bude', 'live' => 'běží živě', 'zaznam' => 'ze záznamu'))
 			   ->addRule(Form::FILLED, 'Je nutné zvolit, zda bude video přenos.');
 		/* $form->addText('ustream_id', 'Ustream ID videa')
 		  ->addConditionOn($form['ustream_stav'], Form::EQUAL, 'live')
@@ -462,7 +463,7 @@ class ZavodyPresenter extends BasePresenter
 		elseif($form['save']->isSubmittedBy() || $form['saveAndAdd']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$data = $form->getValues();
-			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], 'ustream_stav' => $data['ustream_stav'], 'spolecne_startovni_poradi' => true);
+			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], /*'ustream_stav' => $data['ustream_stav'], */'spolecne_startovni_poradi' => true);
 
 			$fazeUlozeni = 'zavod';
 
@@ -795,6 +796,16 @@ class ZavodyPresenter extends BasePresenter
 		}
 
 		$this['vysledkyForm']['zverejnit']->setDisabled(!$this->template->lzeZverejnit);
+
+		$ucastiModel = new Ucasti;
+		$ucasti = $ucastiModel->findByZavod($id);
+		$bodoveTabulkyModel = new Body();
+		$this->template->ucasti = array();
+		foreach($ucasti as $ucast)
+		{
+			$bt = $bodoveTabulkyModel->findByTabulka($ucast['id_bodove_tabulky'])->fetchAll();
+			$this->template->ucasti[] = (array)$ucast + array('bodova_tabulka' => $bt);
+		}
 	}
 
 	public function getDruzstva($form)
@@ -803,9 +814,9 @@ class ZavodyPresenter extends BasePresenter
 		return $druzstva->findByUcastiToSelect($form['id_ucasti']->getValue())->fetchPairs('id', 'druzstvo');
 	}
 
-	public function createComponentPridatVysledekForm()
+	public function createComponentPridatVysledekForm($name)
 	{
-		$form = new RequestButtonReceiver($this, 'pridatVysledekForm');
+		$form = new RequestButtonReceiver($this, $name);
 		$kategorie = new Kategorie;
 		$druzstva = new Druzstva;
 		$ucastiModel = new Ucasti;
