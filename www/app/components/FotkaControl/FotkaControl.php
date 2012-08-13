@@ -153,7 +153,7 @@ class FotkaControl extends Control
 			$this->fotka['sirka'] = $rozmery[0];
 			$this->fotka['vyska'] = $rozmery[1];
 
-			$fotogalerie = new Fotogalerie;
+			$fotogalerie = new Galerie;
 			$jednaGalerie = $fotogalerie->find($this->fotka['id_autora'])->fetch();
 			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->parent->jeAutor($this->fotka['id_autora']));
 		}
