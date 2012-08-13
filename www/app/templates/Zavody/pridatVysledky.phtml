@@ -1,5 +1,14 @@
 @{block content}
 
+<div class="warning">
+<p>Výsledky se obodují následujícím způsobem: [<a href="{plink Zavody:edit, 'id' => $zavod['id'], 'backlink' => $backlink}">změnit bodovací tabulky závodu</a>]</p>
+<ul>
+{foreach $ucasti as $ucast}
+<li>{$ucast['nazev']} - {$ucast['kategorie']}: {foreach $ucast['bodova_tabulka'] as $tabulka}{$tabulka['body']}, {/foreach}</li>
+{/foreach}
+</ul>
+</div>
+
 {snippet pridatVysledekForm}
 {widget pridatVysledekForm}
 {/snippet}
