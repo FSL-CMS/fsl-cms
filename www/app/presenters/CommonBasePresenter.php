@@ -179,7 +179,24 @@ abstract class CommonBasePresenter extends Presenter
 
 		if( VERZE_DB > $verzeDB)
 		{
-			if(!($this->presenter instanceof SpravaPresenter)) throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+			//if(!($this->presenter instanceof SpravaPresenter)) throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+
+			$aktualizaceDBModel = new AktualizaceDB;
+			try
+			{
+				dibi::begin();
+				$aktualizaceDBModel->aktualizuj($verzeDB, VERZE_DB);
+				dibi::commit();
+				$this->flashMessage('Databáze byla aktualizovaná.', 'ok');
+				//$this->redirect('default');
+			}
+			catch(DibiException $e)
+			{
+				dibi::rollback();
+				$this->flashMessage('Databázi se nepodařilo aktualizovat.', 'error');
+				Debug::processException($e, true);
+				//$this->redirect('default');
+			}
 		}
 		elseif( VERZE_DB < $verzeDB )
 		{
