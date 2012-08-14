@@ -21,8 +21,12 @@ dt	{font-weight: bold;}
 
 strong	{font-weight: bold;}
 
+abbr {border: none;}
+
 .zalomit-pred	{page-break-before: always;}
 .zalomit-za	{page-break-after: always;}
+
+.odkaz-pod-caru	{vertical-align: super; font-size: 80%;}
 
 /* styly tabulek */
 table	{clear: both; border-collapse: collapse; text-align: center; margin: 0 auto;}

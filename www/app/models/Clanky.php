@@ -29,7 +29,7 @@ class Clanky extends Zverejnovane implements IUdrzba
 
 	public function findNezverejnene()
 	{
-		return $this->findAll()->where(false)->where('[clanky].[datum_zverejneni] IS NULL');
+		return $this->findAll()->where(false)->where('[clanky].[datum_zverejneni] IS NULL OR [clanky].[datum_zverejneni] > NOW()');
 	}
 
 	public function findAll()
@@ -45,8 +45,9 @@ class Clanky extends Zverejnovane implements IUdrzba
 			->leftJoin('[komentare] ON [komentare].[id_diskuze] = [diskuze].[id]')
 			->leftJoin('[kategorie_clanku] ON [kategorie_clanku].[id] = [clanky].[id_kategorie]')
 			->groupBy('[clanky].[id]')
+			->where('[clanky].[datum_zverejneni] <= NOW()')
 			->orderBy('[datum_zverejneni] DESC');
-		if( $this->zverejnene == 1 ) $dotaz->where('[clanky].[datum_zverejneni] IS NOT NULL');
+		if( $this->zverejnene == 1 ) $dotaz->where('[clanky].[datum_zverejneni] IS NOT NULL OR [clanky].[datum_zverejneni] > NOW()');
 
 		return $dotaz;
 	}
@@ -89,20 +90,6 @@ class Clanky extends Zverejnovane implements IUdrzba
 			->leftJoin('[clanky] ON [kategorie_clanku].[id] = [clanky].[id_kategorie] AND [clanky].[datum_zverejneni] IS NOT NULL')
 			->groupBy('[kategorie_clanku].[id]')
 			->orderBy('[kategorie_clanku].[poradi]');
-	}
-
-	public function findByZavod($id)
-	{
-		return $this->connection->select('[clanky].[id], [clanky].[nazev], [clanky].[datum_zverejneni], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [autor], [kategorie_clanku].[nazev] AS [kategorie]')
-			->from('[clanky_zavody]')
-			->leftJoin('[clanky] ON [clanky].[id] = [clanky_zavody].[id_clanku] AND [clanky].[datum_zverejneni] IS NOT NULL')
-			->leftJoin('[uzivatele] ON [uzivatele].[id] = [clanky].[id_autora]')
-               ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-               ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->leftJoin('[kategorie_clanku] ON [clanky].[id_kategorie] = [kategorie_clanku].[id]')
-			->where('[clanky_zavody].[id_zavodu] = %i', $id, ' AND [clanky].[datum_zverejneni] IS NOT NULL')
-			->orderBy('[datum_zverejneni]');
 	}
 
 	public function findKategorie()

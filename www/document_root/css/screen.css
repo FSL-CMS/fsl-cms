@@ -19,6 +19,8 @@ dd + dt, dd + div	{margin-top: 1.5em;}
 
 strong	{font-weight: bold;}
 
+abbr		{border-bottom: 1px dotted #000; cursor: help;}
+
 table h3			{margin: 0; padding: 0;}
 td p			{margin: 0 !important;}
 td p + p		{margin-bottom: 1em;}
@@ -109,6 +111,7 @@ table.prehled .terce	{text-align: center;}
 table.prehled .pocet-stahnuti {text-align: center;}
 table.prehled .pripona	{text-align: center;}
 table.prehled .ukazatel-prubehu {text-align: center;}
+table.prehled .okres {text-align: center;}
 /* ----------------------------------------------------------------------mp-- */
 
 

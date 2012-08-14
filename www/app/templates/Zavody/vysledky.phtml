@@ -8,7 +8,7 @@
 	<caption>Výsledky kategorie <span class="{$kategorie|webalize}">{$kategorie}</span> v soutěži <span class="soutez-{$soutez|webalize}">{$soutez}</span></caption>
 	<thead>
 		<tr>
-			<th rowspan="2">Pořadí</th><th rowspan="2">Družstvo</th>{if $vysledkyKategorie['jeLepsiCas']}<th rowspan="2">První terč</th>{/if}<th rowspan="2">Výsledný čas</th><th rowspan="2">Získané body</th>{if $vysledkyKategorie['jePoradiPred'] || $vysledkyKategorie['jePoradiPo']}<th{if $vysledkyKategorie['jePoradiPred'] && $vysledkyKategorie['jePoradiPo']} colspan="3"{/if}>Pořadí v soutěži{/if}</th>
+			<th rowspan="2">Pořadí</th><th rowspan="2">Družstvo</th><th rowspan="2">Okres</th>{if $vysledkyKategorie['jeLepsiCas']}<th rowspan="2">První terč</th>{/if}<th rowspan="2">Výsledný čas</th><th rowspan="2">Získané body</th>{if $vysledkyKategorie['jePoradiPred'] || $vysledkyKategorie['jePoradiPo']}<th{if $vysledkyKategorie['jePoradiPred'] && $vysledkyKategorie['jePoradiPo']} colspan="3"{/if}>Pořadí v soutěži{/if}</th>
 		</tr>
 		<tr>
 			{if $vysledkyKategorie['jePoradiPred']}<th>Před</th>{/if}{if $vysledkyKategorie['jePoradiPo'] && $vysledkyKategorie['jePoradiPred']}<th></th>{/if}{if $vysledkyKategorie['jePoradiPo']}<th>Po</th>{/if}
@@ -18,7 +18,7 @@
 {foreach $vysledkyKategorie['vysledky'] as $vysledek}
 	<tr>
 	     <td class="poradi">{ifset $vysledek['poradi']}{$vysledek['poradi']}.{/if}</td>
-	     <td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a>{else}<p>&nbsp;</p>{/if}</td>
+		<td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td><td class="okres"><abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}<p>&nbsp;</p>{/if}</td>
           {if $vysledkyKategorie['jeLepsiCas']}<td class="cas">{if $vysledek['lepsi_cas'] != 0} {$vysledek['lepsi_cas']} {$vysledek['lepsi_terc']|upper}{/if}</td>{/if}
           <td class="cas">{ifset $vysledek['vysledny_cas']}{$vysledek['vysledny_cas']|vyslednyCas}{/if}</td>
           <td class="body">{ifset $vysledek['body']}{$vysledek['body']}{/if}</td>

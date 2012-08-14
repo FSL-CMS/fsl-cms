@@ -7,11 +7,11 @@
 {if count($vysledky)}
 {foreach $vysledky as $soutez => $vysledkySouteze}
 {foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
-<table class="prehled{if !$iterator->isLast()} zalomit-za{/if}" id="toc-{$soutez|webalize}-{$kategorie|webalize}">
+<table class="prehled zalomit-za" id="toc-{$soutez|webalize}-{$kategorie|webalize}">
 	<caption>{block|texy:true}Výsledky kategorie <span class="{$kategorie|webalize}">{$kategorie}</span> v soutěži **{$soutez}**{/block}</caption>
 <thead>
 	<tr>
-		<th class="poradi">Pořadí</th><th>Družstvo</th><th class="body" colspan="2">Získané body</th>
+		<th class="poradi">Pořadí</th><th colspan="2">Družstvo, okres</th><th class="body" colspan="2">Získané body</th>
 	</tr>
 </thead>
 <tbody>
@@ -20,6 +20,7 @@
 	<tr>
 		<td class="poradi">{$vysledek['poradi']}.</td>
 		<td><a href="{link Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td>
+		<td class="okres"><abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr></td>
 		<td class="body">{$vysledek['celkem_bodu']}{ifset $vysledek['odkazy']} {foreach $vysledek['odkazy'] as $odkaz}<a href="#odkaz-pod-carou-{$odkaz}" class="odkaz-pod-caru">{$odkaz})</a> {/foreach}{/ifset}</td>
 		<!--td>
 			{* ifset $vysledek['lepsi']}{foreach $vysledek['lepsi'] as $lepsi}<p>Družstvo dosáhlo více lepších umístění než {$lepsi['druzstvo']}. {$vysledek['prubeh']|implode:", "}</p>{/foreach}{/ifset *}
