@@ -45,9 +45,8 @@ class Clanky extends Zverejnovane implements IUdrzba
 			->leftJoin('[komentare] ON [komentare].[id_diskuze] = [diskuze].[id]')
 			->leftJoin('[kategorie_clanku] ON [kategorie_clanku].[id] = [clanky].[id_kategorie]')
 			->groupBy('[clanky].[id]')
-			->where('[clanky].[datum_zverejneni] <= NOW()')
 			->orderBy('[datum_zverejneni] DESC');
-		if( $this->zverejnene == 1 ) $dotaz->where('[clanky].[datum_zverejneni] IS NOT NULL OR [clanky].[datum_zverejneni] > NOW()');
+		if( $this->zverejnene == 1 ) $dotaz->where('[clanky].[datum_zverejneni] IS NOT NULL AND [clanky].[datum_zverejneni] <= NOW()');
 
 		return $dotaz;
 	}

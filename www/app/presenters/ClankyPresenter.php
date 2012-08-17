@@ -140,7 +140,7 @@ class ClankyPresenter extends BasePresenter
 	{
 		parent::actionEdit($id);
 
-		if($id != 0 && !$this->model->find($id)->fetch()) throw new BadRequestException('Článek nebyl nalezen.');
+		//if($id != 0 && !$this->model->find($id)->fetch()) throw new BadRequestException('Článek nebyl nalezen.');
 	}
 
 	public function renderEdit($id = 0)
@@ -198,12 +198,6 @@ class ClankyPresenter extends BasePresenter
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(FALSE);
-
-		$form->addGroup('Publikace na sociálních sítích');
-		$fb = $form->addContainer('facebook');
-		$fb->addText('komentar', 'Komentář k příspěvku', 50, 255);
-		$fb->addSubmit('zverejnit', 'Zveřejnit na Facebooku');
-
 
 		$form->onSubmit[] = array($this, 'clanekFormSubmitted');
 

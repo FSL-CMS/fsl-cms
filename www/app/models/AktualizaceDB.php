@@ -41,6 +41,7 @@ class AktualizaceDB extends BaseModel
 			}
 		}
 		while($found && $z < $na);
+		if($found == false && $z < $na) throw new DBVersionMismatchException('Nepodařilo se povýšit na požadovanou verzi.');
 	}
 
 	private function from1to2()

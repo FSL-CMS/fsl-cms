@@ -2,9 +2,10 @@
 
 {if count($vysledky['vysledky'])}
 	{foreach $vysledky['vysledky'] as $soutez => $vysledkySouteze}
+		{var $it $iterator->isFirst()}
 		{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
-			{if !$iterator->isFirst() && $nahled}<h1>{$nadpis}</h1>{/if}
-<table class="prehled zalomit-za">
+			{if !$it && $nahled}<h1 class="zalomit-pred">{$nadpis}</h1>{/if}
+<table class="prehled">
 	<caption>Výsledky kategorie <span class="{$kategorie|webalize}">{$kategorie}</span> v soutěži <span class="soutez-{$soutez|webalize}">{$soutez}</span></caption>
 	<thead>
 		<tr>
@@ -18,7 +19,8 @@
 {foreach $vysledkyKategorie['vysledky'] as $vysledek}
 	<tr>
 	     <td class="poradi">{ifset $vysledek['poradi']}{$vysledek['poradi']}.{/if}</td>
-		<td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a></td><td class="okres"><abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}<p>&nbsp;</p>{/if}</td>
+		<td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a>{else}&nbsp;{/if}</td>
+		<td class="okres">{ifset $vysledek['okres']}<abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}&nbsp;{/if}</td>
           {if $vysledkyKategorie['jeLepsiCas']}<td class="cas">{if $vysledek['lepsi_cas'] != 0} {$vysledek['lepsi_cas']} {$vysledek['lepsi_terc']|upper}{/if}</td>{/if}
           <td class="cas">{ifset $vysledek['vysledny_cas']}{$vysledek['vysledny_cas']|vyslednyCas}{/if}</td>
           <td class="body">{ifset $vysledek['body']}{$vysledek['body']}{/if}</td>

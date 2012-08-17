@@ -215,7 +215,7 @@ class Zavody extends Zverejnovane
 	{
 		if(isset($data['datum%t'])) {
 			$zavod = $this->find($id)->fetch();
-			$data['uri'] = '/zavody/'.date('Y-m-d', strtotime($data['datum%t'])).'-'.Texy::webalize($zavod['nazev']);
+			$data['uri'] = date('Y-m-d', strtotime($data['datum%t'])).'-'.Texy::webalize($zavod['nazev']);
 		}
 		return $data;
 	}
@@ -246,7 +246,11 @@ class Zavody extends Zverejnovane
 			parent::update($id, $data)->execute();
 			$data = $this->constructUri($id, $data);
 			$urlsModel = new Urls;
-			if(isset($data['uri'])) $urlsModel->setUrl('Zavody', 'zavod', $id, $data['uri']);
+			if(isset($data['uri']))
+			{
+				$urlsModel->setUrl('Zavody', 'zavod', $id, '/zavody/'.$data['uri']);
+				$urlsModel->setUrl('Zavody', 'vysledky', $id, '/zavody/'.$data['uri'].'/vysledky');
+			}
 		}
 		catch(DibiException $e)
 		{
