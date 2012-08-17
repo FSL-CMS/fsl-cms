@@ -1,0 +1,137 @@
+{snippet}
+<div id="fileUploader-dropbox">
+	<span class="message">Soubory k nahrání přetáhnout sem<br /><small><small>Jsou povoleny přípony {$allowedTypes|implode:", "}.<br /><small><span id="fileUploader-finnished">Úspěšně nahráno: <span class="nahrano">0</span> souborů, velikost: <span class="velikost">0</span> kB.</span></small></small></small></span>
+</div>
+{widget inputFileUploaderForm}
+<script type="text/javascript">
+$(function(){
+
+	var dropbox = $('#fileUploader-dropbox'),
+		message = $('.message', dropbox);
+
+	dropbox.show();
+
+	$('#{!inputFileUploaderFormId}').hide();
+
+	dropbox.filedrop({
+		// The name of the $_FILES entry:
+		paramname: {$uploadedKey},
+
+		maxfiles: 30,
+		queuefiles: 4,
+		maxfilesize: 2, // in mb
+		url: {link upload!},
+
+		uploadFinished:function(i,file,response){
+			if( response.status == 'ok' )
+			{
+				$.data(file).addClass('done').delay("1000").fadeOut();
+
+				$('#fileUploader-finnished .nahrano').text(
+					parseInt($('#fileUploader-finnished .nahrano').text())+1
+				);
+				$('#fileUploader-finnished .velikost').text(
+					parseInt($('#fileUploader-finnished .velikost').text()) + Math.round(file.size/1000)
+				);
+			}
+			else { $.data(file).addClass('error'); alert(response.status); }
+		},
+
+		dragOver: function(e) {
+			message.css('opacity', 1.0);
+		},
+
+		dragLeave: function(e) {
+			message.css('opacity', 0.3);
+		},
+
+		afterAll: function(e) {
+			message.css('opacity', 0.3);
+		},
+
+		error: function(err, file) {
+			switch(err) {
+				case 'BrowserNotSupported':
+					showMessage('Prohlížeč bohužel nepodporuje tento způsob nahrávání souborů.');
+					break;
+				case 'TooManyFiles':
+					alert('Bylo vybráno příliš mnoho souborů.');
+					break;
+				case 'FileTooLarge':
+					alert(file.name+' je příliš velký!');
+					break;
+				default:
+					break;
+			}
+		},
+
+		// Called before each upload is started
+		beforeEach: function(file){
+			if({foreach $allowedMimeTypes as $value}!file.type.match(/{!$value}/){if !$iterator->isLast()} && {/if}{/foreach}){
+				alert('Jsou povoleny pouze formáty {$allowedTypes|implode:", "}!');
+
+				// Returning false will cause the
+				// file to be rejected
+				return false;
+			}
+		},
+
+		uploadStarted:function(i, file, len){
+			createImage(file);
+		},
+
+		progressUpdated: function(i, file, progress) {
+			$.data(file).find('.progress').width(progress);
+		},
+
+	});
+
+	var template = '<div class="preview">'+
+	'<span class="imageHolder">'+
+		'<img />'+
+		'<span class="uploaded"></span>'+
+		'<span class="notuploaded"></span>'+
+	'</span>'+
+	'<div class="progressHolder">'+
+		'<div class="progress"></div>'+
+	'</div>'+
+'</div>';
+
+	function createImage(file){
+
+		var preview = $(template),
+			image = $('img', preview);
+
+		var reader = new FileReader();
+
+		image.width = 100;
+		image.height = 100;
+
+		reader.onload = function(e){
+
+			// e.target.result holds the DataURL which
+			// can be used as a source of the image:
+
+			image.attr('src',e.target.result);
+		};
+
+		// Reading the file as a DataURL. When finished,
+		// this will trigger the onload function above:
+		reader.readAsDataURL(file);
+
+		//message.hide();
+		preview.appendTo(dropbox);
+
+		// Associating a preview container
+		// with the file, using jQuery's $.data():
+
+		$.data(file,preview);
+	}
+
+	function showMessage(msg){
+		message.html(msg);
+	}
+
+});
+</script>
+{/snippet}

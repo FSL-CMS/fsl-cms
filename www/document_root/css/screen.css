@@ -348,6 +348,99 @@ table.tablesorter thead tr .header:hover {
 /* ----------------------------------------------------------------------mp-- */
 
 
+/* FileUploader */
+#fileUploader-dropbox			{height: 270px; margin-bottom: 1.5em; background: #2c6A82; position: relative; overflow: hidden;}
+#fileUploader-dropbox			{display: none;}
+#fileUploader-dropbox .message	{font-size: 30px; margin: 10px; padding-top: 20px; width: 640px; height: 200px; color: #fff; display: table-cell; text-align: center; vertical-align: middle; position: absolute; top: 10px; left: 10px; z-index: 0; border: 5px dashed #fff; opacity: 0.3;}
+
+#fileUploader-dropbox .preview		{
+	width: 126px;
+	height: 90px;
+	float: left;
+	margin: 30px 0 0 50px;
+	position: relative;
+	text-align: center;
+	padding: 0;
+	z-index: 1;
+}
+
+#fileUploader-dropbox .preview img	{
+	max-width: 120px;
+	max-height: 90px;
+	border: 3px solid #fff;
+	display: block;
+	box-shadow:0 0 2px #000;
+}
+
+#fileUploader-dropbox .imageHolder	{
+	display: inline-block;
+	position:relative;
+}
+
+#fileUploader-dropbox .uploaded		{
+	position: absolute;
+	top:0;
+	left:0;
+	height:100%;
+	width:100%;
+	background: url('../images/FileUploader/done.png') no-repeat center center rgba(255,255,255,0.5);
+	display: none;
+}
+
+#fileUploader-dropbox .notuploaded{
+	position: absolute;
+	top:0;
+	left:0;
+	height:100%;
+	width:100%;
+	background: url('../images/FileUploader/error.png') no-repeat center center rgba(255,255,255,0.5);
+	display: none;
+}
+
+#fileUploader-dropbox .preview.done .uploaded{
+	display: block;
+}
+
+#fileUploader-dropbox .preview.error .notuploaded{
+	display: block;
+}
+
+#fileUploader-dropbox .progressHolder{
+	position: absolute;
+	background-color:#252f38;
+	height:12px;
+	width:100%;
+	left:0;
+	bottom: 0;
+
+	box-shadow:0 0 2px #000;
+}
+
+#fileUploader-dropbox .progress{
+	background-color:#2586d0;
+	position: absolute;
+	height:100%;
+	left:0;
+	width:0;
+
+	box-shadow: 0 0 1px rgba(255, 255, 255, 0.4) inset;
+
+	-moz-transition:0.25s;
+	-webkit-transition:0.25s;
+	-o-transition:0.25s;
+	transition:0.25s;
+}
+
+#fileUploader-dropbox .preview.done .progress{
+	width:100% !important;
+}
+
+#fileUploader-dropbox .preview.error .progress{
+	width:100% !important;
+}
+/* ----------------------------------------------------------------------mp-- */
+
+
 /* ----------------------------------------------------------------------mp-- */
 /* PollControl */
 .anketa				{float: left; margin-bottom: 1.5em;}

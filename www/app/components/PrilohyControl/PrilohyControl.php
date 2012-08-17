@@ -23,11 +23,27 @@ class PrilohyControl extends BaseControl
 	{
 
 		$this->model = new Soubory;
-		$this->render = 'prehled';
+		$this->render = 'prilohy';
 
 		//$this->template = parent::createTemplate();
 
 		parent::__construct();
+	}
+
+	public function createComponentFileUploader($name)
+	{
+		$c = new FileUploaderControl();
+
+		$souvisejici = $this->getPresenter()->getName();
+		$id_souvisejiciho = $this->getPresenter()->getParam('id');
+
+		$soubory = new SouboryManager();
+		$soubory->setAutor($this->getPresenter()->user->getIdentity()->id);
+		$soubory->setSouvisejici($id_souvisejiciho, $souvisejici);
+		$c->setFileModel($soubory);
+		$c->setType('images,docs,photos');
+
+		return $c;
 	}
 
 	public function createComponentPrilohyForm()
@@ -93,18 +109,10 @@ class PrilohyControl extends BaseControl
 	public function createComponentNahraniSouboruForm()
 	{
 		$form = new AppForm;
-
-		$form->addGroup('Soubory k nahrání');
-
 		$form->getElementPrototype()->class[] = "ajax";
-		$form->addMultipleFileUpload('upload', 'Nahrát soubory', 20)
-			/*->addRule("MultipleFileUpload::validateFilled", "Musíte odeslat alespoň jeden soubor!")
-			->addRule("MultipleFileUpload::validateFileSize", "Soubory jsou dohromady moc veliké!",1024*1024)*/;
-
-		$form->addSubmit('save', 'Nahrát soubory');
+		$form->addSubmit('save', 'Zobrazit nahrané soubory');
 		$form->onSubmit[] = array($this, 'nahraniSouboruFormSubmitted');
 
-		$form->onInvalidSubmit[] = array($this,"handlePrekresliForm");
 		$form->onSubmit[] = array($this,"handlePrekresliForm");
 
 		return $form;
@@ -117,30 +125,6 @@ class PrilohyControl extends BaseControl
 
 	public function nahraniSouboruFormSubmitted(AppForm $form)
 	{
-		$data = $form->getValues();
-
-		foreach($data["upload"] AS $file)
-		{
-			try
-			{
-				$soubor = new Soubory($file);
-				$soubor->id_autora = $this->parent->user->getIdentity()->id;
-
-				$souvisejici = $this->parent->getPresenter()->getName();
-				$id_souvisejiciho = $this->parent->getPresenter()->getParam('id');
-
-				$soubor->uloz($id_souvisejiciho, $souvisejici);
-				$this->parent->flashMessage('Soubor '.$file->getName().' byl úspěšně uložen.', 'ok');
-			}
-			catch(Exception $e)
-			{
-				$this->parent->flashMessage('Nepodařilo se uložit soubor '.$file->getName().'. Chyba: '.$e->getMessage(), 'error');
-				Debug::processException($e, true);
-			}
-		}
-
-		// Předáme data do šablony
-		//$this->template->values = $data;
 		if(!$this->parent->isAjax()) $this->redirect('this');
 	}
 
@@ -185,10 +169,10 @@ class PrilohyControl extends BaseControl
 		$soubory = new Soubory;
 		$user = Environment::getUser();
 
-		$souvisejici = $this->getPresenter()->getName();
-		$id_souvisejiciho = $this->getPresenter()->getParam('id');
-
 		$this->template->setFile(dirname(__FILE__).'/prilohy.phtml');
+
+		$souvisejici = $this->parent->getPresenter()->getName();
+		$id_souvisejiciho = $this->parent->getPresenter()->getParam('id');
 
 		$this->template->prilohy = array();
 		$this->template->prilohy['prilohy'] = $soubory->findBySouvisejici($id_souvisejiciho, $souvisejici)->fetchAssoc('id,=');

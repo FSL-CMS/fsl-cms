@@ -33,6 +33,8 @@ abstract class CommonBasePresenter extends Presenter
 		FormContainer::extensionMethod('FormContainer::addRequestButton', array('RequestButtonHelper', 'addRequestButton'));
 		FormContainer::extensionMethod('FormContainer::addRequestButtonBack', array('RequestButtonHelper', 'addRequestButtonBack'));
 
+		$this->checkDbVersion();
+
 		$fbconnect = new FacebookConnectControl;
 		$this->addComponent($fbconnect, 'facebookConnect');
 
@@ -63,6 +65,9 @@ abstract class CommonBasePresenter extends Presenter
 		$poll->setModel(new PollControlModel());
 		$this->addComponent($poll, 'anketa');
 
+		$imageUploader = new FileUploaderControl($this, 'fileUploader');
+		$this->addComponent($imageUploader, 'fileUploader');
+
 		$prilohy = new PrilohyControl;
 		$this->addComponent($prilohy, 'prilohy');
 
@@ -86,9 +91,6 @@ abstract class CommonBasePresenter extends Presenter
 
 		$prehledRocniku = new PrehledRocnikuControl($this, 'prehledRocniku');
 		$this->addComponent($prehledRocniku, 'prehledRocniku');
-
-		$imageUploader = new ImageUploaderControl($this, 'imageUploader');
-		$this->addComponent($imageUploader, 'imageUploader');
 
 		$slideshow = new SlideshowControl($this, 'slideshow');
 		$this->addComponent($slideshow, 'slideshow');
@@ -161,8 +163,6 @@ abstract class CommonBasePresenter extends Presenter
 		$this->user->setAuthorizationHandler($acl);
 
 		parent::startup();
-
-		$this->checkDbVersion();
 
 		if($this->getPresenter()->getName() != 'Uzivatele' && $this->action != 'edit' && $this->user->isLoggedIn() && (trim($this->user->getIdentity()->getName()) == '' || intval($this->user->getIdentity()->id_sboru) == 0))
 		{
@@ -1053,30 +1053,6 @@ abstract class CommonBasePresenter extends Presenter
 	public function orderVysledkyReverse($a, $b)
 	{
 		return self::orderVysledky($a, $b) * -1;
-	}
-
-	/**
-	 * Vloží do formuláře možnost nahrát soubory
-	 * @param AppForm $form
-	 * @return unknown_type
-	 */
-	public function nahravaniSouboru(AppForm $form)
-	{
-		$form->addGroup('Nahrávání souborů');
-
-		$form->addMultipleFileUpload('fileUpload', 'Nahrát soubory', 20)
-		/* ->addRule("MultipleFileUpload::validateFilled", "Musíte odeslat alespoň jeden soubor!")
-		  ->addRule("MultipleFileUpload::validateFileSize", "Soubory jsou dohromady moc veliké!",1024*1024) */;
-
-		$form->onSubmit[] = array($this, 'pridaniFotekDoAlbaFormSubmitted');
-
-		$form->onInvalidSubmit[] = array($this, "handlePrekresliForm");
-		$form->onSubmit[] = array($this, "handlePrekresliForm");
-	}
-
-	public function handlePrekresliForm()
-	{
-		$this->invalidateControl("form");
 	}
 
 	public function vyslednyCas($cas)

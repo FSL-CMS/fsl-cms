@@ -11,14 +11,9 @@ var fallbackController = this;
 			{* runtimes : 'gears,html5,browserplus,silverlight,html4', *}
 			{* runtimes : 'flash',*}
 			rename: true,
-			url : {!$backLink|escapeJs},
+			url : {!$uploadLink|escapeJs},
 			/*max_file_size : {!$sizeLimit},*/
 			chunk_size : '5mb',
-
-			headers: {
-				"X-Uploader": "plupload",
-				"token"     : {!$token|escapeJs}
-			},
 
 			// Flash settings
 			flash_swf_url : {!$baseUri|escapeJs}+'swf/MultipleFileUpload/plupload/plupload.flash.swf',
@@ -27,12 +22,11 @@ var fallbackController = this;
 			silverlight_xap_url : {!$baseUri|escapeJs}+'xap/MultipleFileUpload/plupload/plupload.silverlight.xap'
 		});
 		uploader = $(uploader).pluploadQueue();
-		/*uploader.bind("Error",function(){
-			fallbackController.fallback();
-		})*/
-		setInterval(function(){ // if plupload moves around page, good to recompute position of uploader
+		var refreshFn = function(){ // if plupload moves around page, good to recompute position of uploader
 			uploader.refresh();
-		},500);
+		};
+		setInterval(refreshFn,1000);
+		refreshFn();
 	});
 
 	return true; // OK

@@ -2,11 +2,9 @@
 
 {snippet prilohy}
 <h2>Přiložit nové soubory</h2>
+{widget fileUploader}
+
 {widget nahraniSouboruForm begin}
-<fieldset>
-	<legend>Soubory k nahrání</legend>
-		{$control['nahraniSouboruForm']['upload']->control}
-		{$control['nahraniSouboruForm']['save']->control}
-</fieldset>
+{$control['nahraniSouboruForm']['save']->control}
 {widget nahraniSouboruForm end}
 {/snippet}

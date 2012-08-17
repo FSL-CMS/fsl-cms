@@ -15,7 +15,6 @@
  */
 class Soubory extends BaseSoubory
 {
-
 	public function __construct(HttpUploadedFile $soubor = NULL)
 	{
 		parent::__construct($soubor);
@@ -43,6 +42,5 @@ class Soubory extends BaseSoubory
 		return $this->findBy()
 			->where('%n.uri = %s', $this->table, $uri);
 	}
-
 
 }

@@ -62,6 +62,11 @@ class GaleriePresenter extends BasePresenter
 		{
 			throw new BadRequestException('Galerie nebyla nalezena.');
 		}
+
+		$fotkyModel = new FotkyManager();
+		$fotkyModel->setAutor($this->user->getIdentity()->id);
+		$fotkyModel->setSouvisejici($id);
+		$this['fileUploader']->setFileModel($fotkyModel);
 	}
 
 	public function actionAdd()
@@ -225,7 +230,6 @@ class GaleriePresenter extends BasePresenter
 
 	public function renderPridatFotky($id)
 	{
-		$this['imageUploader']->setId($id);
 		$this->template->galerie = $this->model->find($id)->fetch();
 
 		$this->setTitle('Přidání fotek do galerie "' . $this->template->galerie['nazev'] . '"');

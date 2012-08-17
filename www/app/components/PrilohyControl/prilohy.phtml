@@ -5,15 +5,14 @@
 		<caption>Přiložené soubory</caption>
 		<thead>
 			<tr>
-				<th colspan="2">Soubor</th><th>Přípona<th>Počet stáhnutí</th><th>Datum přidání</th><th>Správa</th>
+				<th>Soubor</th><th>Přípona<th>Počet stáhnutí</th><th>Datum přidání</th><th>Správa</th>
 			</tr>
 		</thead>
 		<tbody>
 	{if count($prilohy['prilohy'])}
 		{foreach $prilohy['prilohy'] as $priloha}
 			<tr>
-				<td><a href="{plink Soubory:soubor, $priloha['id']}" title="Stáhnout soubor">{$priloha['nazev']}</a></td>
-				<td>{$control['prilohyForm']['prilohy'][$priloha['id']]['id']->control}{$control['prilohyForm']['prilohy'][$priloha['id']]['nazev']->control}</td>
+				<td><a href="{plink Soubory:soubor, $priloha['id']}" title="Stáhnout soubor">{$priloha['nazev']}</a><br />{$control['prilohyForm']['prilohy'][$priloha['id']]['id']->control}{$control['prilohyForm']['prilohy'][$priloha['id']]['nazev']->control}</td>
 				<td class="pripona">{$priloha['pripona']}</td>
 				<td class="pocet-stahnuti">{$priloha['pocet_stahnuti']} &times;</td>
 				<td class="datum">{$priloha['datum_pridani']}</td>

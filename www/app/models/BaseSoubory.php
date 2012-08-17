@@ -26,13 +26,31 @@ class BaseSoubory extends BaseModel
 
 	protected $soubor = NULL;
 
-	public $id_autora = NULL;
+	/** @var string */
+	protected $souvisejici = NULL;
+
+	/** @var int */
+	protected $id_souvisejiciho = NULL;
+
+	/** @var int */
+	protected $id_autora = NULL;
 
 	public function __construct(HttpUploadedFile $soubor = NULL)
 	{
 		$this->connection = dibi::getConnection();
 		$this->cestaKsouborum = APP_DIR.'/../data/';
 		$this->soubor = $soubor;
+	}
+
+	public function setSouvisejici($id, $tabulka = NULL)
+	{
+		$this->id_souvisejiciho = $id;
+		$this->souvisejici = $tabulka;
+	}
+
+	public function setAutor($id)
+	{
+		$this->id_autora = $id;
 	}
 
 	public function findAll()
