@@ -1,9 +1,21 @@
 <?php
 
-class Zavod implements IResource
+/**
+ * Resource pro závody
+ * @author Milan Pála
+ */
+class ZavodResource implements IResource
 {
+	private $data;
 
-	public $data;
+	/**
+	 * Konsktruktor příjmá data o jednom závodu.
+	 * @param array $data Jeden konkrétní závod.
+	 */
+	public function __construct($data)
+	{
+		$this->data = $data;
+	}
 
 	public function __get($name)
 	{
@@ -14,11 +26,6 @@ class Zavod implements IResource
 		}
 
 		return $this->data[$name];
-	}
-
-	public function __construct($data)
-	{
-		$this->data = $data;
 	}
 
 	public function getId()

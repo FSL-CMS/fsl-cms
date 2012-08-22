@@ -73,7 +73,7 @@ class StartovniPoradi extends BaseModel
 	protected function findBy()
 	{
 		return $this->connection
-			->select('[startovni_poradi].[id], CONCAT_WS(" ", [typ_sboru_druzstva].[zkratka], [sbor_druzstva].[privlastek], [misto_druzstva].[obec], [druzstva].[poddruzstvo]) AS [druzstvo], [okresy].[nazev] AS [okres], [okresy].[zkratka] AS [okres_zkratka], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [startovni_poradi].[poradi], [startovni_poradi].[datum], [startovni_poradi].[id_druzstva], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel], [startovni_poradi].[id_autora], [sbory].[id] AS [id_sboru]')
+			->select('[startovni_poradi].[id], CONCAT_WS(" ", [typ_sboru_druzstva].[zkratka], [sbor_druzstva].[privlastek], [misto_druzstva].[obec], [druzstva].[poddruzstvo]) AS [druzstvo], [okresy].[nazev] AS [okres], [okresy].[zkratka] AS [okres_zkratka], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [startovni_poradi].[poradi], [startovni_poradi].[datum], [startovni_poradi].[id_druzstva], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel], [startovni_poradi].[id_autora], [sbory].[id] AS [id_sboru], [startovni_poradi].[id_zavodu], [sbor_druzstva].[id] AS [id_sboru_druzstva]')
 			->from($this->table)
 
 			->leftJoin('[druzstva] ON [druzstva].[id] = [startovni_poradi].[id_druzstva]')

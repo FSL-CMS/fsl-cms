@@ -34,12 +34,13 @@ class Sbory extends BaseModel
 	protected function findOne()
 	{
 		return $this->connection
-					 ->select('[sbory].*, CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]) AS [nazev], [okresy].[nazev] AS [okres], [uzivatele].[jmeno] AS [kontakt_jmeno], [uzivatele].[prijmeni] AS [kontakt_prijmeni], [uzivatele].[kontakt] AS [kontakt_kontakt], [uzivatele].[id] AS [kontakt_id], [uzivatele].[email] AS [kontakt_email]')
+					 ->select('[sbory].*, CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]) AS [nazev], [okresy].[nazev] AS [okres], [uzivatele].[jmeno] AS [kontakt_jmeno], [uzivatele].[prijmeni] AS [kontakt_prijmeni], [uzivatele].[kontakt] AS [kontakt_kontakt], [uzivatele].[id] AS [kontakt_id], [uzivatele].[email] AS [kontakt_email], [spravce].[prijmeni] AS [spravce_prijmeni], [spravce].[jmeno] AS [spravce_jmeno], [spravce].[id] AS [spravce_id], [spravce].[email] AS [spravce_email]')
 					 ->from($this->table)
 					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
 					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
 					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-					 ->leftJoin('[uzivatele] ON [uzivatele].[id] = [sbory].[id_kontaktni_osoby]');
+					 ->leftJoin('[uzivatele] ON [uzivatele].[id] = [sbory].[id_kontaktni_osoby]')
+					 ->leftJoin('[uzivatele] [spravce] ON [spravce].[id] = [sbory].[id_spravce]');
 	}
 
 	public function findAll()
@@ -70,6 +71,11 @@ class Sbory extends BaseModel
 					 ->from('[typy_sboru]');
 	}
 
+	/**
+	 * Nalezne sbory, které pořádaly daný závod.
+	 * @param int $id ID závodu
+	 * @return DibiFluent Sbory, které pořádají daný závod
+	 */
 	public function findByZavod($id)
 	{
 		return $this->findOne()

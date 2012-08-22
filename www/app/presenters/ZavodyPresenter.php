@@ -54,6 +54,7 @@ class ZavodyPresenter extends BasePresenter
 		if($id_rocniku == 0)
 		{
 			$rocnikyModel = new Rocniky;
+			$rocnikyModel->zobrazitNezverejnene();
 			$this->redirect('Zavody:add', $rocnikyModel->findLast()->fetchSingle('id'));
 		}
 
@@ -76,7 +77,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->vysledky = array();
 		$this->template->vysledky['vysledky'] = array();
 		$vysledky = $vysledkyModel->findByZavodZverejnene($id)->fetchAssoc('soutez,kategorie,id,=');
-		$this->template->vysledky['muze_editovat'] = !$nahled && ($this->user->isAllowed('vysledky', 'edit') || $this->user->isAllowed(new Zavod($this->template->zavod)));
+		$this->template->vysledky['muze_editovat'] = !$nahled && ($this->user->isAllowed('vysledky', 'edit') || $this->user->isAllowed(new ZavodResource($this->template->zavod)));
 
 		$vysledkyPredZavodem = $vysledkyModel->findByRocnikAndZavod($this->template->zavod['id_rocniku'], $id)->fetchAssoc('soutez,kategorie,id_druzstva,=');
 		$vysledkyModel->vyhodnotVysledkyRocniku($vysledkyPredZavodem);
@@ -160,7 +161,7 @@ class ZavodyPresenter extends BasePresenter
 	{
 		$this->template->zavod = $this->model->find($id)->fetch();
 		$this->template->zavod['poradatele'] = $this->model->findPoradatele($id);
-		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed(new Zavod($this->template->zavod), 'edit');
+		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit');
 		$this->template->zavod['muze_hodnotit'] = (bool) (strtotime($this->template->zavod['datum']) < strtotime('NOW'));
 
 		$datum = new Datum;
@@ -244,7 +245,7 @@ class ZavodyPresenter extends BasePresenter
 						// obsazené startovní místo
 						// vloží se do volných startovních míst a určí se, zda lze smazat
 						$this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i] = $prihlasenaSP[$ucast['kategorie']][$i];
-						$this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i]['muze_smazat'] = $this->template->startovni_poradi['muze_editovat'] && ($this->jeAutor($this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i]['id_autora']) || ( $this->user->getIdentity() !== NULL && $this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i]['id_sboru'] == $this->user->getIdentity()->id_sboru ));
+						$this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i]['muze_smazat'] = $this->user->isAllowed(new StartovniPoradiResource($this->template->startovni_poradi['startovni_poradi'][$ucast['kategorie']][$i]), 'delete');
 					}
 					else
 					{ // volné startovní místo
@@ -290,7 +291,7 @@ class ZavodyPresenter extends BasePresenter
 		$backlink = $this->getApplication()->storeRequest();
 		if($this->user === NULL || !$this->user->isLoggedIn()) $this->redirect('Sprava:login', $backlink);
 
-		if(!$this->user->isAllowed(new Zavod($zavod), 'edit')) throw new ForbiddenRequestException();
+		if(!$this->user->isAllowed(new ZavodResource($zavod), 'edit')) throw new ForbiddenRequestException();
 	}
 
 	public function renderEdit($id = 0, $id_rocniku = NULL, $backlink = NULL)
@@ -328,6 +329,7 @@ class ZavodyPresenter extends BasePresenter
 	{
 		$f = new AppForm($this, 'zmenitRocnikForm');
 		$rocnikyModel = new Rocniky;
+		$rocnikyModel->zobrazitNezverejnene();
 
 		$f->addGroup('Ročník, ke kterému se vkládá závod');
 		$f->addSelect('id_rocniku', 'Ročník', $rocnikyModel->findAll()->fetchPairs('id', 'rok'))
@@ -350,15 +352,18 @@ class ZavodyPresenter extends BasePresenter
 		$id = (int) $this->getParam('id', 0);
 
 		$sbory = new Sbory;
-		$terce = new Terce;
+		$terceModel = new Terce;
 		$druzstva = new Druzstva;
 		$ucasti = new Ucasti;
 		$sportovisteModel = new Sportoviste;
 
 		$backlink = $this->getApplication()->storeRequest();
 
-		$mistaZDB = $sportovisteModel->findAllToSelect()->fetchPairs('id', 'nazev');
-		$mistaPoradani = $mistaZDB;
+		$mistaPoradani = $sportovisteModel->findAllToSelect()->fetchPairs('id', 'nazev');
+		//if(count($mistaPoradani) == 0) $mistaPoradani = array('žádné není');
+
+		$terce = $terceModel->findAlltoSelect()->fetchPairs('id', 'terce');
+		//if(count($terce) == 0) $terce = array(null => 'žádné nejsou');
 
 		$zavod = $this->model->find($id)->fetch();
 
@@ -373,17 +378,20 @@ class ZavodyPresenter extends BasePresenter
 
 		$form->addGroup('Informace o závodu');
 		$form->addHidden('id_rocniku', 'Ročník')
-			   ->addRule(Form::FILLED, 'Je nutné vybrat ročník pořádání.');
+			   ->setRequired('Je nutné vybrat ročník pořádání.');
 		$form->addMultiSelect('id_poradatele', 'Pořadatelé', $sbory->findAlltoSelect()->fetchPairs('id', 'sbor'), 6)
-			   ->addRule(Form::FILLED, 'Je nutné vybrat ročník pořádání.')
-			   ->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
+			   ->setRequired('Je nutné vybrat ročník pořádání.')
+			   ->setOption('description', 'Více pořadatelů vyberete, když podržíte Ctrl a označíte je myší.');
+		$form->addRequestButton('addSbory', 'Přidat nového pořadatele', 'Sbory:add');
 		$form->addSelect('id_mista', 'Sportoviště', $mistaPoradani)
-			   ->setOption('description', $form->addRequestButton('addSportoviste', 'Přidat nové', 'Sportoviste:add'));
+			   ->setRequired('Je nutné vybrat místo konání závodů.')
+			   ->setOption('description', $form->addRequestButton('addSportoviste', 'Přidat nové sportoviště', 'Sportoviste:add'));
 		$form->addDatetimePicker('datum', 'Datum a čas')
-			   ->addRule(Form::FILLED, 'Je nutné vyplnit datum závodu.');
-		$form->addSelect('id_tercu', 'Terče', $terce->findAlltoSelect()->fetchPairs('id', 'terce'))
-			   ->addRule(Form::FILLED, 'Je nutné vybrat terče.');
-		$form->addRequestButton('addTerce', 'Přidat nové', 'Terce:add');
+			   ->setRequired('Je nutné vyplnit datum závodu.')
+			   ->setDefaultValue(date('Y-m-d H:i'));
+		$form->addSelect('id_tercu', 'Terče', $terce)
+			   ->setRequired('Je nutné vybrat terče.');
+		$form->addRequestButton('addTerce', 'Přidat nové terče', 'Terce:add');
 		$form->addCheckbox('zruseno', 'Zrušený závod', 'ano');
 
 		/*$form->addSelect('ustream_stav', 'Video přenos', array('ne' => 'není/nebude', 'ano' => 'bude', 'live' => 'běží živě', 'zaznam' => 'ze záznamu'))
@@ -402,7 +410,7 @@ class ZavodyPresenter extends BasePresenter
 
 		$poradiCont = $form->addContainer('poradi');
 		$poradiCont->setCurrentGroup($form->addGroup('Společné startovní pořadí'));
-		$form->addCheckbox('spolecne_startovni_poradi', 'Společné startovní pořadí pro všechny soutěže', true)->setDisabled(true);
+		$form->addCheckbox('spolecne_startovni_poradi', 'Společné startovní pořadí pro všechny soutěže na tomto závodu', true)->setDisabled(true);
 		$form->addRequestButton('addSouteze', 'Přidat novou soutěž', 'Souteze:add');
 		$form->addRequestButton('addKategorie', 'Přidat novou sportovní kategorii', 'Kategorie:add');
 		foreach ($soutezeRocniku as $soutez => $val)
@@ -707,11 +715,16 @@ class ZavodyPresenter extends BasePresenter
 		$spm = new StartovniPoradi;
 		$sp = $spm->find($id)->fetch();
 
-		if(!$this->user->isAllowed('startovni_poradi', 'edit') && $this->user->getIdentity()->id_sboru != $sp['id_sboru']) throw new ForbiddenRequestException('Na tuto akci nemáte dostatečné oprávnění.');
+		if( !$this->user->isAllowed(new StartovniPoradiResource($sp), 'delete') )
+		{
+			$this->flashMessage('Nemáte oprávnění odhlásit toto družstvo.', 'warning');
+			$this->redirect('Zavody:zavod', $id_zavodu);
+			//throw new ForbiddenRequestException('Na tuto akci nemáte dostatečné oprávnění.');
+		}
 
 		$spm->delete($id);
 
-		$this->flashMessage('Startovní pořadí bylo úspěšně odebráno.', 'ok');
+		$this->flashMessage('Startovní pořadí bylo úspěšně odhlášeno.', 'ok');
 		//$this->getApplication()->restoreRequest($this->backlink);
 		$this->redirect('Zavody:zavod', $id_zavodu);
 	}

@@ -1,6 +1,6 @@
 @{block content}
 
-{if $bodoveTabulky['muze_pridavat']}<p><a href="{plink BodoveTabulky:add}" title="Přidat novou bodovou tabulku" class="add">Přidat novou bodovou tabulku</a></p>{/if}
+{if $bodoveTabulky['muze_pridavat']}<p class="config"><a href="{plink BodoveTabulky:add}" title="Přidat novou bodovou tabulku" class="add">Přidat novou bodovou tabulku</a></p>{/if}
 
 {if count($bodoveTabulky['bodoveTabulky'])}
 <table class="prehled">
@@ -12,7 +12,7 @@
 	<tbody>
 {foreach $bodoveTabulky['bodoveTabulky'] as $tabulka}
 	<tr>
-		<td>{$tabulka['pocet_bodovanych_pozic']}</td><td>{foreach $tabulka['body'] as $bod}{$bod['body']}, {/foreach}</td><td><a href="{plink edit, $tabulka['id']}" class="edit">Upravit</a></td><td><a href="{plink delete!, $tabulka['id']}" class="delete">Smazat</a></td>
+		<td>{$tabulka['pocet_bodovanych_pozic']}</td><td>{foreach $tabulka['body'] as $bod}{$bod['body']}{if !$iterator->isLast()}, {/if}{/foreach}</td><td><a href="{plink edit, $tabulka['id']}" class="edit">Upravit</a></td><td><a href="{plink delete!, $tabulka['id']}" class="delete">Smazat</a></td>
 	</tr>
 {/foreach}
 	</tbody>

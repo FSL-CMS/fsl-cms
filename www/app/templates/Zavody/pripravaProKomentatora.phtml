@@ -28,7 +28,7 @@
 	<tr>
 		<td class="poradi">{$druzstvo['poradi']}.</td>
 		<td>{$druzstvo['druzstvo']}</td>
-		<td>{$druzstvo['zkratka_okresu']}</td>
+		<td>{$druzstvo['okres_zkratka']}</td>
 		<td class="cas">{ifset $druzstvo['letosniRekord']}{$druzstvo['letosniRekord']|vyslednyCas}{/ifset}</td>
 		<td class="cas">{ifset $druzstvo['letosniPrumer']}{$druzstvo['letosniPrumer']|vyslednyCas}{/ifset}</td>
 		<td class="cas">{ifset $druzstvo['rekord']['rekord']}{$druzstvo['rekord']['rekord']|vyslednyCas} (<a href="{plink Zavody:zavod, $druzstvo['rekord']['id_zavodu']}">{$druzstvo['rekord']['zavod']}, {$druzstvo['rekord']['rok']}</a>){/if}</td>

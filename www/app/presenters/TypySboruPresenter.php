@@ -13,7 +13,7 @@
  *
  * @author	Milan Pála
  */
-class TypySboruPresenter extends SecuredPresenter
+class TypySboruPresenter extends BasePresenter
 {
 	protected $model = NULL;
 
@@ -38,11 +38,9 @@ class TypySboruPresenter extends SecuredPresenter
 		$this->setTitle('Typy sborů');
 	}
 
-	public function handleEdit($id = 0)
+	public function renderEdit($id = 0)
 	{
 		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
-
-		$this->invalidateControl('editForm');
 
 		if($id == 0) $this->setTitle('Přidání typu sboru');
 		else $this->setTitle('Úprava typu sboru');
@@ -72,15 +70,12 @@ class TypySboruPresenter extends SecuredPresenter
 			$this->flashMessage($e->getMessage(), 'warning');
 		}
 
-		if( $this->isAjax() ) $this->invalidateControl('typySboru');
-		else $this->redirect('this');
+		$this->redirect('this');
 	}
 
-	public function createComponentEditForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new AppForm;
-
-		$form->getElementPrototype()->class('ajax');
+		$form = new RequestButtonReceiver($this, $name);
 
 		$form->addGroup('Přidání typu sboru');
 
@@ -92,12 +87,11 @@ class TypySboruPresenter extends SecuredPresenter
 			->addRule(Form::FILLED, 'Je nutné vyplnit zkratku kategorie.');
 
 		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
+		$form->addSubmit('cancel', 'Zpět')
 			->setValidationScope(false);
+		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		return $form;
 	}
 
 	public function editFormSubmitted(AppForm $form)
@@ -134,9 +128,8 @@ class TypySboruPresenter extends SecuredPresenter
 		}
 
 		$this->getApplication()->restoreRequest($this->backlink);
-
-		if( $this->isAjax() ) $this->invalidateControl('typySboru');
-		else $this->redirect('this');
+		RequestButtonHelper::redirectBack();
+		$this->redirect('this');
 	}
 
 }

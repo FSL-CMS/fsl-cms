@@ -51,11 +51,11 @@ class UzivatelePresenter extends BasePresenter
 		$this->setTitle('Správa uživatelů');
 	}
 
-	public function actionUzivatel($id)
+	public function actionUzivatel($id = 0)
 	{
-		if( $id === NULL ) $this->redirect('default');
+		if( $id == 0 ) $this->redirect('default');
 		
-		if( !$this->model->find($id) ) throw new BadRequestException('Hledaný uživatel neexistuje');
+		if( !$this->model->find($id)->fetch() ) throw new BadRequestException('Hledaný uživatel neexistuje');
 	}
 
 

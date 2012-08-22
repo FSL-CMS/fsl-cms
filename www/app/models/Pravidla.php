@@ -77,8 +77,11 @@ class Pravidla extends BaseModel
 	{
 		$rocnikyModel = new Rocniky;
 		$posledni = $rocnikyModel->findLast()->fetch();
-		$predchozi = $rocnikyModel->findPredchozi($posledni['id'])->fetch();
-		$posledniPravidla = $this->findByRocnik($predchozi['id'])->fetch();
-		return $this->insert(array('pravidla' => $posledniPravidla['pravidla'], 'id_rocniku' => $id));
+		if($posledni != false)
+		{
+			$predchozi = $rocnikyModel->findPredchozi($posledni['id'])->fetch();
+			$posledniPravidla = $this->findByRocnik($predchozi['id'])->fetch();
+			return $this->insert(array('pravidla' => $posledniPravidla['pravidla'], 'id_rocniku' => $id));
+		}
 	}
 }

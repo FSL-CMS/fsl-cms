@@ -39,6 +39,9 @@
 	{/if}
 </fieldset>
 
-<p>{$control['editForm']['save']->control} {$control['editForm']['saveAndReturn']->control} {$control['editForm']['cancel']->control}</p>
+<fieldset>
+	<legend>Uložení</legend>
+{$control['editForm']['save']->control} {$control['editForm']['saveAndReturn']->control} {$control['editForm']['cancel']->control}
+</fieldset>
 
 {widget editForm end}

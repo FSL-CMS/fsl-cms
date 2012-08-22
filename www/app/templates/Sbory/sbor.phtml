@@ -6,6 +6,7 @@
 	<dt>Název sboru</dt><dd>{$sbor->nazev}</dd>
 	<dt>Okres</dt><dd>{$sbor->okres}</dd>
 	{if isset($sbor['kontakt_id']) || isset($sbor['kontakt_kontakt'])}<dt>Kontaktní informace</dt><dd><a href="{plink Uzivatele:uzivatel, $sbor['kontakt_id']}">{$sbor['kontakt_jmeno'].' '.$sbor['kontakt_prijmeni']}</a></dd><dd>{!$sbor['kontakt_email']|texy:true}</dd><dd>{!$sbor['kontakt_kontakt']|texy}</dd>{/if}
+	{if isset($sbor['spravce_id'])}<dt>Správce sboru na těchto stránkách</dt><dd><a href="{plink Uzivatele:uzivatel, $sbor['spravce_id']}">{$sbor['spravce_jmeno'].' '.$sbor['spravce_prijmeni']}</a></dd><dd>{!$sbor['spravce_email']|texy:true}</dd>{/if}
 </dl>
 
 {widget souvisejici "sbory", $sbor['id']}

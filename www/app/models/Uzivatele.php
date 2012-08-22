@@ -174,6 +174,8 @@ class Uzivatele extends BaseModel implements IAuthenticator
 
 	public function insert(array $data)
 	{
+		if( count($this->findAll()) == 0 ) $data['opravneni'] = 'admin';
+
 		if( $this->connection->query('SELECT [id] FROM [uzivatele] WHERE [email] = %s', strtolower($data['email']))->fetch() ) throw new RegistredAccountException();
 
 		if( isset($data['id_funkce']) )

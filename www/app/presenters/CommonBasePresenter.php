@@ -138,8 +138,8 @@ abstract class CommonBasePresenter extends Presenter
 		$acl->allow('guest', 'sbory', 'add');
 		$acl->allow('guest', 'mista', 'add');
 		$acl->allow('guest', 'okresy', 'add');
+		$acl->allow('guest', 'typysboru', 'add');
 
-		$acl->allow('user', 'startovni_poradi', 'add');
 		$acl->allow('user', 'komentare', 'add');
 		$acl->allow('user', 'diskuze', 'add');
 		$acl->allow('user', 'druzstva', 'add');
@@ -151,6 +151,8 @@ abstract class CommonBasePresenter extends Presenter
 		$acl->allow('user', 'sledovani', 'add');
 
 		$acl->allow('user', 'zavody', NULL, new LigaAssertion());
+		$acl->allow('user', 'startovni_poradi', 'add');
+		$acl->allow('user', 'startovni_poradi', NULL, new LigaAssertion());
 
 		$acl->allow('author', 'clanky', Permission::ALL);
 		$acl->allow('author', 'galerie', Permission::ALL);
@@ -385,7 +387,7 @@ abstract class CommonBasePresenter extends Presenter
 
 		$navSbory = $nav->add('Sbory', $this->link('Sbory:'));
 		if($presenter == 'Sbory' && $this->getAction() == 'default') $nav->setCurrent($navSbory);
-		if($vsechno || in_array($presenter, array('Sbory', 'Druzstva', 'Uzivatele', 'Terce')))
+		if($vsechno || in_array($presenter, array('Sbory', 'Druzstva', 'Uzivatele', 'Terce', 'TypySboru')))
 		{
 			$sboryModel = new Sbory;
 			$druzstvaModel = new Druzstva;
@@ -458,6 +460,18 @@ abstract class CommonBasePresenter extends Presenter
 
 			$node = $nav->add('Uživatelé', $this->link('Uzivatele:default'));
 			if($presenter == 'Uzivatele' && $this->getAction() == 'default') $nav->setCurrent($node);
+
+			$nod20 = $nav->add('Typ sborů', $this->link('TypySboru:'));
+			if($presenter == 'TypySboru' && $this->getAction() == 'default') $nav->setCurrent($nod20);
+
+			$nod21 = $nod20->add('Nový', $this->link('TypySboru:add'));
+			if($presenter == 'TypySboru' && $this->getAction() == 'add') $nav->setCurrent($nod21);
+
+			$nod20 = $nav->add('Místa', $this->link('Mista:'));
+			if($presenter == 'Mista' && $this->getAction() == 'default') $nav->setCurrent($nod20);
+
+			$nod21 = $nod20->add('Nové', $this->link('Mista:add'));
+			if($presenter == 'Mista' && $this->getAction() == 'add') $nav->setCurrent($nod21);
 		}
 
 		$navForum = $nav->add('Fórum', $this->link('Forum:'));
@@ -551,7 +565,7 @@ abstract class CommonBasePresenter extends Presenter
 			if($this->getAction() == 'poradaneZavody') $nav->setCurrent($nav6);
 		}
 
-		if($vsechno || in_array($presenter, array('Sprava', 'Stranky', 'Rocniky', 'Zavody', 'Kategorie', 'BodoveTabulky', 'Uzivatele', 'Sledovani', 'Mista', 'Okresy', 'Souteze', 'Druzstva', 'Ankety')))
+		if($vsechno || in_array($presenter, array('Sprava', 'Stranky', 'Rocniky', 'Zavody', 'Kategorie', 'BodoveTabulky', 'Uzivatele', 'Sledovani', 'Mista', 'Okresy', 'Souteze', 'Druzstva', 'Ankety', 'TypySboru')))
 		{
 			if($this->user->isAllowed('sprava', 'edit'))
 			{
@@ -680,6 +694,15 @@ abstract class CommonBasePresenter extends Presenter
 
 				$nod21 = $nod20->add('Úprava', $this->link('Ankety:edit', $this->getParam('id', NULL)));
 				if($presenter == 'Ankety' && $this->getAction() == 'edit') $nav->setCurrent($nod21);
+
+				$nod20 = $sprava->add('Typ sborů', $this->link('TypySboru:'));
+				if($presenter == 'TypySboru' && $this->getAction() == 'default') $nav->setCurrent($nod20);
+
+				$nod21 = $nod20->add('Nový', $this->link('TypySboru:add'));
+				if($presenter == 'TypySboru' && $this->getAction() == 'add') $nav->setCurrent($nod21);
+
+				$nod21 = $nod20->add('Úprava', $this->link('TypySboru:edit', $this->getParam('id', NULL)));
+				if($presenter == 'TypySboru' && $this->getAction() == 'edit') $nav->setCurrent($nod21);
 			}
 		}
 	}

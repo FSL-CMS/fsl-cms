@@ -13,7 +13,7 @@
  *
  * @author	Milan Pála
  */
-class OkresyPresenter extends SecuredPresenter
+class OkresyPresenter extends BasePresenter
 {
 	/** @persistent */
 	public $backlink = '';

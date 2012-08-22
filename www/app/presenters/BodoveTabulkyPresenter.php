@@ -17,9 +17,9 @@ class BodoveTabulkyPresenter extends BasePresenter
 {
 	/** @persistent */
 	public $backlink = '';
-	
+
 	protected $model;
-	
+
 	protected function startup()
 	{
 		$this->model = new BodoveTabulky;
@@ -33,7 +33,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 	{
 		$this->template->bodoveTabulky = array();
 		$bodyModel = new Body;
-		
+
 		$this->template->bodoveTabulky['bodoveTabulky'] = $this->model->findAll()->fetchAssoc('id');
 		foreach( $this->template->bodoveTabulky['bodoveTabulky'] as $tabulka )
 		{
@@ -41,21 +41,21 @@ class BodoveTabulkyPresenter extends BasePresenter
 		}
 		$this->template->bodoveTabulky['muze_pridavat'] = $this->user->isAllowed('bodovetabulky', 'add');
 		$this->template->bodoveTabulky['muze_editovat'] = $this->user->isAllowed('bodovetabulky', 'edit');
-		
+
 		$this->setTitle('Bodové tabulky');
 	}
 
 	public function actionEdit($id = 0)
 	{
 		if( $id == 0 ) $this->redirect('add');
-		
+
 		if( !$this->user->isLoggedIn() )
 		{
 			$backlink = $this->getApplication()->storeRequest();
 			$this->flashMessage('Nejste přihlášen.');
 			$this->forward('Sprava:login', $backlink);
 		}
-		
+
 		if( $id != 0 && !$this->model->find($id)->fetch() ) throw new BadRequestException('Anketa nebyla nalezen.');
 	}
 
@@ -75,7 +75,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 			$body['body'] = $bodyModel->findByTabulka($id)->fetchAll();
 		}
 		if( $id != 0) $this['editForm']->setDefaults($body);
-		
+
 		if( $id == 0 ) $this->setTitle('Přidání nové bodové tabulky');
 		else $this->setTitle('Úprava bodové tabulky');
 	}
@@ -106,10 +106,10 @@ class BodoveTabulkyPresenter extends BasePresenter
 		}
 
 		$form->addGroup('Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(FALSE);;
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
+		$form->addSubmit('cancel', 'Zpět')
+			->setValidationScope(FALSE);;
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 
@@ -122,6 +122,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 
 		if( $form['cancel']->isSubmittedBy() )
 		{
+			RequestButtonHelper::redirectBack();
 			$this->getApplication()->restoreRequest($this->backlink);
 			if( $id == 0 ) $this->redirect('default');
 			else $this->redirect('default');
@@ -130,7 +131,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 		{
 			$data = $form->getValues();
 			$dataDoDB = array( 'pocet_bodovanych_pozic' => $data['pocet_bodovanych_pozic'] );
-			
+
 			try
 			{
 				if( $id == 0 )
@@ -142,7 +143,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 				{
 					$this->model->update( $id, $dataDoDB );
 				}
-				
+
 				if(isset($data['body'])) foreach($data['body'] as $odpoved)
 				{
 					$bodyModel = new Body;
@@ -155,20 +156,20 @@ class BodoveTabulkyPresenter extends BasePresenter
 				$this->flashMessage('Nepodařilo se uložit bodovou tabulku.', 'error');
 				Debug::processException($e, true);
 			}
-			
+
 			if( $form['saveAndReturn']->isSubmittedBy() )
 			{
+				RequestButtonHelper::redirectBack();
 				$this->getApplication()->restoreRequest($this->backlink);
 				$this->redirect('default');
 			}
 			else
 			{
-				$this->getApplication()->restoreRequest($this->backlink);
 				$this->redirect('edit', $id);
 			}
 		}
 	}
-	
+
 	public function handleDelete($id)
 	{
 		try

@@ -100,13 +100,16 @@ class SoutezePresenter extends SecuredPresenter
 		else $this->setTitle('Úprava soutěže');
 	}
 
-	public function createComponentEditForm()
+	public function createComponentEditForm($name)
 	{
 		$id = $this->getParam('id');
-		$form = new RequestButtonReceiver;
+		$form = new RequestButtonReceiver($this, $name);
 		$bodoveTabulkyModel = new BodoveTabulky;
 		$kategorieModel = new Kategorie;
 		$kategorie = $kategorieModel->findAllToSelect()->fetchPairs('id', 'nazev');
+
+		$bodoveTabulky = $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id','nazev');
+		if(count($bodoveTabulky) == 0) $bodoveTabulky = array(0 => 'žádná není');
 
 		$form->addGroup('Informace o soutěži');
 		$form->addText('nazev', 'Název', 50)
@@ -114,10 +117,10 @@ class SoutezePresenter extends SecuredPresenter
 			   ->addRule(Form::MAX_LENGTH, 'Název může mít maximálně %d znaků.', 255);
 		$form->addAdminTexylaTextArea('popis', 'Popis soutěže');
 
-		$form->addDateTimePicker('platnost_od', 'Platí od')
-			->setDefaultValue(Datum::$dnes['ted'])
-			->addRule(Form::FILLED, 'Je nutné vyplnit datum počátku platnosti soutěže.');
-		$form->addDateTimePicker('platnost_do', 'Platí do');
+		$form->addGroup('Sportovní kategorie a bodové tabulky');
+		$form->addRequestButton('addKategorie', 'Přidat novou kategorii', 'Kategorie:add');
+		$form->addRequestButton('addBodovaTabulka', 'Přidat novou bodovou tabulku', 'BodoveTabulky:add');
+		$form->addRequestButton('editBodovaTabulka', 'Spravovat bodové tabulky', 'BodoveTabulky:default');
 
 		$kategorieCont = $form->addContainer('kategorie');
 		foreach($kategorie as $key => $val)
@@ -127,7 +130,7 @@ class SoutezePresenter extends SecuredPresenter
 			$form->addGroup('Kategorie '.$val, true);
 			$katCont->addHidden('kategorie_souteze_id');
 			$katCont->addCheckbox('id', $val.' - tato kategorie se může účastnit soutěže');
-			$katCont->addSelect('id_bodove_tabulky', 'Výchozí bodová tabulka', $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id','nazev'));
+			$katCont->addSelect('id_bodove_tabulky', 'Výchozí bodová tabulka', $bodoveTabulky);
 			//$katCont->addRequestButton('addBodoveTabulky', 'Přidat novou', 'BodoveTabulky:add');
 		}
 
@@ -140,8 +143,6 @@ class SoutezePresenter extends SecuredPresenter
 			->setValidationScope(false);
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		return $form;
 	}
 
 	public function editFormSubmitted(AppForm $form)
