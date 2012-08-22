@@ -27,7 +27,16 @@ Debug::$strictMode = TRUE;
 
 //RoutingDebugger::enable();
 // 2b) load configuration from config.ini file
-dibi::connect(Environment::getConfig('database'));
+try
+{
+	dibi::connect(Environment::getConfig('database'));
+}
+catch(DibiException $e)
+{
+	Debug::processException($e, true);
+	include '../app/templates/error.phtml';
+	exit;
+}
 
 // Step 3: Configure application
 // 3a) get and setup a front controller
@@ -148,9 +157,6 @@ function Form_addSouradniceInput(Form $_this, $name, $label, $sirkaInput, $delka
 	return $_this[$name] = new SouradniceInput($label, $sirkaInput, $delkaInput);
 }
 Form::extensionMethod('Form::addSouradnice', 'Form_addSouradniceInput');
-
-
-MultipleFileUpload::register();
 
 FormContainer::extensionMethod('FormContainer::addAjaxSelect', array('AjaxSelectBox', 'addAjaxSelect'));
 
