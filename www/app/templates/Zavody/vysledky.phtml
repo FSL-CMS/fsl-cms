@@ -1,10 +1,11 @@
 @{block content}
 
 {if count($vysledky['vysledky'])}
+	{var $isFirst 0; }
 	{foreach $vysledky['vysledky'] as $soutez => $vysledkySouteze}
-		{var $it $iterator->isFirst()}
 		{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
-			{if !$it && $nahled}<h1 class="zalomit-pred">{$nadpis}</h1>{/if}
+		{? $isFirst++; }
+			{if $isFirst > 1 && $nahled}<h1 class="zalomit-pred">{$nadpis}</h1>{/if}
 <table class="prehled">
 	<caption>Výsledky kategorie <span class="{$kategorie|webalize}">{$kategorie}</span> v soutěži <span class="soutez-{$soutez|webalize}">{$soutez}</span></caption>
 	<thead>
