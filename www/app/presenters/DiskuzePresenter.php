@@ -64,7 +64,7 @@ class DiskuzePresenter extends BasePresenter
 	public function renderZeptatse($id = 0, $id_souvisejiciho = NULL)
 	{
 		if( $id != 0) $this['editForm']['id_tematu']->value = $id;
-		if( $id_souvisejiciho !== NULL) $this['diskuzeForm']['id_souvisejiciho']->value = $id_souvisejiciho;
+		if( $id_souvisejiciho !== NULL) $this['editForm']['id_souvisejiciho']->value = $id_souvisejiciho;
 
 		$this->template->diskuze = array();
 		$this->template->diskuze['id_souvisejiciho'] = $id_souvisejiciho;

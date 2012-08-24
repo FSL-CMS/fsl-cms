@@ -153,7 +153,7 @@ class ForumPresenter extends BasePresenter
 	public function renderZeptatse($id, $id_souvisejiciho = NULL)
 	{
 		$this->template->tema = $this->model->findTema($id)->fetch();
-		if( $id_souvisejiciho !== NULL) $this['diskuzeForm']['id_souvisejiciho']->value = $id_souvisejiciho;
+		if( $id_souvisejiciho !== NULL) $this['editForm']['id_souvisejiciho']->value = $id_souvisejiciho;
 
 		$this->template->diskuze = array();
 		$this->template->diskuze['id_souvisejiciho'] = $id_souvisejiciho;
@@ -183,9 +183,9 @@ class ForumPresenter extends BasePresenter
 		}
 	}*/
 
-	public function createComponentDiskuzeForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new AppForm($this, 'diskuzeForm');
+		$form = new AppForm($this, $name);
 		$form->addHidden('id_souvisejiciho');
 		$form->addText('nazev', 'Téma diskuze', 40)
 			->addRule(Form::FILLED, 'Je nutné vyplnit téma diskuze.');
@@ -195,14 +195,12 @@ class ForumPresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Vrátit se zpět')
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'diskuzeFormSubmitted');
+		$form->onSubmit[] = array($this, 'editFormSubmitted');
 
 		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
-		return $form;
 	}
 
-	public function diskuzeFormSubmitted(AppForm $form)
+	public function editFormSubmitted(AppForm $form)
 	{
 		$id_tematu = (int) $this->getParam('id');
 		$id_souvisejiciho = (int) $form['id_souvisejiciho']->value;
