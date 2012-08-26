@@ -138,6 +138,7 @@ class GaleriePresenter extends BasePresenter
 		$this->template->galerie += (array) $this->model->find($id)->fetch();
 		$this->template->galerie['muze_pridavat'] |= $this->jeAutor($this->template->galerie['id_autora']);
 		$this->template->galerie['muze_smazat'] |= $this->user->isAllowed('galerie', 'delete') || $this->jeAutor($this->template->galerie['id_autora']);
+		$this->template->galerie['muze_editovat'] |= $this->jeAutor($this->template->galerie['id_autora']);
 
 		$this->template->fotky['fotky'] = $fotky->findBySouvisejici($id)->fetchAll();
 		$this->template->fotky['muze_pridavat'] = $this->user->isAllowed('fotky', 'add') || $this->jeAutor($this->template->galerie['id_autora']);
