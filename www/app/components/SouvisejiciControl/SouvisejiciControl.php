@@ -78,7 +78,8 @@ class SouvisejiciControl extends BaseControl
 
 		$form->getElementPrototype()->class('ajax');
 
-		$souvisejiciTabulky = array( 'Druzstva' => 'Družstva', 'Zavody' => 'Závody', 'Fotogalerie' => 'Fotogalerie', 'Clanky' => 'Články' );
+		// klíče jsou názvy souvisejících tabulek
+		$souvisejiciTabulky = array( 'Druzstva' => 'Družstva', 'Zavody' => 'Závody', 'Galerie' => 'Galerie', 'Clanky' => 'Články' );
 		$form->addGroup('Související položky');
 		$form->addSelect('souvisejici', 'Související skupina', array('' => 'Vyberte kategorii')+$souvisejiciTabulky);
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Položka', $form['souvisejici'], array($this, "getSouvisejici"));
@@ -147,9 +148,9 @@ class SouvisejiciControl extends BaseControl
 					$vystup[$polozka['id']] = $polozka['nazev'];
 				}
 		}
-		elseif( $tabulka == 'Fotogalerie' )
+		elseif( $tabulka == 'Galerie' )
 		{
-			$model = new Fotogalerie;
+			$model = new Galerie;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
