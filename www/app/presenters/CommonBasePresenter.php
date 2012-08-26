@@ -113,6 +113,7 @@ abstract class CommonBasePresenter extends Presenter
 		$acl->addResource('uzivatele');
 		$acl->addResource('galerie');
 		$acl->addResource('fotky');
+		$acl->addResource('videa');
 		$acl->addResource('stranky');
 		$acl->addResource('druzstva');
 		$acl->addResource('sbory');
@@ -157,6 +158,7 @@ abstract class CommonBasePresenter extends Presenter
 		$acl->allow('author', 'clanky', Permission::ALL);
 		$acl->allow('author', 'galerie', Permission::ALL);
 		$acl->allow('author', 'fotky', Permission::ALL);
+		$acl->allow('author', 'videa', Permission::ALL);
 		$acl->allow('author', 'souvisejici', Permission::ALL);
 
 		$acl->allow('admin', Permission::ALL, Permission::ALL);

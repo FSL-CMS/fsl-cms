@@ -173,6 +173,8 @@ class GaleriePresenter extends BasePresenter
 		$this->template->fotky['muze_pridavat'] = $this->user->isAllowed('fotky', 'add') || $this->jeAutor($this->template->galerie['id_autora']);
 		$this->template->fotky['muze_smazat'] = true;
 
+		$this->template->videa['muze_pridavat'] = $this->user->isAllowed('videa', 'add') || $this->jeAutor($this->template->galerie['id_autora']);
+
 		foreach ($this->template->fotky['fotky'] as $key => &$fotka)
 		{
 			if(!file_exists(APP_DIR . '/../data/' . $fotka['id'] . '.' . $fotka['pripona']))
@@ -186,7 +188,6 @@ class GaleriePresenter extends BasePresenter
 		}
 
 		$videaModel = new Videa;
-
 		$this->template->videa['videa'] = $videaModel->findByGalerie($id);
 
 		$this->setTitle('Galerie: ' . $this->template->galerie['nazev']);
