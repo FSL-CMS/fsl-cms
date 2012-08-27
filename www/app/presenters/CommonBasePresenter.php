@@ -177,34 +177,69 @@ abstract class CommonBasePresenter extends Presenter
 
 	private function checkDbVersion()
 	{
+		// 1. Zkontroluje se, zda je v aplikaci uvedená potřebná verze DB
 		if(!defined('VERZE_DB')) throw new DBVersionMismatchException('Není uvedena verze DB v aplikaci.');
-		$verzeDB = dibi::fetchSingle('SELECT verze FROM verze LIMIT 1');
-		if($verzeDB === false || $verzeDB == 0) throw new DBVersionMismatchException('Není uvedena verze DB v aplikaci.');
-
-		if( VERZE_DB > $verzeDB)
+		try
 		{
-			//if(!($this->presenter instanceof SpravaPresenter)) throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+			// 2. Zkontroluje, zda je verze uvedená v DB
+			$verzeDB = dibi::fetchSingle('SELECT [verze] FROM [verze] LIMIT 1');
+			if($verzeDB === false || $verzeDB == 0)
+			{
+				throw new DBVersionMismatchException('Není uvedena verze DB v databázi.');
+			}
+			// Databáze může být aktualizována
+			if( VERZE_DB > $verzeDB)
+			{
+				$aktualizaceDBModel = new AktualizaceDB;
+				try
+				{
+					dibi::begin();
+					$aktualizaceDBModel->aktualizuj($verzeDB, VERZE_DB);
+					dibi::commit();
+					$this->flashMessage('Databáze byla aktualizovaná.', 'ok');
+					//$this->redirect('default');
+				}
+				catch(DibiException $e)
+				{
+					dibi::rollback();
+					$this->flashMessage('Databázi se nepodařilo aktualizovat.', 'error');
+					Debug::processException($e, true);
+					//$this->redirect('default');
+				}
+			}
+			// Aplikace by měla být povýšena na vyšší verzi databáze
+			elseif( VERZE_DB < $verzeDB )
+			{
+				throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+			}
 
-			$aktualizaceDBModel = new AktualizaceDB;
-			try
-			{
-				dibi::begin();
-				$aktualizaceDBModel->aktualizuj($verzeDB, VERZE_DB);
-				dibi::commit();
-				$this->flashMessage('Databáze byla aktualizovaná.', 'ok');
-				//$this->redirect('default');
-			}
-			catch(DibiException $e)
-			{
-				dibi::rollback();
-				$this->flashMessage('Databázi se nepodařilo aktualizovat.', 'error');
-				Debug::processException($e, true);
-				//$this->redirect('default');
-			}
 		}
-		elseif( VERZE_DB < $verzeDB )
+		catch(DibiException $e)
 		{
-			throw new DBVersionMismatchException('Nesouhlasí verze databází. Současná '.$verzeDB.', požadovaná '.VERZE_DB.'.');
+			// Tabulka verze neexistuje, ani ostatní tabulky neexistují => inicializace DB
+			if($e->getCode() == 1146 && count(dibi::fetchAll('SHOW TABLES')) == 0)
+			{
+				$aktualizaceDBModel = new AktualizaceDB;
+				try
+				{
+					dibi::begin();
+					$aktualizaceDBModel->inicializuj();
+					dibi::commit();
+					$this->flashMessage('Databáze byla inicializovaná.', 'ok');
+					//$this->redirect('default');
+				}
+				catch(DibiException $e)
+				{
+					dibi::rollback();
+					$this->flashMessage('Databázi se nepodařilo inicializovat.', 'error');
+					Debug::processException($e, true);
+					//$this->redirect('default');
+				}
+			}
+			else // Tabulka "verze" neexistuje, ostatní možná ano => nespecifikovaná chyba
+			{
+				throw $e;
+			}
 		}
 	}
 
