@@ -17,11 +17,43 @@ class AktualizaceDB extends BaseModel
 	/** @var DibiConnection */
 	protected $connection;
 
+	/** @var string $SQL_PATH Cesta k inicializačním skriptům. */
+	private static $SQL_PATH;
+
 	public function __construct()
 	{
 		$this->connection = dibi::getConnection();
+		self::$SQL_PATH = APP_DIR.'/models/sql';
 	}
 
+	/**
+	 * Provede prvotní inicializaci databáze. Nahraje do zvolené databáze
+	 * tabulky a data nezbytná pro první spuštění aplikace.
+	 */
+	public function inicializuj()
+	{
+		// Nahraje tabulky do zvolené databáze.
+		$this->connection->loadFile(self::$SQL_PATH.'/tabulky.sql');
+
+		// Nahraje data nezbytná pro spuštění aplikace.
+		$this->connection->loadFile(self::$SQL_PATH.'/data.sql');
+	}
+
+	/**
+	 * Pokusí se aktualizovat databázi na požadovanou verzi.
+	 *
+	 * Aktuální verze DB je v tabulce "verze" v databázi a je předána jako první
+	 * argument. Požadovaná verze databáze je v CommonBasePresenter jako VERZE_DB
+	 * a je předána jako druhý argument.
+	 *
+	 * Převod probíhá hledáním funkcí, které mají název ve tvaru fromXtoY(), kde
+	 * X je číslo verze, ze které se aktualizuje a Y je verze, na kterou daná funkce
+	 * aktualizuje. Poukouší se hledat aktualizace, dokud se neshodují čísla verzí.
+	 *
+	 * @param type $z Číslo verze, ze které se aktualizuje.
+	 * @param type $na Číslo verze, na kterou se aktualizuje.
+	 * @throws DBVersionMismatchException
+	 */
 	public function aktualizuj($z, $na)
 	{
 		$methods = $this->getReflection()->getMethods();
@@ -34,7 +66,6 @@ class AktualizaceDB extends BaseModel
 				if( preg_match('/from'.$z.'to([0-9]+)/', $method->getName(), $matched) > 0 )
 				{
 					$z = $matched[1];
-					//$method->invoke($this);
 					call_user_func(array($this, $method->getName()));
 					$found == true;
 				}
