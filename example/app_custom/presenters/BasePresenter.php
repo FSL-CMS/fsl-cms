@@ -16,8 +16,8 @@ abstract class BasePresenter extends CommonBasePresenter
 
 	protected function renderMenu()
 	{
-		$stranky = new Stranky;
-		$strankyDoMenu = $stranky->findAllToMenu()->fetchAll();
+		//$stranky = new Stranky;
+		//$strankyDoMenu = $stranky->findAllToMenu()->fetchAll();
 
 		$presenter = $this->getPresenter()->getName();
 		$action = $this->getAction();
@@ -27,7 +27,7 @@ abstract class BasePresenter extends CommonBasePresenter
 		    array('odkaz' => 'Rocniky:', 'id' => NULL, 'nazev' => 'Soutěže', 'class' => 'souteze', 'aktivni' => $presenter == 'Rocniky' || $presenter == 'Zavody'),
 		    array('odkaz' => 'Pravidla:', 'id' => NULL, 'nazev' => 'Pravidla', 'class' => 'pravidla', 'aktivni' => $presenter == 'Pravidla'),
 		    array('odkaz' => 'Stranky:stranka', 'id' => 2, 'nazev' => 'Kronika', 'class' => 'kronika', 'aktivni' => $presenter == 'Stranky' && $action == 'stranka' && $id == 2),
-		    array('odkaz' => 'Fotogalerie:', 'id' => NULL, 'nazev' => 'Fotogalerie', 'class' => 'fotogalerie', 'aktivni' => $presenter == 'Fotogalerie'),
+		    array('odkaz' => 'Galerie:', 'id' => NULL, 'nazev' => 'Galerie', 'class' => 'galerie', 'aktivni' => $presenter == 'Galerie'),
 		    array('odkaz' => 'Stranky:stranka', 'id' => 1, 'nazev' => 'Kontakt', 'class' => 'kontakt', 'aktivni' => $presenter == 'Stranky' && $action == 'stranka' && $id == 1),
 		    array('odkaz' => 'Forum:', 'id' => NULL, 'nazev' => 'Fórum', 'class' => 'diskuze', 'aktivni' => $presenter == 'Forum' || $presenter == 'Diskuze'),
 		);

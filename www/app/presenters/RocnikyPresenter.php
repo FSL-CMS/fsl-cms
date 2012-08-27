@@ -32,7 +32,12 @@ class RocnikyPresenter extends BasePresenter
 	{
 		$posledni = $this->model->findLast();
 
-		if($posledni->count() == 0) $this->redirect('Rocniky:add');
+		// Neexistuje zatím žádný ročník
+		if($posledni->count() == 0)
+		{
+			$this->flashMessage('Žádné ročníky nebyly vytvořeny.', 'warning');
+			$this->redirect('Rocniky:add');
+		}
 
 		$this->redirect('rocnik', $posledni->fetchSingle());
 	}
