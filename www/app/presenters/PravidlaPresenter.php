@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála
  */
 
-
-
 /**
  * Presenter pravidel
  *
@@ -15,9 +13,9 @@
  */
 class PravidlaPresenter extends BasePresenter
 {
+
 	/** @persistent */
 	public $backlink = '';
-
 	protected $model;
 
 	public function startup()
@@ -29,7 +27,12 @@ class PravidlaPresenter extends BasePresenter
 	public function actionDefault()
 	{
 		$posledni = $this->model->findLast()->fetch();
-		$this->redirect('pravidla', $posledni['id']);
+		if($posledni === false)
+		{
+			$this->flashMessage('Neexistují pravidla k poslednímu ročníku.', 'warning');
+			$this->redirect('Rocniky:');
+		}
+		else $this->redirect('pravidla', $posledni['id']);
 	}
 
 	public function actionEdit($id = 0)
@@ -40,7 +43,7 @@ class PravidlaPresenter extends BasePresenter
 	public function actionPravidla($id = 0)
 	{
 		if($id == 0) $this->redirect('default');
-		if( !$this->model->find($id)->fetch() )
+		if(!$this->model->find($id)->fetch())
 		{
 			$this->flashMessage('Požadovaná pravidla neexistují.', 'warning');
 			$this->redirect('default');
@@ -58,8 +61,8 @@ class PravidlaPresenter extends BasePresenter
 
 		$this['prehledRocniku']->setRocnik($this->template->pravidla['id_rocniku']);
 
-		$this->setTitle('Pravidla pro sezónu '.$this->template->pravidla['rok']);
-  	}
+		$this->setTitle('Pravidla pro sezónu ' . $this->template->pravidla['rok']);
+	}
 
 	public function actionAdd()
 	{
@@ -68,13 +71,13 @@ class PravidlaPresenter extends BasePresenter
 
 	public function renderEdit($id = 0)
 	{
-		if( $id != 0 )
+		if($id != 0)
 		{
 			$zDB = $this->model->find($id)->fetch();
 			$this['editForm']->setDefaults($zDB);
 		}
 
-		if( $id == 0 ) $this->setTitle('Přidání pravidel');
+		if($id == 0) $this->setTitle('Přidání pravidel');
 		else $this->setTitle('Úprava pravidel');
 	}
 
@@ -91,7 +94,7 @@ class PravidlaPresenter extends BasePresenter
 
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(false);
+			   ->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
@@ -99,7 +102,7 @@ class PravidlaPresenter extends BasePresenter
 
 	public function editFormSubmitted(AppForm $form)
 	{
-		$id = (int)$this->getParam('id');
+		$id = (int) $this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
 		{
 			$this->redirect('Terce:default');
@@ -121,11 +124,12 @@ class PravidlaPresenter extends BasePresenter
 				$this->flashMessage('Pravidla byla uložena.');
 				$this->redirect('Pravidla:pravidla', $id);
 			}
-			catch(DibiException $e)
+			catch (DibiException $e)
 			{
 				$this->flashMessage('Pravidla se nepodařilo uložit.', 'error');
 				Debug::processException($e, true);
 			}
 		}
 	}
+
 }
