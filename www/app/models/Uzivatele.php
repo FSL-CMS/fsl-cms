@@ -190,6 +190,16 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		$data = $this->constructUri($id, $data);
 		$urlsModel = new Urls;
 		$urlsModel->setUrl('Uzivatele', 'uzivatel', $id, $data['uri']);
+
+		// Pokud byl vložen první uživatel, doplní se data, která mají na něj návaznost
+		// Kontrola na ID 1 je vhodná kvůli tomu, že to je opravdu první uživatel
+		// s ID 1, na co mají návaznost doplňovaná data.
+		if($id == 1)
+		{
+			$aktualizaceDBModel = new AktualizaceDB;
+			$aktualizaceDBModel->inicializuj2();
+		}
+
 		return $ret;
 	}
 

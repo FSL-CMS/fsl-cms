@@ -40,6 +40,22 @@ class AktualizaceDB extends BaseModel
 	}
 
 	/**
+	 * Provede prvotní inicializaci databáze s daty, která musí mít nějakého autora.
+	 * Inicializace se spouští po vytvoření prvního uživatele - správce.
+	 */
+	public function inicializuj2()
+	{
+		// Nahraje data nutná pro provoz aplikace.
+		$this->connection->loadFile(self::$SQL_PATH.'/data2.sql');
+
+		$temataModel = new Temata;
+		$temataModel->udrzba();
+
+		$strankyModel = new Stranky;
+		$strankyModel->udrzba();
+	}
+
+	/**
 	 * Pokusí se aktualizovat databázi na požadovanou verzi.
 	 *
 	 * Aktuální verze DB je v tabulce "verze" v databázi a je předána jako první
