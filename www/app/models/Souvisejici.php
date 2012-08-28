@@ -53,14 +53,22 @@ class Souvisejici extends BaseModel
 		$data2['souvisejici'] = $data['rodic'];
 		$data2['id_souvisejiciho'] = $data['id_rodice'];
 		$dataDoDB[] = $data2;
-		return $this->connection->query('INSERT INTO %n', $this->table, '%ex', $dataDoDB);
+		try
+		{
+			return $this->connection->query('INSERT INTO %n', $this->table, '%ex', $dataDoDB);
+		}
+		catch(DibiException $e)
+		{
+			if( $e->getCode() == 1062 ) throw new AlreadyExistException($e->getMessage(), $e->getCode(), $e);
+			else throw $e;
+		}
 	}
 
 	public function update($id, array $data)
 	{
 		return parent::update($id, $data)->execute();
 	}
-	
+
 	public function delete($id)
 	{
 		$data = $this->find($id)->fetch();
@@ -69,6 +77,6 @@ class Souvisejici extends BaseModel
 		$data2['souvisejici'] = $data['rodic'];
 		$data2['id_souvisejiciho'] = $data['id_rodice'];
 		return parent::delete($id)->where(false)->where('%and OR %and', $data, $data2)->execute();
-	}	
-	
+	}
+
 }

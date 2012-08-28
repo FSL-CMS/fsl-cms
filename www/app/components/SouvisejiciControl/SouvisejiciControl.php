@@ -107,6 +107,10 @@ class SouvisejiciControl extends BaseControl
 				$this->model->insert($dataDoDB);
 				$this->getPresenter()->flashMessage('Související položka byla přidána.', 'ok');
 			}
+			catch(AlreadyExistException $e)
+			{
+				$this->getPresenter()->flashMessage('Vkládaná související položka již je vložena.', 'warning');
+			}
 			catch(DibiException $e)
 			{
 				$this->getPresenter()->flashMessage('Nepodařilo se uložit související položku.', 'error');
