@@ -41,17 +41,26 @@ $(document).ready(function()
 		});
 
 		//$('input.datepicker').datepicker({ duration: 'fast' });
-		$('input.datetimepicker').datepicker({
-			duration: '',
+
+		$('input.datetimepicker').datetimepicker({
+			duration: 'normal',
 			changeMonth: true,
 			changeYear: true,
-			yearRange: '1997:2020',
-			showTime: true,
-			time24h: true,
+			yearRange: '1900:2100',
 			currentText: 'Dnes',
 			closeText: 'OK',
 			showOn: "button",
-			buttonText: "Kalendář"
+			buttonText: "Kalendář",
+			timeText: "Čas",
+			hourText: "Hodiny",
+			minuteText: "Minuty"
+		});
+		/* Automaticky se změní volba na ruční určení data při jeho změně. */
+		$('.datetimepicker').change(function() {
+			var $radios = $(this).closest('fieldset').find('input:radio');
+			$radios.each(function(){
+				if($(this).val() == 'datum_zverejneni') $(this).attr('checked', true);
+			});
 		});
 
 		//odkazyVkotve.init();
