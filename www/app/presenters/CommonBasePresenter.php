@@ -20,9 +20,26 @@ abstract class CommonBasePresenter extends Presenter
 	protected $texy;
 	private static $nazev;
 
+	/**
+	 * Název projektu FSL CMS
+	 */
+	const FSL_CMS = 'FSL CMS';
+
+	/**
+	 * Verze FSL CMS
+	 */
+	const FSL_CMS_VERZE = '1.0.0-dev';
+
+	/**
+	 * Odkaz na hlavní stránku FSL CMS
+	 */
+	const FSL_CMS_URL = 'https://github.com/FSL-CMS/fsl-cms/wiki';
+
 	public function __construct()
 	{
 		self::$nazev = Environment::getVariable('name');
+
+		// Verze databáze, kterou požaduje aplikace
 		if(!defined('VERZE_DB')) define('VERZE_DB', 2);
 	}
 
@@ -33,6 +50,7 @@ abstract class CommonBasePresenter extends Presenter
 		FormContainer::extensionMethod('FormContainer::addRequestButton', array('RequestButtonHelper', 'addRequestButton'));
 		FormContainer::extensionMethod('FormContainer::addRequestButtonBack', array('RequestButtonHelper', 'addRequestButtonBack'));
 
+		// Provede kontrolu správné verze databáze
 		$this->checkDbVersion();
 
 		$fbconnect = new FacebookConnectControl;
@@ -175,6 +193,12 @@ abstract class CommonBasePresenter extends Presenter
 		}
 	}
 
+	/**
+	 * Provede kontrolu na správnou verzi databáze. Pokusí se povýšit, pokud to
+	 * lze. Jinak skončí vyjímkou. Umí počáteční inicializaci prázdné databáze.
+	 * @throws DBVersionMismatchException
+	 * @throws DibiException
+	 */
 	private function checkDbVersion()
 	{
 		// 1. Zkontroluje se, zda je v aplikaci uvedená potřebná verze DB
@@ -214,6 +238,7 @@ abstract class CommonBasePresenter extends Presenter
 			}
 
 		}
+		// Došlo k chybě při zjišťování verze databáze. Možná první spuštění.
 		catch(DibiException $e)
 		{
 			// Tabulka verze neexistuje, ani ostatní tabulky neexistují => inicializace DB
@@ -257,7 +282,6 @@ abstract class CommonBasePresenter extends Presenter
 		$texy->addHandler('image', array($this, 'imageHandler'));
 		$texy->addHandler('afterTable', array($this, 'afterTable'));
 
-
 		$template->registerHelper('texy', array($texy, 'process'));
 		$template->registerHelper('texy2', array($texy2, 'process'));
 		$template->registerHelper('noimagetexy', array($texy3, 'process'));
@@ -268,7 +292,6 @@ abstract class CommonBasePresenter extends Presenter
 		$template->registerHelper('zvetsPrvni', array($this, 'zvetsPrvni'));
 
 		$template->registerHelper('vyslednyCas', array($this, 'vyslednyCas'));
-		//$template->registerHelper('imlode', array($this, 'implode'));
 
 		return $template;
 	}
@@ -744,6 +767,11 @@ abstract class CommonBasePresenter extends Presenter
 		}
 	}
 
+	/**
+	 * Nastaví do šablony název stránky, jak pro "title", tak pro "h1".
+	 * Pokud není název zadán, vygeneruje se pouze název webu.
+	 * @param string $title Název stránky
+	 */
 	public function setTitle($title = NULL)
 	{
 		if($title === NULL) $this->template->title = self::$nazev;
@@ -774,6 +802,10 @@ abstract class CommonBasePresenter extends Presenter
 		$this->template->isProduction = Environment::isProduction();
 
 		$this->template->aktualniRok = date('Y');
+
+		$this->template->FSL_CMS = self::FSL_CMS;
+		$this->template->FSL_CMS_URL = self::FSL_CMS_URL;
+		$this->template->FSL_CMS_VERZE = self::FSL_CMS_VERZE;
 	}
 
 	abstract protected function renderMenu();

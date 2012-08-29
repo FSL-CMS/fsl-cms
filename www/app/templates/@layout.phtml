@@ -111,7 +111,7 @@
 			<p class="menu"><a href="{plink Clanky:}">Články</a> | {foreach $menu as $odkaz}
 				{if $odkaz['id'] !== NULL}<a href="{link $odkaz['odkaz'], $odkaz['id']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{else}<a href="{link $odkaz['odkaz']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{/if} |
 				{/foreach} <a href="{plink Sprava:}">Správa</a></p>
-			<p><a href="http://fslcms.milanpala.cz/">FSL CMS</a> &copy; 2007 &ndash; {$aktualniRok}</p>
+			<p>Redakční systém <a href="{$FSL_CMS_URL}">{$FSL_CMS}</a> v{$FSL_CMS_VERZE} &copy; 2007 &ndash; {$aktualniRok}</p>
 		</div>
 	</div>
 </body>
