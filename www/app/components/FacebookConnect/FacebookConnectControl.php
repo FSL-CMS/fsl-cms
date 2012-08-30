@@ -15,28 +15,28 @@
   */
 class FacebookConnectControl extends BaseControl
 {
-	public $apiId = "119774764702049";
-	private $apiSecret = "e3a689dd77880081fb9b4380da243f0f";
+	public $apiId;
+	public $apiSecret;
 
 	public function handleXd_receiver()
 	{
-		
+
 	}
-	
+
 	public function render()
 	{
 		$facebook = new Facebook(array(
 			'appId'  => $this->apiId,
 			'secret' => $this->apiSecret,
 		));
-		
+
 		$this->template->fbconfig = array(
                 'scope'         => 'email',
                 'redirect_uri'  => $this->link('//facebookLogin!')
 		);
-		
+
 		$this->template->facebook = $facebook;
-		
+
 		$uzivatele = new Uzivatele;
 		if( $this->parent->user->getIdentity() !== NULL ) $uzivatel = $uzivatele->find($this->parent->user->getIdentity()->id)->fetch();
 
@@ -48,7 +48,7 @@ class FacebookConnectControl extends BaseControl
 
 		$template->render();
 	}
-	
+
 	public function handleFacebookLogin()
 	{
 		$uzivateleModel = new Uzivatele;
@@ -57,7 +57,7 @@ class FacebookConnectControl extends BaseControl
 			'appId'  => $this->apiId,
 			'secret' => $this->apiSecret,
 		));
-		
+
 		// Get User ID
 		$user = $facebook->getUser();
 
@@ -72,9 +72,9 @@ class FacebookConnectControl extends BaseControl
 			try {
 			// Proceed knowing you have a logged in user who's authenticated.
 				$userProfile = $facebook->api('/me');
-				
+
 				$uzivatel = $uzivateleModel->findByEmail($userProfile['email'])->fetch();
-				
+
 				if( $uzivatel !== false && !empty($uzivatel->facebookId) )
 				{
 					if( $uzivatel->facebookId == $userProfile['id'] ) $this->getPresenter()->prihlas(array('facebookId' => $userProfile['id']));
@@ -97,7 +97,7 @@ class FacebookConnectControl extends BaseControl
 					$id = $uzivateleModel->insertedId();
 					$this->redirect('Uzivatele:edit', $id);
 				}
-				
+
 			}
 			catch(DibiException $e)
 			{

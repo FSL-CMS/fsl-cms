@@ -53,9 +53,6 @@ abstract class CommonBasePresenter extends Presenter
 		// Provede kontrolu správné verze databáze
 		$this->checkDbVersion();
 
-		$fbconnect = new FacebookConnectControl;
-		$this->addComponent($fbconnect, 'facebookConnect');
-
 		$auth = new AuthControl;
 		$this->addComponent($auth, 'auth');
 
@@ -64,8 +61,6 @@ abstract class CommonBasePresenter extends Presenter
 
 		$hodnoceni = new HodnoceniControl;
 		$this->addComponent($hodnoceni, 'hodnoceni');
-
-		$foo = new Soubory();
 
 		$fotka = new FotkaControl;
 		$this->addComponent($fotka, 'fotka');
