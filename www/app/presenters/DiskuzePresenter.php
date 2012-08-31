@@ -59,12 +59,12 @@ class DiskuzePresenter extends BasePresenter
 	/**
 	 * Stránka se založením diskuze
 	 * @param int $id ID tématu
-	 * @param int $id_souvisejiciho ID souvisejícího prvku, nebo NULL
+	 * @param int $id_souvisejiciho ID související položky, nebo NULL
 	 */
 	public function renderZeptatse($id = 0, $id_souvisejiciho = NULL)
 	{
-		if( $id != 0) $this['editForm']['id_tematu']->value = $id;
-		if( $id_souvisejiciho !== NULL) $this['editForm']['id_souvisejiciho']->value = $id_souvisejiciho;
+		if($id != 0) { $this['zeptatseForm']['id_tematu']->value = $id; $this['zeptatseForm']['id_souvisejiciho']->refresh(); }
+		if($id_souvisejiciho !== NULL) $this['zeptatseForm']['id_souvisejiciho']->value = $id_souvisejiciho;
 
 		$this->template->diskuze = array();
 		$this->template->diskuze['id_souvisejiciho'] = $id_souvisejiciho;

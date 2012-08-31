@@ -539,7 +539,7 @@ abstract class CommonBasePresenter extends Presenter
 
 			foreach ($temata as $tema)
 			{
-				$roc = $navForum->add('' . $tema->nazev, $this->link('Forum:forum', $tema->id));
+				$roc = $navForum->add($tema->nazev, $this->link('Forum:forum', $tema->id));
 				if($presenter == 'Forum' && $this->getParam('id') == $tema->id) $nav->setCurrent($roc);
 
 				$node = $roc->add('Zeptat se', $this->link('Diskuze:zeptatse', array('id' => $tema->id, 'id_souvisejiciho' => $this->getParam('id_souvisejiciho', NULL))));
@@ -548,11 +548,8 @@ abstract class CommonBasePresenter extends Presenter
 				$diskuze = $diskuzeModel->findByTema($tema->id);
 				foreach ($diskuze as $disk)
 				{
-					$node = $roc->add('' . $disk->tema_diskuze, $this->link('Diskuze:diskuze', $disk->id_diskuze));
-					if($presenter == 'Diskuze' && $this->getParam('id') == $disk->id_diskuze) $nav->setCurrent($node);
-
-					//$node_ = $node->add('Zeptat se', $this->link('Diskuze:zeptatse', $disk->id));
-					//if($presenter == 'Diskuze' && $this->getAction() == 'zeptatse' && $this->getParam('id') == $disk->id_diskuze) $nav->setCurrent($node_);
+					$node = $roc->add($disk->tema_diskuze, $this->link('Diskuze:diskuze', $disk->id_diskuze));
+					if($presenter == 'Diskuze' && $this->getAction() == 'diskuze' && $this->getParam('id') == $disk->id_diskuze) $nav->setCurrent($node);
 				}
 			}
 		}

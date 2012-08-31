@@ -21,10 +21,10 @@ class DiskuzeControl extends BaseControl
 
 	public function __construct(IComponentContainer $parent, $name)
 	{
+		parent::__construct($parent, $name);
 		$this->model = new Diskuze;
 		$this->render = 'diskuze';
 		$this->odpovedet = false;
-		parent::__construct($parent, $name);
 	}
 
 	public function handleZamknout($id)
@@ -231,9 +231,9 @@ class DiskuzeControl extends BaseControl
 	}
 
 	/**
-	 *
-	 * @param (int) $id id diskuze nebo id prvku ze související tabulky
-	 * @param (string) $souvisejiciTabulka název související tabulky
+	 * Vygeneruje diskuzi.
+	 * @param int $id id diskuze nebo id prvku ze související tabulky
+	 * @param string $souvisejiciTabulka název související tabulky
 	 */
 	public function renderDiskuze($id, $souvisejiciTabulka = NULL)
 	{
