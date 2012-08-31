@@ -252,46 +252,6 @@ class ClankyPresenter extends BasePresenter
 				$this->redirect('Clanky:edit', $id);
 			}
 		}
-		elseif($form['facebook']['zverejnit']->isSubmittedBy())
-		{
-			$this->redirect('zverejnitNaFB', array('id' => $id, 'komentar' => $form['facebook']['komentar']->value));
-		}
-	}
-
-	public function actionZverejnitNaFB($id, $komentar, $tmp = true)
-	{
-		try
-		{
-			$fb = new FacebookDriver();
-
-			$clanek = $this->model->find($id)->fetch();
-			$data = array(
-			    'link' => $this->getHttpRequest()->getUri()->getHostUri() . $this->link('Clanky:clanek', $id),
-			    'message' => $komentar,
-			    'name' => $clanek->nazev,
-			);
-			$a = $fb->publishLink($data, false);
-
-			$this->flashMessage('Článek byl úspěšně zveřejněn na Facebooku. '.print_r($a, true), 'ok');
-			$this->redirect('Clanky:edit', $id);
-		}
-		catch(FacebookNeedLoginException $e)
-		{
-			die("NeedLoginException");
-			$this->redirectUri($fb->getLoginUrl());
-		}
-		catch(FacebookNeedLogoutException $e)
-		{
-			//die("NeedLogoutException");
-			//$this->redirectUri($fb->getLogoutUrl());
-			$this->actionZverejnitNaFB($id, $komentar, false);
-		}
-		catch (FacebookApiException $e)
-		{
-			$this->flashMessage('Došlo k chybě při zveřejňování na Facebooku: '. $e->getFile().'-' . $e->getMessage(), 'error');
-			Debug::processException($e, true);
-			$this->redirect('Clanky:edit', $id);
-		}
 	}
 
 	public function handleDelete($id)
