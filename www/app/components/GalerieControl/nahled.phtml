@@ -1,0 +1,16 @@
+{block #content}
+
+<div class="galerie-nahled">
+	<h3>{block|texy:true}Galerie "{$galerie['nazev']}"{/block} &rarr; <a href="{plink Galerie:galerie, $galerie['id']}">zobrazit celou galerii</a></h3>
+	<div class="galerie-nahled-telo">
+	{if count($fotky['fotky'])}
+	{foreach $fotky['fotky'] as $fotka}
+		{widget fotka:nahled $fotka}
+	{/foreach}
+{elseif $galerie['typ'] == GaleriePresenter::$TYP_RAJCE}
+	<p>Náhled fotek není, galerie je vložená ze serveru Rajče.cz.</p>
+{else}
+	<p class="warning">V galerii nejsou žádné fotogfafie ani videa.</p>
+{/if}
+	</div>
+</div>
