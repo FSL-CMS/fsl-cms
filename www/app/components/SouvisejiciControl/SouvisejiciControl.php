@@ -22,7 +22,12 @@ class SouvisejiciControl extends BaseControl
 		parent::__construct($parent, $name);
 	}
 
-	public function render($souvisejiciTabulka, $id)
+	public function createComponentGalerie($name)
+	{
+		return new GalerieControl();
+	}
+
+	public function render($souvisejiciTabulka, $id, $pouzeSpecialni = false)
 	{
 		$this->model = new Souvisejici();
 		$return = array();
@@ -43,6 +48,8 @@ class SouvisejiciControl extends BaseControl
 		$template->souvisejici['souvisejici'] = $return;
 		$template->souvisejici['muze_pridavat'] = $this->getPresenter()->user->isAllowed('souvisejici', 'add');
 		$template->souvisejici['muze_smazat'] = $this->getPresenter()->user->isAllowed('souvisejici', 'delete');
+
+		$template->pouzeSpecialni = $pouzeSpecialni;
 
 		$template->render();
 	}

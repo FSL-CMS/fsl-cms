@@ -16,6 +16,17 @@ class GaleriePresenter extends BasePresenter
 
 	protected $model;
 
+	/**
+	 * Galerie obsahující nahrané fotky
+	 * @var string
+	 */
+	public static $TYP_INTERNI = 'interni';
+	/**
+	 * Galerie uložená na serveru Rajče.cz
+	 * @var string
+	 */
+	public static $TYP_RAJCE = 'rajce';
+
 	protected function startup()
 	{
 		$this->model = new Galerie;
@@ -40,7 +51,7 @@ class GaleriePresenter extends BasePresenter
 		}
 		$this->model->noveZhlednuti($id);
 
-		if($galerie['typ'] == 'rajce') $this->setView('galerieRajce');
+		if($galerie['typ'] == self::$TYP_RAJCE) $this->setView('galerieRajce');
 	}
 
 	public function actionFotka($id = 0)
@@ -517,12 +528,12 @@ class GaleriePresenter extends BasePresenter
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka textu je %d znaků.', 65535);
 
 		$form->addGroup('Typ fotogalerie');
-		$form->addSelect('typ', 'Typ galerie', array('nativni' => 'integrovaná', 'rajce' => 'Rajče.cz'))
-			   ->addCondition(Form::EQUAL, 'rajce')->toggle('rajce', true)
-			   ->addCondition(Form::EQUAL, 'nativni')->toggle('nativni', true);
+		$form->addSelect('typ', 'Typ galerie', array(self::$TYP_NATIVNI => 'integrovaná', self::$TYP_RAJCE => 'Rajče.cz'))
+			   ->addCondition(Form::EQUAL, self::$TYP_RAJCE)->toggle(self::$TYP_RAJCE, true)
+			   ->addCondition(Form::EQUAL, self::$TYP_NATIVNI)->toggle(self::$TYP_NATIVNI, true);
 
-		$form->addGroup('Galerie uložená na Rajče.cz')->setOption("container", Html::el("fieldset")->id("rajce"));
-		$rajceCont = $form->addContainer('rajce');
+		$form->addGroup('Galerie uložená na Rajče.cz')->setOption("container", Html::el("fieldset")->id(self::$TYP_RAJCE));
+		$rajceCont = $form->addContainer(self::$TYP_RAJCE);
 		$rajceCont->addText('typ_key', 'Odkaz na galerii')->setOption('description', 'Uveďte odkaz na galerii, např.: http://ukazka.rajce.idnes.cz/zvirata_v_ZOO');
 
 		$form->addGroup('Integrovaná galerie')->setOption("container", Html::el("fieldset")->id("nativni"));

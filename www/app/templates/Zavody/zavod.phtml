@@ -82,9 +82,12 @@
 {if 0 && $zavod['muze_hodnotit']}
 	<dt>Ohodnoťte pořádání závodu</dt><dd>{widget hodnoceni $zavod['id']}</dd>
 {/if}
+
 {widget souvisejici "zavody", $zavod['id']}
 
 </dl>
+
+{widget souvisejici "zavody", $zavod['id'], true}
 
 @{widget prilohy "zavody", $zavod['id']}
 

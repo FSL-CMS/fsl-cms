@@ -90,6 +90,9 @@ abstract class CommonBasePresenter extends Presenter
 		$diskuze = new DiskuzeControl($this, 'diskuze');
 		//$this->addComponent($diskuze, 'diskuze');
 
+		$gal = new GalerieControl;
+		$this->addComponent($gal, 'galerie');
+
 		$souvisejici = new SouvisejiciControl($this, 'souvisejici');
 		//$this->addComponent($souvisejici, 'souvisejici');
 

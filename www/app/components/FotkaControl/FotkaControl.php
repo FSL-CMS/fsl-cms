@@ -44,7 +44,7 @@ class FotkaControl extends Control
 			$rozmery = getimagesize($soubor);
 			$this->fotka['sirka'] = $rozmery[0];
 			$this->fotka['vyska'] = $rozmery[1];
-			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->parent->jeAutor($this->fotka['id_autora']));
+			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->getPresenter()->jeAutor($this->fotka['id_autora']));
 		}
 		$template->render();
 	}
@@ -73,7 +73,7 @@ class FotkaControl extends Control
 				$noveRozmery = Image::calculateSize($rozmery[0], $rozmery[1], 380, 380);
 				$this->fotka['sirka'] = $noveRozmery[0];
 				$this->fotka['vyska'] = $noveRozmery[1];
-				$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->parent->jeAutor($this->fotka['id_autora']));
+				$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->getPresenter()->jeAutor($this->fotka['id_autora']));
 			}
 			$template->render();
 		}
@@ -95,7 +95,7 @@ class FotkaControl extends Control
 		}
 		catch(Exception $e)
 		{
-			//Debug::processException($e);
+			//Debug::processException($e, true);
 		}
 
 	}
@@ -155,7 +155,7 @@ class FotkaControl extends Control
 
 			$fotogalerie = new Galerie;
 			$jednaGalerie = $fotogalerie->find($this->fotka['id_autora'])->fetch();
-			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->parent->jeAutor($this->fotka['id_autora']));
+			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->getPresenter()->jeAutor($this->fotka['id_autora']));
 		}
 	}
 
@@ -187,16 +187,16 @@ class FotkaControl extends Control
 		try
 		{
 			$this->model->delete($id);
-			$this->parent->flashMessage('Fotka byla odstraněna.');
+			$this->getPresenter()->flashMessage('Fotka byla odstraněna.');
 		}
 		catch(DibiException $e)
 		{
-			$this->parent->flashMessage('Fotku se nepodařilo odstranit.', 'error');
+			$this->getPresenter()->flashMessage('Fotku se nepodařilo odstranit.', 'error');
 			Debug::processException($e, true);
 		}
 
-		$this->parent->invalidateControl('flashes');
-		$this->parent->invalidateControl('galerie');
+		$this->getPresenter()->invalidateControl('flashes');
+		$this->getPresenter()->invalidateControl('galerie');
 
 		if(!$this->getPresenter()->isAjax()) $this->redirect('this');
 	}

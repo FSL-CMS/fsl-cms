@@ -209,6 +209,10 @@ h2 + .perex		{margin-top: -0.5em;}
 .fotky-v-textu	{clear: left;}
 
 .video		{text-align: center;}
+
+.galerie-nahled			{margin-bottom: 1.5em;}
+.galerie-nahled:after		{content:"."; display: block; height: 0; clear: both; visibility: hidden;}
+.galerie-nahled-telo		{margin: 0 20px;}
 /* ----------------------------------------------------------------------mp-- */
 
 
