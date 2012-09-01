@@ -28,7 +28,7 @@ abstract class CommonBasePresenter extends Presenter
 	/**
 	 * Verze FSL CMS
 	 */
-	const FSL_CMS_VERZE = '1.0.0';
+	const FSL_CMS_VERZE = '1.0.1-dev';
 
 	/**
 	 * Odkaz na hlavní stránku FSL CMS
