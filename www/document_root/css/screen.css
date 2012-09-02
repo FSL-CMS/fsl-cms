@@ -278,7 +278,10 @@ table.tablesorter thead tr .header:hover {
 /* ----------------------------------------------------------------------mp-- */
 
 
-
+/* ----------------------------------------------------------------------mp-- */
+.sdileni-zavodu		{width: 300px; float: right;}
+.kalendar a			{padding-left: 20px; background: url('../images/icons/calendar.png') left center no-repeat;}
+/* ----------------------------------------------------------------------mp-- */
 
 
 
@@ -286,7 +289,7 @@ table.tablesorter thead tr .header:hover {
 /* ----------------------------------------------------------------------mp-- */
 /* MapaControl */
 #mapa			{}
-.misto-zavodu		{width: 300px; float: right;}
+.misto-zavodu		{width: 300px;}
 .misto-zavodu #mapa	{width: 300px; height: 350px;}
 .mala-mapa		{width: 200px; height: 200px; float: right;}
 .vyber-polohy		{width: 550px; height: 400px;}

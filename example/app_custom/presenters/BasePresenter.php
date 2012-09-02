@@ -14,6 +14,16 @@
 abstract class BasePresenter extends CommonBasePresenter
 {
 
+	protected function startup()
+	{
+		parent::startup();
+
+		/** Název kalendáře obsahující všechny závody ligy */
+		KalendarPresenter::$nazevKalendare = 'FSL CMS';
+		/** Popis kalendáře obsahující všechny závody ligy */
+		KalendarPresenter::$popisKalendare = 'Kalendář všech ročníků závodů';
+	}
+
 	protected function renderMenu()
 	{
 		//$stranky = new Stranky;
