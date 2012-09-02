@@ -196,6 +196,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
 
 		$this->template->backlink = $this->application->storeRequest();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost();
 	}
 
 	public function actionStartovniPoradi($id = 0)
