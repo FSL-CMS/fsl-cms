@@ -11,7 +11,15 @@
 {* Informace o závodu *}
 <h2>Informace o závodu{if $zavod['muze_editovat'] == true} [<a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">upravit informace o závodu</a>]{/if}</h2>
 
-{widget mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
+<div class="sdileni-zavodu">
+	{widget mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
+
+	<dl>
+		<dt>Exportovat do kalendáře</dt>
+		<dd class="kalendar"><a href="{plink Kalendar:liga}">Všechny závody ve formátu iCal</a></dd>
+		<dd class="kalendar"><a href="{plink Kalendar:zavod, $zavod->id}">Tento závod ve formátu iCal</a></dd>
+	</dl>
+</div>
 
 {if $zavod['zruseno'] == true}<p class="warning">Tento závod byl zrušen.</p>{/if}
 <dl>
