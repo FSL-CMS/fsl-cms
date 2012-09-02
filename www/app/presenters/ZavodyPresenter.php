@@ -172,22 +172,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->nasledujici = $this->model->findNext($id)->fetch();
 		$this->template->predchozi = $this->model->findPrevious($id)->fetch();
 
-		$vysledkyModel = new Vysledky;
-		$this->template->zavod['dosavadniRekordy'] = $vysledkyModel->dosavadniRekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
-		foreach ($this->template->zavod['dosavadniRekordy'] as $soutez)
-			foreach ($soutez as &$rekord)
-			{
-				$rekord['vysledny_cas'] = sprintf('%.2f', $rekord['vysledny_cas']);
-				$rekord['druzstvo'] = trim($rekord['druzstvo']);
-			}
-
-		$this->template->zavod['rekordy'] = $vysledkyModel->rekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
-		foreach ($this->template->zavod['rekordy'] as $soutez)
-			foreach ($soutez as &$rekord)
-			{
-				$rekord['vysledny_cas'] = sprintf('%.2f', $rekord['vysledny_cas']);
-				$rekord['druzstvo'] = trim($rekord['druzstvo']);
-			}
+		$this->pripravRekordy($id);
 
 		$this->template->startovni_poradi = array();
 		$this->startovniPoradi($id, false);
@@ -1105,6 +1090,38 @@ class ZavodyPresenter extends BasePresenter
 		}
 	}
 
+	private function pripravRekordy($id)
+	{
+		$vysledkyModel = new Vysledky;
+
+		$this->template->zavod['dosavadniRekordy'] = $vysledkyModel->dosavadniRekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
+		foreach ($this->template->zavod['dosavadniRekordy'] as $soutez)
+			foreach ($soutez as &$rekord)
+			{
+				$rekord['vysledny_cas'] = sprintf('%.2f', $rekord['vysledny_cas']);
+				$rekord['druzstvo'] = trim($rekord['druzstvo']);
+			}
+
+		if($this->template->zavod['datum'] < Datum::$dnes['dnes'])
+		{
+			$this->template->zavod['rekordy'] = $vysledkyModel->rekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
+			foreach ($this->template->zavod['rekordy'] as $soutez)
+				foreach ($soutez as &$rekord)
+				{
+					$rekord['vysledny_cas'] = sprintf('%.2f', $rekord['vysledny_cas']);
+					$rekord['druzstvo'] = trim($rekord['druzstvo']);
+				}
+		}
+		else
+		{
+			$this->template->zavod['rekordy'] = array();
+		}
+
+		$this->template->rekordyLigy = array('dosavadni' => array(), 'aktualni' => array());
+		$this->template->rekordyLigy['dosavadni'] = $vysledkyModel->rekordyLigy($id, true)->fetchAssoc('soutez,kategorie,=');
+		if($this->template->zavod['datum'] < Datum::$dnes['dnes'])$this->template->rekordyLigy['aktualni'] = $vysledkyModel->rekordyLigy($id, false)->fetchAssoc('soutez,kategorie,=');
+	}
+
 	public function renderPripravaProKomentatora($id)
 	{
 		$ucastiModel = new Ucasti;
@@ -1170,14 +1187,7 @@ class ZavodyPresenter extends BasePresenter
 			}
 		}
 
-		$this->template->zavod['rekordy'] = array();
-		$this->template->zavod['dosavadniRekordy'] = $vysledkyModel->dosavadniRekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
-		foreach ($this->template->zavod['dosavadniRekordy'] as $soutez)
-			foreach ($soutez as &$rekord)
-			{
-				$rekord['vysledny_cas'] = sprintf('%.2f', $rekord['vysledny_cas']);
-				$rekord['druzstvo'] = trim($rekord['druzstvo']);
-			}
+		$this->pripravRekordy($id);
 
 		$datum = new Datum;
 		$this->setTitle('Informace pro komentátora, ' . $this->template->zavod['nazev'] . ' ' . $datum->date(substr($this->template->zavod['datum'], 0, 10), 0, 0, 0));

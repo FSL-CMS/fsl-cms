@@ -1,14 +1,46 @@
 @{block content}
 
+<dl>
+<dt>Dosavadní rekordy dráhy platné do začátku závodu</dt>
 {if count($zavod['dosavadniRekordy'])}
-	<dt>Dosavadní rekordy platné do začátku závodu</dt>
-{foreach $zavod['dosavadniRekordy'] as $soutez => $foo}
-	<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
-	{foreach $foo as $rekord}
-		<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
-	{/foreach}</ul></dd>
-{/foreach}
+	{foreach $zavod['dosavadniRekordy'] as $soutez => $foo}
+		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+		{foreach $foo as $rekord}
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+		{/foreach}</ul></dd>
+	{/foreach}
+{else}
+	<dd class="warning">Na této dráze se ještě nezávodilo.</dd>
 {/if}
+{if count($zavod['rekordy'])}
+	<dt>Aktuální rekordy dráhy</dt>
+	{foreach $zavod['rekordy'] as $soutez => $foo}
+		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+		{foreach $foo as $rekord}
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+		{/foreach}</ul></dd>
+	{/foreach}
+{/if}
+
+{if count($rekordyLigy['dosavadni'])}
+	<dt>Dosovadní rekordy ligy platné do začátku závodu</dt>
+	{foreach $rekordyLigy['dosavadni'] as $soutez => $foo}
+		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+		{foreach $foo as $rekord}
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id_druzstva']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+		{/foreach}</ul></dd>
+	{/foreach}
+{/if}
+{if count($rekordyLigy['aktualni'])}
+	<dt>Aktuální rekordy ligy</dt>
+	{foreach $rekordyLigy['aktualni'] as $soutez => $foo}
+		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
+		{foreach $foo as $rekord}
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id_druzstva']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+		{/foreach}</ul></dd>
+	{/foreach}
+{/if}
+</dl>
 
 {if count($informace)}
 <p>Všechny časy jsou udávané v sekundách a to na {$zavod['terce']} terče.</p>
