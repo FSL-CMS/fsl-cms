@@ -16,6 +16,7 @@ class VysledkyTest extends PHPUnit_Framework_TestCase
 	{
 		parent::setUpBeforeClass();
 
+		//dibi::loadFile(dirname(__FILE__).'/../../../app/models/sql/tabulky.sql');
 		//dibi::loadFile(dirname(__FILE__).'/../../test_data.sql');
 
 		self::$model = new Vysledky;
