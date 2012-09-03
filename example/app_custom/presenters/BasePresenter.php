@@ -22,6 +22,8 @@ abstract class BasePresenter extends CommonBasePresenter
 		KalendarPresenter::$nazevKalendare = 'FSL CMS';
 		/** Popis kalendáře obsahující všechny závody ligy */
 		KalendarPresenter::$popisKalendare = 'Kalendář všech ročníků závodů';
+		/** Zkratka názvu ligy */
+		KalendarPresenter::$zkratkaLigy = 'PHL';
 	}
 
 	protected function renderMenu()

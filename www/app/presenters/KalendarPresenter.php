@@ -18,6 +18,7 @@ class KalendarPresenter extends BasePresenter
 
 	public static $nazevKalendare;
 	public static $popisKalendare;
+	public static $zkratkaLigy;
 
 	protected function startup()
 	{
@@ -68,7 +69,7 @@ class KalendarPresenter extends BasePresenter
 
 			$vevent->setProperty("LOCATION", $zavod->misto);
 
-			$vevent->setProperty("summary", "KL ".$zavod->nazev);
+			$vevent->setProperty("summary", self::$zkratkaLigy.' '.$zavod->nazev);
 			$vevent->setProperty("description", 'Oficiální stránka závodu s možností rezervace startovního pořadí a dalšími podrobnostmi na '.$this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost().$this->link('Zavody:zavod', $zavod->id));
 			$vevent->setProperty("URL", $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost().$this->link('Zavody:zavod', $zavod->id));
 	}
