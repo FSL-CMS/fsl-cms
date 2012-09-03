@@ -86,7 +86,7 @@ class SouvisejiciControl extends BaseControl
 		$form->getElementPrototype()->class('ajax');
 
 		// klíče jsou názvy souvisejících tabulek
-		$souvisejiciTabulky = array( 'Druzstva' => 'Družstva', 'Zavody' => 'Závody', 'Galerie' => 'Galerie', 'Clanky' => 'Články' );
+		$souvisejiciTabulky = array( 'Druzstva' => 'Družstva', 'Zavody' => 'Závody', 'Galerie' => 'Galerie', 'Clanky' => 'Články', 'Sbory' => 'Sbory' );
 		$form->addGroup('Související položky');
 		$form->addSelect('souvisejici', 'Související skupina', array('' => 'Vyberte kategorii')+$souvisejiciTabulky);
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Položka', $form['souvisejici'], array($this, "getSouvisejici"));
@@ -165,7 +165,7 @@ class SouvisejiciControl extends BaseControl
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
-				$vystup[$polozka['id']] = $polozka['nazev'].', '.datum::date($polozka['datum_zverejneni'], 0, 0, 0);;
+				$vystup[$polozka['id']] = $polozka['nazev'].', '.datum::date($polozka['datum_zverejneni'], 0, 0, 0);
 			}
 		}
 		elseif( $tabulka == 'Clanky' )
@@ -174,7 +174,16 @@ class SouvisejiciControl extends BaseControl
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
-				$vystup[$polozka['id']] = $polozka['nazev'].', '.datum::date($polozka['datum_zverejneni'], 0, 0, 0);;
+				$vystup[$polozka['id']] = $polozka['nazev'].', '.datum::date($polozka['datum_zverejneni'], 0, 0, 0);
+			}
+		}
+		elseif( $tabulka == 'Sbory' )
+		{
+			$model = new Sbory;
+			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
+			foreach( $polozky as &$polozka )
+			{
+				$vystup[$polozka['id']] = $polozka['nazev'];
 			}
 		}
 

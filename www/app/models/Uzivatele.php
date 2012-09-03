@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála
  */
 
-
-
 /**
  * Model uživatelů
  *
@@ -60,7 +58,6 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		', $rocniky->findLast()->fetchSingle());
 	}
 
-
 	public function authenticate(array $credentials)
 	{
 		$login = $credentials[self::USERNAME];
@@ -69,11 +66,13 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		// přečteme záznam o uživateli z databáze
 		$row = $this->connection->query('SELECT id, CONCAT(prijmeni, " ", jmeno) AS jmeno, heslo, docasneheslo, opravneni, id_sboru FROM [uzivatele] WHERE [email] = %s', $login)->fetch();
 
-		if (!$row) { // uživatel nenalezen?
+		if(!$row)
+		{ // uživatel nenalezen?
 			throw new AuthenticationException("Uživatel nebyl nalezen.", self::IDENTITY_NOT_FOUND);
 		}
 
-		if ($row->heslo !== $heslo && $row->docasneheslo !== $heslo) { // hesla se neshodují?
+		if($row->heslo !== $heslo && $row->docasneheslo !== $heslo)
+		{ // hesla se neshodují?
 			throw new AuthenticationException("Špatné heslo.", self::INVALID_CREDENTIAL);
 		}
 
@@ -86,68 +85,67 @@ class Uzivatele extends BaseModel implements IAuthenticator
 	public function findLogined()
 	{
 		return $this->connection
-			->select('[uzivatele].[jmeno], [uzivatele].[prijmeni], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru]')
-			->from('[uzivatele]')
-   			->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->where('[uzivatele].[id] = %i', $this->user->getIdentity()->id);
+					 ->select('[uzivatele].[jmeno], [uzivatele].[prijmeni], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru]')
+					 ->from('[uzivatele]')
+					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+					 ->where('[uzivatele].[id] = %i', $this->user->getIdentity()->id);
 	}
 
 	public function findAllToSelect()
 	{
 		return $this->connection
-			->select('[uzivatele].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel]')
-			->from($this->table)
-			->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-			->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
+					 ->select('[uzivatele].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel]')
+					 ->from($this->table)
+					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+					 ->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
 	}
 
 	public function find($id)
 	{
 		return $this->findAll()
-			->where('[uzivatele].[id] = %i', $id);
+					 ->where('[uzivatele].[id] = %i', $id);
 	}
 
 	public function findByEmail($email)
 	{
 		return $this->findAll()
-			->where('[uzivatele].[email] = %s', $email);
+					 ->where('[uzivatele].[email] = %s', $email);
 	}
 
 	public function findBySbor($id)
 	{
 		return $this->findAll()
-			->where('[uzivatele].[id_sboru] = %i', $id);
+					 ->where('[uzivatele].[id_sboru] = %i', $id);
 	}
 
 	public function findByFunkce($id)
 	{
 		return $this->findAll()
-			->where('[uzivatele].[id_funkce] = %i', $id);
+					 ->where('[uzivatele].[id_funkce] = %i', $id);
 	}
 
 	public function findIdByUri($uri)
 	{
 		return $this->findAll()
-			->where('[uzivatele].[uri] = %s', $uri);
+					 ->where('[uzivatele].[uri] = %s', $uri);
 	}
 
 	public function findAll()
 	{
 		return $this->connection
-			->select('[uzivatele].*, CONCAT([typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [sbor], [okresy].[nazev] AS [okres], COUNT([komentare].[id]) AS [pocet_komentaru], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [uzivatel]')
-			->from($this->table)
-			->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-			->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
-			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->leftJoin('[komentare] ON [komentare].[id_autora] = [uzivatele].[id]')
-			->groupBy('[uzivatele].[id]')
-			->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
-
+					 ->select('[uzivatele].*, CONCAT([typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [sbor], [okresy].[nazev] AS [okres], COUNT([komentare].[id]) AS [pocet_komentaru], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [uzivatel]')
+					 ->from($this->table)
+					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
+					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+					 ->leftJoin('[komentare] ON [komentare].[id_autora] = [uzivatele].[id]')
+					 ->groupBy('[uzivatele].[id]')
+					 ->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
 	}
 
 	/**
@@ -157,28 +155,28 @@ class Uzivatele extends BaseModel implements IAuthenticator
 	 */
 	public function noveHeslo($email)
 	{
-		$heslo = substr(md5($email.date('H:i:s')), 0, 8);
-		$data = array( 'docasneheslo' => md5($heslo) );
+		$heslo = substr(md5($email . date('H:i:s')), 0, 8);
+		$data = array('docasneheslo' => md5($heslo));
 		$this->connection->update($this->table, $data)->where('[email] = %s', $email)->execute();
 		return $heslo;
 	}
 
 	private function constructUri($id, $data)
 	{
-		if( isset($data['jmeno']) && isset($data['prijmeni']) )
+		if(isset($data['jmeno']) && isset($data['prijmeni']))
 		{
-			$data['uri'] = '/uzivatele/'.$id.'-'.Texy::webalize( $data['jmeno'].' '.$data['prijmeni'] );
+			$data['uri'] = '/uzivatele/' . $id . '-' . Texy::webalize($data['jmeno'] . ' ' . $data['prijmeni']);
 		}
 		return $data;
 	}
 
 	public function insert(array $data)
 	{
-		if( count($this->findAll()) == 0 ) $data['opravneni'] = 'admin';
+		if(count($this->findAll()) == 0) $data['opravneni'] = 'admin';
 
-		if( $this->connection->query('SELECT [id] FROM [uzivatele] WHERE [email] = %s', strtolower($data['email']))->fetch() ) throw new RegistredAccountException();
+		if($this->connection->query('SELECT [id] FROM [uzivatele] WHERE [email] = %s', strtolower($data['email']))->fetch()) throw new RegistredAccountException();
 
-		if( isset($data['id_funkce']) )
+		if(isset($data['id_funkce']))
 		{
 			$data['id_funkce%in'] = intval($data['id_funkce']);
 			unset($data['id_funkce']);
@@ -205,18 +203,21 @@ class Uzivatele extends BaseModel implements IAuthenticator
 
 	public function update($id, array $data)
 	{
-		if( isset($data['id_funkce']) )
+		if(isset($data['id_funkce']))
 		{
 			$data['id_funkce%in'] = intval($data['id_funkce']);
 			unset($data['id_funkce']);
 		}
 
-		if( isset($data['id_sboru%i']) && intval($data['id_sboru%i']) != 0 ) $data['aktivni'] = 1;
+		if(isset($data['id_sboru%i']) && intval($data['id_sboru%i']) != 0) $data['aktivni'] = 1;
 
 		parent::update($id, $data)->execute();
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
-		$urlsModel->setUrl('Uzivatele', 'uzivatel', $id, $data['uri']);
+		if(isset($data['uri']))
+		{
+			$urlsModel = new Urls;
+			$urlsModel->setUrl('Uzivatele', 'uzivatel', $id, $data['uri']);
+		}
 	}
 
 	public function delete($id)
@@ -233,10 +234,11 @@ class Uzivatele extends BaseModel implements IAuthenticator
 	public function udrzba()
 	{
 		$vsichniUzivatele = $this->findAll();
-		foreach( $vsichniUzivatele as $data )
+		foreach ($vsichniUzivatele as $data)
 		{
-			$dataDoDB = array( 'jmeno' => $data['jmeno'], 'prijmeni' => $data['prijmeni'] );
+			$dataDoDB = array('jmeno' => $data['jmeno'], 'prijmeni' => $data['prijmeni']);
 			$this->update($data['id'], $dataDoDB);
 		}
 	}
+
 }
