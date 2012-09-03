@@ -51,7 +51,12 @@
 	{if $zavod['muze_editovat']}<dd><a href="{plink Terce:edit, $zavod['id_tercu'], $backlink}" title="Úprava informací o terčích" class="edit">změnit informace o terčích</a></dd>{/if}
 	<dd><a href="{plink Terce:terce, $zavod['id_tercu']}" title="Informace o terčích">{$zavod['terce']} ({$zavod['majitel_tercu']})</a></dd>
 
-	<dt>Dosavadní rekordy dráhy platné do začátku závodu</dt>
+	<dt>Bodové tabulky</dt>
+		<dd><a href="{plink Rocniky:vysledkyPredZavodem, $zavod['id']}" title="Průběžný stav bodů před začátkem závodů">Bodová tabulka před závodem</a></dd>
+		{if !empty($nasledujici)}<dd><a href="{plink Rocniky:vysledkyPredZavodem, $nasledujici['id']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{else}<dd><a href="{plink Rocniky:vysledky, $zavod['rocnik']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{/if}
+
+
+	<dt class="cleaner">Dosavadní rekordy dráhy platné do začátku závodu</dt>
 {if count($zavod['dosavadniRekordy'])}
 	{foreach $zavod['dosavadniRekordy'] as $soutez => $foo}
 		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
@@ -90,10 +95,6 @@
 		{/foreach}</ul></dd>
 	{/foreach}
 {/if}
-
-	<dt>Bodové tabulky</dt>
-		<dd><a href="{plink Rocniky:vysledkyPredZavodem, $zavod['id']}" title="Průběžný stav bodů před začátkem závodů">Bodová tabulka před závodem</a></dd>
-		{if !empty($nasledujici)}<dd><a href="{plink Rocniky:vysledkyPredZavodem, $nasledujici['id']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{else}<dd><a href="{plink Rocniky:vysledky, $zavod['rocnik']}" title="Průběžný stav bodů po závodu">Bodová tabulka po závodu</a></dd>{/if}
 
 {if count($predchoziKola)}
 	<dt>Jiná kola pořádaná tímto sborem</dt>
