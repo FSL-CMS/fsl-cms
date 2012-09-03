@@ -103,6 +103,7 @@ class DiskuzePresenter extends BasePresenter
 
 		DependentSelectBox::$disableChilds = false;
 
+		$form->addHidden('id');
 		$form->addGroup('Úprava informací o diskuzi');
 		$form->addSelect('id_tematu', 'Téma diskuze', $temataModel->findAllToSelect()->fetchPairs('id','nazev'))
 			   ->addRule(Form::FILLED, 'Je nutné vybrat téma diskuze.');
@@ -160,6 +161,15 @@ class DiskuzePresenter extends BasePresenter
 			foreach( $polozky as &$polozka )
 			{
 				$vystup[$polozka['id']] = $polozka['nazev'].', '.datum::date($polozka['datum_zverejneni'], 0, 0, 0);;
+			}
+		}
+		elseif( $tabulka == 'Sbory' )
+		{
+			$model = new Sbory;
+			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
+			foreach( $polozky as &$polozka )
+			{
+				$vystup[$polozka['id']] = $polozka['nazev'];
 			}
 		}
 		else $vystup = array('' => 'není k dispozici');
@@ -249,14 +259,33 @@ class DiskuzePresenter extends BasePresenter
 
 	public function editFormSubmitted(AppForm $form)
 	{
-		$id = (int)$this->getParam('id');
+		$id = (int) $form['id']->value;
 		$id_tematu = (int) $form['id_tematu']->value;
 		$id_souvisejiciho = (int) $form['id_souvisejiciho']->value;
+		$tema = $this->model->findTema($id_tematu)->fetch();
 
 		if( $form['save']->isSubmittedBy() )
 		{
 			try
 			{
+				if( $id_souvisejiciho != 0 && !empty($tema['souvisejiciTabulka']) )
+				{
+					$souvisejiciModel = new Souvisejici;
+					$souvisejici = $souvisejiciModel->findByRodic('diskuze', $id)->fetch();
+					if($souvisejici !== false)
+					{
+						if($souvisejici['souvisejiciTabulka'] != $tema['souvisejiciTabulka'] || $souvisejici['id_souvisejiciho'] != $id_souvisejiciho)
+						{
+							$souvisejiciModel->delete($souvisejici['id']);
+							$souvisejiciModel->insert(array('rodic' => 'diskuze', 'id_rodice' => $id, 'souvisejici' => $tema['souvisejiciTabulka'], 'id_souvisejiciho' => $id_souvisejiciho) );
+						}
+					}
+					else
+					{
+						$souvisejiciModel->insert(array('rodic' => 'diskuze', 'id_rodice' => $id, 'souvisejici' => $tema['souvisejiciTabulka'], 'id_souvisejiciho' => $id_souvisejiciho) );
+					}
+				}
+
 				$data = array('nazev' => $form['tema_diskuze']->value, 'id_tematu' => $id_tematu);
 				$this->model->update($id, $data);
 
@@ -280,6 +309,7 @@ class DiskuzePresenter extends BasePresenter
 		$souvisejiciModel = new Souvisejici();
 		$souv = $souvisejiciModel->findByRodic('diskuze', $disk['id_diskuze'])->fetch();
 		$disk['id_souvisejiciho'] = $souv['id_souvisejiciho'];
+		$disk['id'] = $id;
 		$this['editForm']->setValues($disk);
 		$this['editForm']['id_souvisejiciho']->refresh();
 		$this['editForm']->setValues($disk);
