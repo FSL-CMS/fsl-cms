@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-	<meta name="description" content="FSL CMS" />
+	<meta name="description" content="{$liga['popis']}" />
 
 	<title>{$title}</title>
 
@@ -107,11 +107,11 @@
 			<span class="cleaner"></span>
 		</div>
 		<div id="patka">
-			<h3>FSL CMS</h3>
+			<h3>{$liga['nazev']}</h3>
 			<p class="menu"><a href="{plink Clanky:}">Články</a> | {foreach $menu as $odkaz}
 				{if $odkaz['id'] !== NULL}<a href="{link $odkaz['odkaz'], $odkaz['id']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{else}<a href="{link $odkaz['odkaz']}"{if $odkaz['aktivni'] == true} class="aktivni"{/if}>{$odkaz['nazev']}</a>{/if} |
 				{/foreach} <a href="{plink Sprava:}">Správa</a></p>
-			<p>Redakční systém <a href="{$FSL_CMS_URL}">{$FSL_CMS}</a> v{$FSL_CMS_VERZE} &copy; 2007 &ndash; {$aktualniRok}</p>
+			<p>Redakční systém <a href="{$FSL_CMS_URL}">{$FSL_CMS}</a> v{$FSL_CMS_VERZE} &copy; 2010 &ndash; {$aktualniRok}</p>
 		</div>
 	</div>
 </body>

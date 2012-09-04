@@ -7,13 +7,12 @@
  */
 
 
-
 /**
- * Továrna pro model ukládající soubory
+ * Výjimka označující nesoulad v databázi požadované aplikací a samotné databázi.
  *
  * @author Milan Pála
  */
-interface IFileUploaderFileManager
+class DBVersionMismatchException extends RuntimeException
 {
-	public function save(HttpUploadedFile $soubor);
+
 }

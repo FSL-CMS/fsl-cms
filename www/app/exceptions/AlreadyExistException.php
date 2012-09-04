@@ -9,11 +9,11 @@
 
 
 /**
- * Rozhraní pro třídu implementující údržbu svých položek
+ * Výjimka označující, že zpracovávaná položka již existuje.
  *
- * @author	Milan Pála
+ * @author Milan Pála
  */
-interface IUdrzba
+class AlreadyExistException extends RuntimeException
 {
-	public function udrzba();
+
 }

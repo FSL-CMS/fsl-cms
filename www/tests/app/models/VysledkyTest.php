@@ -1,12 +1,20 @@
 <?php
 
+/**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
+
 require_once('PHPUnit/Autoload.php');
 require_once dirname(__FILE__) . "/../../../document_root/index.php";
 
 /**
- * Description of VysledkyTest
+ * Test třídy Vysledky
  *
- * @author Milan
+ * @author Milan Pála
  */
 class VysledkyTest extends PHPUnit_Framework_TestCase
 {

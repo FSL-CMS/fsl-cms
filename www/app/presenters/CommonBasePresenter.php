@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Informační systém Krušnohorské ligy
+ * FSL CMS - Redakční systém pro hasičské ligy
  *
- * @copyright  Copyright (c) 2010 Milan Pála
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
 /**
@@ -18,7 +18,15 @@ abstract class CommonBasePresenter extends Presenter
 	public $user = NULL;
 	public static $SOUVISEJICI = array('clanky' => 'články', 'zavody' => 'závody', 'terce' => 'terče', 'sbory' => 'sbory', 'druzstva' => 'družstva');
 	protected $texy;
-	private static $nazev;
+
+	/**
+	 * Informace o dané lize
+	 * - název
+	 * - zkratka
+	 * - krátký popis
+	 * @var array
+	 */
+	protected static $liga;
 
 	/**
 	 * Název projektu FSL CMS
@@ -28,7 +36,7 @@ abstract class CommonBasePresenter extends Presenter
 	/**
 	 * Verze FSL CMS
 	 */
-	const FSL_CMS_VERZE = '1.0.1-rc2';
+	const FSL_CMS_VERZE = '1.0.1';
 
 	/**
 	 * Odkaz na hlavní stránku FSL CMS
@@ -37,7 +45,11 @@ abstract class CommonBasePresenter extends Presenter
 
 	public function __construct()
 	{
-		self::$nazev = Environment::getVariable('name');
+		self::$liga['nazev'] = Environment::getVariable('nazev');
+		self::$liga['zkratka'] = Environment::getVariable('zkratka');
+		self::$liga['popis'] = Environment::getVariable('popis');
+
+		if(empty(self::$liga['popis'])) self::$liga['popis'] = self::$liga['nazev'];
 
 		// Verze databáze, kterou požaduje aplikace
 		if(!defined('VERZE_DB')) define('VERZE_DB', 2);
@@ -769,8 +781,8 @@ abstract class CommonBasePresenter extends Presenter
 	 */
 	public function setTitle($title = NULL)
 	{
-		if($title === NULL) $this->template->title = self::$nazev;
-		else $this->template->title = self::$nazev . ' >> ' . $title;
+		if($title === NULL) $this->template->title = self::$liga['nazev'];
+		else $this->template->title = self::$liga['nazev'] . ' >> ' . $title;
 
 		$this->template->nadpis = $title !== NULL ? trim($title) : '';
 	}
@@ -801,6 +813,8 @@ abstract class CommonBasePresenter extends Presenter
 		$this->template->FSL_CMS = self::FSL_CMS;
 		$this->template->FSL_CMS_URL = self::FSL_CMS_URL;
 		$this->template->FSL_CMS_VERZE = self::FSL_CMS_VERZE;
+
+		$this->template->liga = self::$liga;
 	}
 
 	abstract protected function renderMenu();

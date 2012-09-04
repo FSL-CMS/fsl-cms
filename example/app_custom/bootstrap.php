@@ -3,7 +3,7 @@
 /**
  * Bootstrap soubor.
  *
- * @copyright  Copyright (c) 2010 Milan Pála
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
 

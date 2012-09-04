@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
+/**
+ * Komponenta, z níž vycházejí všechny komponenty. Obsahuje společné prvky.
+ *
+ * @author Milan Pála
+ */
 class BaseControl extends Control
 {
 	public function __construct(\IComponentContainer $parent = NULL, $name = NULL)

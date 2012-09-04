@@ -1,10 +1,17 @@
 <?php
 
+/**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
 
 /**
- * Description of FotkyManager
+ * Implmentace továrny na model ukládající soubory pomocí FileUploaderControl
  *
- * @author Milan
+ * @author Milan Pála
  */
 class SouboryManager implements IFileUploaderFileManager
 {

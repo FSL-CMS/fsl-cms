@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
+
+/**
+ * Vlastní nastavení Texy
+ *
+ * @author Milan Pála
+ */
 class MyTexy extends Texy
 {
 	public function __construct()

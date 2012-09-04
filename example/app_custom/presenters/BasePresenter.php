@@ -1,36 +1,24 @@
 <?php
 
 /**
- * Informační systém Krušnohorské ligy
+ * FSL CMS - Redakční systém pro hasičské ligy
  *
- * @copyright  Copyright (c) 2010 Milan Pála
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
 /**
  * Bázový presenter
+ * Obsahuje vlastní rozšíření nad kódem v CommonBasePresenteru.
  *
  * @author	Milan Pála
  */
 abstract class BasePresenter extends CommonBasePresenter
 {
-
-	protected function startup()
-	{
-		parent::startup();
-
-		/** Název kalendáře obsahující všechny závody ligy */
-		KalendarPresenter::$nazevKalendare = 'FSL CMS';
-		/** Popis kalendáře obsahující všechny závody ligy */
-		KalendarPresenter::$popisKalendare = 'Kalendář všech ročníků závodů';
-		/** Zkratka názvu ligy */
-		KalendarPresenter::$zkratkaLigy = 'PHL';
-	}
-
+	/**
+	 * Vykreslení odkazů v menu
+	 */
 	protected function renderMenu()
 	{
-		//$stranky = new Stranky;
-		//$strankyDoMenu = $stranky->findAllToMenu()->fetchAll();
-
 		$presenter = $this->getPresenter()->getName();
 		$action = $this->getAction();
 		$id = $this->getParam('id', 0);
@@ -43,8 +31,5 @@ abstract class BasePresenter extends CommonBasePresenter
 		    array('odkaz' => 'Stranky:stranka', 'id' => 1, 'nazev' => 'Kontakt', 'class' => 'kontakt', 'aktivni' => $presenter == 'Stranky' && $action == 'stranka' && $id == 1),
 		    array('odkaz' => 'Forum:', 'id' => NULL, 'nazev' => 'Fórum', 'class' => 'diskuze', 'aktivni' => $presenter == 'Forum' || $presenter == 'Diskuze'),
 		);
-
-		//$this->template->menu = array_merge($this->template->menu, $strankyDoMenu);
 	}
-
 }

@@ -9,11 +9,11 @@
 
 
 /**
- * Rozhraní pro třídu implementující údržbu svých položek
+ * Výjimka značící, že uživatel nebyl nalezen.
  *
- * @author	Milan Pála
+ * @author Milan Pála
  */
-interface IUdrzba
+class UserNotFoundException extends RuntimeException
 {
-	public function udrzba();
+
 }

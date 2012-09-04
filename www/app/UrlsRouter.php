@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
+
+/**
+ * Router využívající tabulku urls.
+ *
+ * @author Milan Pála
+ */
 class UrlsRouter extends Route implements IRouter
 {
 	private $flags;

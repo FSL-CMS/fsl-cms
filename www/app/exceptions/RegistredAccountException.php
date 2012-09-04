@@ -9,11 +9,11 @@
 
 
 /**
- * Rozhraní pro třídu implementující údržbu svých položek
+ * Výjimka označující, že přihlašovaný účet byl již vytvořen.
  *
- * @author	Milan Pála
+ * @author Milan Pála
  */
-interface IUdrzba
+class RegistredAccountException extends RuntimeException
 {
-	public function udrzba();
+
 }

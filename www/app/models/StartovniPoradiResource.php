@@ -1,7 +1,16 @@
 <?php
 
 /**
+ * FSL CMS - Redakční systém pro hasičské ligy
+ *
+ * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
+ */
+
+
+
+/**
  * Resource pro startovní pořadí.
+ *
  * @author Milan Pála
  */
 class StartovniPoradiResource implements IResource

@@ -9,11 +9,11 @@
 
 
 /**
- * Továrna pro model ukládající soubory
+ * Posílač emailů
  *
- * @author Milan Pála
+ * @author	Milan Pála
  */
-interface IFileUploaderFileManager
+class MyMailer extends Mail
 {
-	public function save(HttpUploadedFile $soubor);
+
 }
