@@ -20,18 +20,18 @@ class BodoveTabulky extends BaseModel
 
 	/** @var DibiConnection */
 	protected $connection;
-	
+
 
 	public function __construct()
 	{
 		$this->connection = dibi::getConnection();
 	}
-	
+
 	public function findAll()
 	{
 		return $this->connection->select('*')->from($this->table)->orderBy('[platnost_od]');
 	}
-	
+
 	public function findAllToSelect()
 	{
 		return $this->connection
@@ -40,10 +40,15 @@ class BodoveTabulky extends BaseModel
 			->leftJoin('[body] ON [body].[id_bodove_tabulky] = [bodove_tabulky].[id]')
 			->groupBy('[bodove_tabulky].[id]');
 	}
-	
+
 	public function find($id)
 	{
 		return $this->connection->select('*')->from($this->table)->where('[bodove_tabulky].[id] = %i', $id);
+	}
+
+	public function findByUcast($id)
+	{
+		return $this->connection->select('*')->from($this->table)->where('[bodove_tabulky].[id] = (SELECT [ucasti].[id_bodove_tabulky] FROM [ucasti] WHERE [ucasti].[id] = %i)', $id);
 	}
 
 	public function update($id, array $data)
@@ -69,7 +74,7 @@ class BodoveTabulky extends BaseModel
 		$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);
-		
+
 		$bodyModel = new Body;
 		for($i=0; $i<$data['pocet_bodovanych_pozic']; $i++)
 		{
@@ -77,7 +82,7 @@ class BodoveTabulky extends BaseModel
 		}
 		return $ret;
 	}
-	
+
 	public function delete($id)
 	{
 		try
@@ -89,6 +94,6 @@ class BodoveTabulky extends BaseModel
 			if( $e->getCode() == '1451' ) throw new RestrictionException('Bodovou tabulku nelze smazat, je používaná.');
 			else throw $e;
 		}
-		
+
 	}
 }
