@@ -1355,7 +1355,16 @@ class ZavodyPresenter extends BasePresenter
 
 			$list->getPageSetup()->setHorizontalCentered(true);
 			$list->getPageSetup()->setVerticalCentered(false);
+			$hf = new PHPExcel_Worksheet_HeaderFooter();
+			$hf->setEvenHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+			$hf->setOddHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+			$list->setHeaderFooter($hf);
 		}
+
+		$vlastnosti = $dokument->getProperties();
+		$vlastnosti->setCreator('Informační systém '.self::$liga['zkratka']);
+		$vlastnosti->setCreated(time());
+		$vlastnosti->setTitle('Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok']);
 
 		$writer = new PHPExcel_Writer_Excel2007($dokument);
 		$writer->setPreCalculateFormulas(false);
