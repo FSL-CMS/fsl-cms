@@ -69,7 +69,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 
 	public function deleteByGalerie($id)
 	{
-		return parent::delete(NULL)->clause('where', true)->where('[soubory].[souvisejici] = "galerie" AND [soubory].[id_souvisejiciho] = %i', $id)->execute();
+		return parent::delete(NULL)->removeClause('where')->where('[soubory].[souvisejici] = "galerie" AND [soubory].[id_souvisejiciho] = %i', $id)->execute();
 	}
 
 	public function insert(array $data)

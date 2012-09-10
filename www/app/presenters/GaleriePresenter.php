@@ -16,17 +16,6 @@ class GaleriePresenter extends BasePresenter
 
 	protected $model;
 
-	/**
-	 * Galerie obsahující nahrané fotky
-	 * @var string
-	 */
-	public static $TYP_INTERNI = 'interni';
-	/**
-	 * Galerie uložená na serveru Rajče.cz
-	 * @var string
-	 */
-	public static $TYP_RAJCE = 'rajce';
-
 	protected function startup()
 	{
 		$this->model = new Galerie;
@@ -51,7 +40,7 @@ class GaleriePresenter extends BasePresenter
 		}
 		$this->model->noveZhlednuti($id);
 
-		if($galerie['typ'] == self::$TYP_RAJCE) $this->setView('galerieRajce');
+		if($galerie['typ'] == Galerie::$TYP_RAJCE) $this->setView('galerieRajce');
 	}
 
 	public function actionFotka($id = 0)
@@ -290,7 +279,7 @@ class GaleriePresenter extends BasePresenter
 				$c['nazev']->setRequired('Je nutné vyplnit název videa.');
 			}
 			$c->addSelect('typ', 'Typ videa', array('youtube' => 'Youtube', 'stream' => 'Stream', 'facebook' => 'Facebook'))->setRequired('Je nutné vybrat typ videa.');
-			$c->addText('url', 'Adresa videa', 50, 255);
+			$c->addText('url', 'Adresa videa', 35, 255)->setOption('description', 'Např. http://www.youtube.com/watch?v=cmYbd2Qwq');
 			if($id_videa != 0)
 			{
 				$c['url']->setRequired('Je nutné vyplnit adresu videa.');
@@ -302,7 +291,7 @@ class GaleriePresenter extends BasePresenter
 				$c['url']->addConditionOn($c['nazev'], Form::FILLED)
 					   ->addRule(Form::FILLED, 'Je nutné vyplnit adresu videa.');
 			}
-			$c->addText('identifikator', 'Identifikátor videa', 50, 255)->setDisabled(true);
+			$c->addText('identifikator', 'Identifikátor videa', 35, 255)->setOption('description', 'Získá se automaticky z adresy videa po uložení.')->setDisabled(true);
 			if($id_videa != 0) $c->addCheckbox('delete', 'Odstranit');
 		}
 
@@ -444,8 +433,8 @@ class GaleriePresenter extends BasePresenter
 		$data = $form->getValues();
 		$id_galerie = (int) $this->getParam('id');
 
-// zpracovat fotku
-// Přesumene uploadované soubory
+		// zpracovat fotku
+		// Přesumene uploadované soubory
 		foreach ($data["upload"] AS $file)
 		{
 			try
@@ -458,11 +447,11 @@ class GaleriePresenter extends BasePresenter
 			catch (Exception $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit soubor ' . $file->getName() . '. Chyba: ' . $e->getMessage(), 'error');
-//Debug::processException($e, true);
+				//Debug::processException($e, true);
 			}
 		}
 
-// Předáme data do šablony
+		// Předáme data do šablony
 		$this->template->values = $data;
 		$this->invalidateControl('flashes');
 	}
@@ -528,16 +517,17 @@ class GaleriePresenter extends BasePresenter
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka textu je %d znaků.', 65535);
 
 		$form->addGroup('Typ fotogalerie');
-		$form->addSelect('typ', 'Typ galerie', array(self::$TYP_NATIVNI => 'integrovaná', self::$TYP_RAJCE => 'Rajče.cz'))
-			   ->addCondition(Form::EQUAL, self::$TYP_RAJCE)->toggle(self::$TYP_RAJCE, true)
-			   ->addCondition(Form::EQUAL, self::$TYP_NATIVNI)->toggle(self::$TYP_NATIVNI, true);
+		$form->addSelect('typ', 'Typ galerie', array(Galerie::$TYP_INTERNI => 'integrovaná', Galerie::$TYP_RAJCE => 'Rajče.cz'))
+			   ->addCondition(Form::EQUAL, Galerie::$TYP_RAJCE)->toggle(Galerie::$TYP_RAJCE, true)
+			   ->addCondition(Form::EQUAL, Galerie::$TYP_INTERNI)->toggle(Galerie::$TYP_INTERNI, true);
 
-		$form->addGroup('Galerie uložená na Rajče.cz')->setOption("container", Html::el("fieldset")->id(self::$TYP_RAJCE));
-		$rajceCont = $form->addContainer(self::$TYP_RAJCE);
+		// Možnost zadat odkaz na galerii na rajčeti
+		$form->addGroup('Galerie uložená na Rajče.cz')->setOption("container", Html::el("fieldset")->id(Galerie::$TYP_RAJCE));
+		$rajceCont = $form->addContainer(Galerie::$TYP_RAJCE);
 		$rajceCont->addText('typ_key', 'Odkaz na galerii')->setOption('description', 'Uveďte odkaz na galerii, např.: http://ukazka.rajce.idnes.cz/zvirata_v_ZOO');
 
-		$form->addGroup('Integrovaná galerie')->setOption("container", Html::el("fieldset")->id("nativni"));
-		$nativniCont = $form->addContainer('nativni');
+		$form->addGroup('Integrovaná galerie')->setOption("container", Html::el("fieldset")->id(Galerie::$TYP_INTERNI));
+		$nativniCont = $form->addContainer(Galerie::$TYP_INTERNI);
 		$nativniCont->addTextArea('typ_key', 'Integrovaná galerie pro nahrávání fotek');
 
 		$form->addContainer('jizSouvisejici');
@@ -610,7 +600,7 @@ class GaleriePresenter extends BasePresenter
 			}
 
 			if($form['saveAndReturn']->isSubmittedBy() || $form['cancel']->isSubmittedBy()) $this->redirect('galerie', $id);
-			else $this->redirect('this');
+			else $this->redirect('edit', $id);
 		}
 	}
 
@@ -657,7 +647,7 @@ class GaleriePresenter extends BasePresenter
 		}
 		catch (RestrictionException $e)
 		{
-			$this->flashMessage($e->getMessage() . ' <a href="' . $this->link('delete', array('id' => $id, 'force' => true)) . '" class="delete">Přesto smazat!</a>', 'error');
+			$this->flashMessage($e->getMessage() . ' <a href="' . $this->link('delete', array('id' => $id, 'force' => true)) . '" class="delete">Přesto smazat!</a>', 'warning');
 		}
 
 		$this->redirect('this');

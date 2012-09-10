@@ -8,12 +8,14 @@
 	{block|texy}{$galerie['text']}{/block}
 {/if}
 
+{include 'videa.phtml'}
+
 {snippet galerie}
 {if count($fotky['fotky'])}
 	{foreach $fotky['fotky'] as $fotka}
 		{widget fotka:nahled $fotka}
 	{/foreach}
 {else}
-<p class="warning">V galerii nejsou žádné fotogfafie ani videa.{if $fotky['muze_pridavat'] == true} <a href="{plink Galerie:pridatFotky, $galerie['id']}" class="add">Přidat nové!</a>{/if}</p>
+<p class="warning">V galerii nejsou žádné fotogfafie.{if $fotky['muze_pridavat'] == true} <a href="{plink Galerie:pridatFotky, $galerie['id']}" class="add">Přidat nové!</a>{/if}</p>
 {/if}
 {/snippet}
