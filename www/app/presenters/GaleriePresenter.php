@@ -647,7 +647,7 @@ class GaleriePresenter extends BasePresenter
 		}
 		catch (RestrictionException $e)
 		{
-			$this->flashMessage($e->getMessage() . ' <a href="' . $this->link('delete', array('id' => $id, 'force' => true)) . '" class="delete">Přesto smazat!</a>', 'warning');
+			$this->flashMessage($e->getMessage() . ' <a href="' . $this->link('delete!', array('id' => $id, 'force' => true)) . '" class="delete">Přesto smazat!</a>', 'warning');
 		}
 
 		$this->redirect('this');
