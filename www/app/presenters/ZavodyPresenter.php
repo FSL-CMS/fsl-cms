@@ -1287,6 +1287,10 @@ class ZavodyPresenter extends BasePresenter
 				$bodovaTabulka = $bodoveTabulkyModel->findByUcast($vysledek['id_ucasti'])->fetch();
 				$bodyModel = new Body();
 				$body = $bodyModel->findByTabulka($bodovaTabulka['id']);
+				for($i=0; $i<5; $i++)
+				{
+					$vysledky[] = array();
+				}
 				foreach($vysledky as $vysledek)
 				{
 					if($offsetPrvnihoDruzstva === NULL) $offsetPrvnihoDruzstva = $aktualniRadek;
@@ -1307,10 +1311,10 @@ class ZavodyPresenter extends BasePresenter
 					$list->getStyleByColumnAndRow(0, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
 					// Družstvo
-					$list->setCellValueByColumnAndRow(1, $aktualniRadek, $vysledek['druzstvo']);
+					if(isset($vysledek['druzstvo'])) $list->setCellValueByColumnAndRow(1, $aktualniRadek, $vysledek['druzstvo']);
 
 					// Okres
-					$list->setCellValueByColumnAndRow(2, $aktualniRadek, $vysledek['okres_zkratka']);
+					if(isset($vysledek['okres_zkratka']))$list->setCellValueByColumnAndRow(2, $aktualniRadek, $vysledek['okres_zkratka']);
 					$list->getStyleByColumnAndRow(2, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
 					// Výsledný čas pro tisk
