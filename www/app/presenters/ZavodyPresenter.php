@@ -1194,4 +1194,190 @@ class ZavodyPresenter extends BasePresenter
 		$this->setTitle('Informace pro komentátora, ' . $this->template->zavod['nazev'] . ' ' . $datum->date(substr($this->template->zavod['datum'], 0, 10), 0, 0, 0));
 	}
 
+	public function actionVysledkyExcel($id)
+	{
+		$this->template->zavod = $this->model->find($id)->fetch();
+		if(!$this->template->zavod) throw new BadRequestException('Závod nebyl nalezen.');
+
+		$zavod['poradatele'] = $this->model->findPoradatele($id);
+		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit');
+		$this->template->zavod['muze_hodnotit'] = (bool) (strtotime($this->template->zavod['datum']) < strtotime('NOW'));
+
+		$datum = new Datum;
+		$this->setTitle('Závod ' . $this->template->zavod['nazev'] . ', ' . $datum->date(substr($this->template->zavod['datum'], 0, 10), 1, 0, 0));
+
+		$this->pripravVysledky($id, false);
+
+		$this->template->nasledujici = $this->model->findNext($id)->fetch();
+		$this->template->predchozi = $this->model->findPrevious($id)->fetch();
+
+		$this->pripravRekordy($id);
+
+		$this->template->startovni_poradi = array();
+		$this->startovniPoradi($id, false);
+
+		$this->template->predchoziKola = array();
+		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
+
+		$this->template->backlink = $this->application->storeRequest();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost();
+
+		$kategorie2index = array();
+		$kategoriePosledniPozice = array();
+
+		require LIBS_DIR.'/PHPExcel/PHPExcel.php';
+		$dokument = new PHPExcel();
+		$dokument->removeSheetByIndex(0);
+
+		$stylZahlaviTabulky = array(
+		    'allborders' => array(
+				'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+		    ),
+		    'font' => array(
+			   'bold' => true
+		    ),
+		    'alignment' => array(
+			   'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+		    )
+		);
+
+		$stylRamecekOkolo = array('allborders' => array(
+			'style' => PHPExcel_Style_Border::BORDER_THIN
+		));
+
+		$bodoveTabulkyModel = new BodoveTabulky;
+
+		foreach($this->template->vysledky['vysledky'] as $soutez => $foo)
+		{
+			foreach($foo as $kategorie => $bar)
+			{
+				if(!array_key_exists($kategorie, $kategorie2index))
+				{
+					$kategorie2index[$kategorie] = count($kategorie2index);
+					$dokument->createSheet($kategorie2index[$kategorie]);
+
+					$kategoriePosledniPozice[$kategorie] = 1;
+				}
+				$list = $dokument->setActiveSheetIndex($kategorie2index[$kategorie]);
+				$list->setTitle($this->zvetsPrvni($kategorie));
+
+				$aktualniRadek = $kategoriePosledniPozice[$kategorie];
+
+				$list->mergeCells('A'.$aktualniRadek.':F'.$aktualniRadek);
+				$styl = $list->getStyle('A'.$aktualniRadek);
+				$styl->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+				$styl->getFont()->setBold(true)->setSize(18);
+				$list->setCellValue('A'.$aktualniRadek, $this->zvetsPrvni($soutez), true);
+				$aktualniRadek++;
+
+				$vysledky = $bar['vysledky'];
+
+				$list->setCellValueByColumnAndRow(0, $aktualniRadek, 'Pořadí', true);
+				$list->setCellValueByColumnAndRow(1, $aktualniRadek, 'Družstvo', true);
+				$list->setCellValueByColumnAndRow(2, $aktualniRadek, 'Okres', true);
+				$list->setCellValueByColumnAndRow(3, $aktualniRadek, 'Zadejte čas', true);
+				$list->setCellValueByColumnAndRow(4, $aktualniRadek, 'Výsledný čas', true);
+				$list->setCellValueByColumnAndRow(5, $aktualniRadek, 'Body', true);
+
+				$list->getStyle('A'.$aktualniRadek.':F'.$aktualniRadek)->applyFromArray($stylZahlaviTabulky)->getBorders()->applyFromArray($stylRamecekOkolo);
+
+				$aktualniRadek++;
+				$offsetPrvnihoDruzstva = NULL;
+				$vysledek = reset($vysledky);
+				$bodovaTabulka = $bodoveTabulkyModel->findByUcast($vysledek['id_ucasti'])->fetch();
+				$bodyModel = new Body();
+				$body = $bodyModel->findByTabulka($bodovaTabulka['id']);
+				for($i=0; $i<5; $i++)
+				{
+					$vysledky[] = array();
+				}
+				foreach($vysledky as $vysledek)
+				{
+					if($offsetPrvnihoDruzstva === NULL) $offsetPrvnihoDruzstva = $aktualniRadek;
+
+					// IF(A2=1,10,IF(A2=2,9,0))
+					$vzorecBody = '=IF(A'.$aktualniRadek.'<>"",IF(D'.$aktualniRadek.'=1000,0,';
+					$zavorky = '';
+					foreach($body as $bod)
+					{
+						$vzorecBody .= 'IF(A'.$aktualniRadek.'='.$bod['poradi'].','.$bod['body'].',';
+						$zavorky .= ')';
+					}
+					$vzorecBody .= '0'.$zavorky.'),"")';
+
+					$vzorecPoradi = '=IF(D'.$aktualniRadek.'<>"",RANK(D'.$aktualniRadek.',D$'.$offsetPrvnihoDruzstva.':D$'.($offsetPrvnihoDruzstva+count($vysledky)-1).',1),"")';
+					// Výsledné pořadí
+					$list->setCellValueByColumnAndRow(0, $aktualniRadek, $vzorecPoradi);
+					$list->getStyleByColumnAndRow(0, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+					// Družstvo
+					if(isset($vysledek['druzstvo'])) $list->setCellValueByColumnAndRow(1, $aktualniRadek, $vysledek['druzstvo']);
+
+					// Okres
+					if(isset($vysledek['okres_zkratka']))$list->setCellValueByColumnAndRow(2, $aktualniRadek, $vysledek['okres_zkratka']);
+					$list->getStyleByColumnAndRow(2, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+					// Výsledný čas pro tisk
+					$list->setCellValueByColumnAndRow(4, $aktualniRadek, '=IF(D'.$aktualniRadek.'<>"",IF(D'.$aktualniRadek.'>500,"NP",D'.$aktualniRadek.'),"")');
+
+					$list->setCellValueByColumnAndRow(5, $aktualniRadek, $vzorecBody);
+					$list->getStyleByColumnAndRow(5, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+					$vzhled = $list->getStyleByColumnAndRow(4, $aktualniRadek);
+					$vzhled->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+					$vzhled->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+					// Zadávání výsledného času
+					$dv = $list->getCellByColumnAndRow(3, $aktualniRadek)->getDataValidation();
+					$dv->setType(PHPExcel_Cell_DataValidation::TYPE_DECIMAL);
+					$dv->setAllowBlank(false);
+
+					$dv->setShowErrorMessage(true);
+					$dv->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_WARNING);
+					$dv->setErrorTitle('Chyba');
+					$dv->setError('Zadejte čas jako desetinné číslo, nebo 1000 jako NP.');
+
+					$dv->setShowInputMessage(true);
+					$dv->setPromptTitle('Zadejte čas');
+					$dv->setPrompt('Zadejte čas jako desetinné číslo, nebo 1000 jako NP.');
+
+					$list->getColumnDimension('D')->setOutlineLevel(1);
+
+					// rámaček okolo celého řádku
+					$list->getStyle('A'.$aktualniRadek.':F'.$aktualniRadek)->getBorders()->applyFromArray($stylRamecekOkolo);
+
+					$aktualniRadek++;
+				}
+				$kategoriePosledniPozice[$kategorie] = ++$aktualniRadek;
+			}
+			$list->getColumnDimensionByColumn(0)->setAutoSize(true);
+			$list->getColumnDimensionByColumn(1)->setAutoSize(true);
+			$list->getColumnDimensionByColumn(2)->setAutoSize(true);
+			$list->getColumnDimensionByColumn(3)->setAutoSize(true);
+			$list->getColumnDimensionByColumn(4)->setAutoSize(true);
+			$list->getColumnDimensionByColumn(5)->setAutoSize(true);
+
+			$list->getPageSetup()->setHorizontalCentered(true);
+			$list->getPageSetup()->setVerticalCentered(false);
+			$hf = new PHPExcel_Worksheet_HeaderFooter();
+			$hf->setEvenHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+			$hf->setOddHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+			$list->setHeaderFooter($hf);
+		}
+
+		$vlastnosti = $dokument->getProperties();
+		$vlastnosti->setCreator('Informační systém '.self::$liga['zkratka']);
+		$vlastnosti->setCreated(time());
+		$vlastnosti->setTitle('Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok']);
+
+		$writer = new PHPExcel_Writer_Excel2007($dokument);
+		$writer->setPreCalculateFormulas(false);
+
+		$this->getHttpResponse()->addHeader('Content-Type', 'pplication/vnd.openxmlformats-officedocument.spreadsheetml.document; charset=utf-8');
+		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename='.String::webalize($this->template->zavod['nazev']).'-'.$this->template->zavod['rok'].'-vysledky.xlsx');
+
+		$writer->save('php://output');
+		$this->terminate();
+	}
+
 }
