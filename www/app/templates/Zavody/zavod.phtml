@@ -110,6 +110,7 @@
 	<dd><a class="printer" href="{plink Zavody:pripravaProKomentatora, $zavod['id']}">Informace o soutěži a soutěžních družstvech pro komentátora</a></dd>
 	<dd><a class="printer" href="{plink Zavody:startovniPoradi, $zavod['id']}">Startovní pořadí</a></dd>
 	<dd><a class="printer" href="{plink Zavody:vysledky, $zavod['id']}">{if count($vysledky['vysledky'])}Výsledky ze závodů{else}Formulář pro zapsání výsledků{/if}</a></dd>
+	<dd><a class="printer" href="{plink Zavody:vysledkyExcel, $zavod['id']}">Tabulka pro Microsoft Excel pro zapsání a tisk výsledků</a></dd>
 {if 0 && $zavod['muze_hodnotit']}
 	<dt>Ohodnoťte pořádání závodu</dt><dd>{widget hodnoceni $zavod['id']}</dd>
 {/if}

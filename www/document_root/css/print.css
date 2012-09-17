@@ -55,6 +55,7 @@ table.prehled .nejlepsi	{font-weight: bold;}
 table.prehled .poradi	{text-align: center; width: 55px;}
 table.prehled .body		{text-align: center; width: 70px;}
 table.prehled .terce	{text-align: center;}
+table.prehled .okres	{text-align: center;}
 table.prehled .pocet-stahnuti	{text-align: center;}
 table.prehled .pripona	{text-align: center;}
 table.prehled .ukazatel-prubehu	{text-align: center;}
