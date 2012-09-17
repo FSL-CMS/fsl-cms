@@ -280,7 +280,7 @@ class RocnikyPresenter extends BasePresenter
 				{
 					if(isset($bar['lepsi']))
 					{
-						$lepsi_ = array_unique($bar['lepsi']);
+						$lepsi_ = array_unique($bar['lepsi'], SORT_REGULAR);
 						foreach ($lepsi_ as $lepsi)
 						{
 							// označí se lepší umístění
