@@ -1376,7 +1376,15 @@ class ZavodyPresenter extends BasePresenter
 		$this->getHttpResponse()->addHeader('Content-Type', 'pplication/vnd.openxmlformats-officedocument.spreadsheetml.document; charset=utf-8');
 		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename='.String::webalize($this->template->zavod['nazev']).'-'.$this->template->zavod['rok'].'-vysledky.xlsx');
 
-		$writer->save('php://output');
+		$tempDir = Environment::getVariable('tempDir');
+		srand(time('Yhs'));
+		$tmpFile = rand();
+
+		$writer->save($tempDir.'/'.$tmpFile);
+		$dokument->disconnectWorksheets();
+		unset($dokument);
+		readfile($tempDir.'/'.$tmpFile);
+		unlink($tempDir.'/'.$tmpFile);
 		$this->terminate();
 	}
 
