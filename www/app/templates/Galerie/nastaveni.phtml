@@ -3,7 +3,7 @@
 	{if $galerie['muze_editovat']}<li><a href="{plink Galerie:edit, $galerie['id']}" title="Upravit galerii" class="edit">Upravit galerii</a></li>{/if}
 	{if $galerie['muze_smazat']}<li><a href="{plink delete!, $galerie['id']}" title="Smazat galerii" class="delete">Smazat galerii</a></li>{/if}
 	{if $fotky['muze_pridavat']}<li><a href="{plink Galerie:pridatFotky, $galerie['id']}" title="Přidat fotky" class="add">Přidat fotky</a></li>{/if}
-	{if $videa['muze_pridavat']}<li><a href="{plink Galerie:pridatVidea, $galerie['id']}" title="Přidat videa" class="add">Přidat videa</a></li>{/if}
+	{if $videa['muze_pridavat']}<li><a href="{plink Galerie:pridatVidea, $galerie['id']}" title="Přidat videa" class="add">Přidat/upravit videa</a></li>{/if}
 	{if $galerie['muze_smazat'] && $fotky['muze_smazat']}<li><a href="{plink truncate!, $galerie['id']}" title="Smazat všechny fotky" class="delete">Smazat všechny fotky</a></li>{/if}
 </ul>
 {/if}

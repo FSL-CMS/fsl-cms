@@ -137,4 +137,16 @@ class AktualizaceDB extends BaseModel
 		");
 	}
 
+	private function from2to3()
+	{
+		$this->connection->query("
+			ALTER TABLE `videa`
+				CHANGE `typ` `typ` enum('youtube','youtubeplaylist','stream','facebook') COLLATE 'utf8_czech_ci' NOT NULL AFTER `nazev`;
+		");
+		$this->connection->query("
+			UPDATE `verze` SET
+			`verze` = 3;
+		");
+	}
+
 }

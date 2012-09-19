@@ -1,6 +1,7 @@
 {if count($videa['videa'])}
 	<h2>Videa</h2>
 	{foreach $videa['videa'] as $video}
+	<h3>{!$video['nazev']|texy}</h3>
 	{block|texy}[* {$video['typ']}:{$video['identifikator']} *]{/block}
 	{/foreach}
 {/if}

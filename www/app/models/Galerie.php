@@ -32,6 +32,11 @@ class Galerie extends Zverejnovane
 	 */
 	public static $TYP_RAJCE = 'rajce';
 
+	public static $VIDEO_YOUTUBE = 'youtube';
+	public static $VIDEO_YOUTUBEPLAYLIST = 'youtubeplaylist';
+	public static $VIDEO_FACEBOOK = 'facebook';
+	public static $VIDEO_STREAM = 'stream';
+
 	public function __construct()
 	{
 		$this->connection = dibi::getConnection();

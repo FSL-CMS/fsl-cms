@@ -36,7 +36,7 @@ abstract class CommonBasePresenter extends Presenter
 	/**
 	 * Verze FSL CMS
 	 */
-	const FSL_CMS_VERZE = '1.0.2';
+	const FSL_CMS_VERZE = '1.0.3-dev';
 
 	/**
 	 * Odkaz na hlavní stránku FSL CMS
@@ -52,7 +52,7 @@ abstract class CommonBasePresenter extends Presenter
 		if(empty(self::$liga['popis'])) self::$liga['popis'] = self::$liga['nazev'];
 
 		// Verze databáze, kterou požaduje aplikace
-		if(!defined('VERZE_DB')) define('VERZE_DB', 2);
+		if(!defined('VERZE_DB')) define('VERZE_DB', 3);
 	}
 
 	protected function startup()
@@ -895,6 +895,13 @@ abstract class CommonBasePresenter extends Presenter
 			case 'youtube':
 				ob_start();
 				$this['video']->renderYoutube($image->width, $image->height, $key);
+				$vystup = ob_get_clean();
+				return $invocation->getTexy()->protect($vystup, Texy::CONTENT_BLOCK);
+				break;
+
+			case Galerie::$VIDEO_YOUTUBEPLAYLIST:
+				ob_start();
+				$this['video']->renderYoutubePlaylist($image->width, $image->height, $key);
 				$vystup = ob_get_clean();
 				return $invocation->getTexy()->protect($vystup, Texy::CONTENT_BLOCK);
 				break;

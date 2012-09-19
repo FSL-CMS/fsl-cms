@@ -30,6 +30,16 @@ class VideoControl extends BaseControl
 		return $template->render();
 	}
 
+	public function renderYoutubePlaylist($width = 450, $height = 300, $key)
+	{
+		$template = $this->template;
+		$template->setFile(dirname(__FILE__) . '/youtubePlaylist.phtml');
+		$template->sirka = $width ?: 450;
+		$template->vyska = $height ?: 300;
+		$template->key = $key;
+		return $template->render();
+	}
+
 	public function renderFacebook($width = 450, $height = 300, $key)
 	{
 		$template = clone $this->parent->template;

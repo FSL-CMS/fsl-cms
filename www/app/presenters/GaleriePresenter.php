@@ -278,7 +278,7 @@ class GaleriePresenter extends BasePresenter
 			{
 				$c['nazev']->setRequired('Je nutné vyplnit název videa.');
 			}
-			$c->addSelect('typ', 'Typ videa', array('youtube' => 'Youtube', 'stream' => 'Stream', 'facebook' => 'Facebook'))->setRequired('Je nutné vybrat typ videa.');
+			$c->addSelect('typ', 'Typ videa', array(Galerie::$VIDEO_YOUTUBE => 'Youtube', Galerie::$VIDEO_STREAM => 'Stream', Galerie::$VIDEO_YOUTUBEPLAYLIST => 'Youtube Playlist'))->setRequired('Je nutné vybrat typ videa.');
 			$c->addText('url', 'Adresa videa', 35, 255)->setOption('description', 'Např. http://www.youtube.com/watch?v=cmYbd2Qwq');
 			if($id_videa != 0)
 			{
@@ -337,7 +337,7 @@ class GaleriePresenter extends BasePresenter
 					$data = array('nazev' => $video['nazev'], 'souvisejici' => 'galerie', 'id_souvisejiciho' => $id, 'typ' => $video['typ'], 'url' => $video['url']);
 					if(strpos($video['url'], 'http://') !== false)
 					{
-						if($video['typ'] == 'youtube')
+						if($video['typ'] == Galerie::$VIDEO_YOUTUBE)
 						{
 							if(preg_match('/watch\?v=([^&]+)/', $video['url'], $matched))
 							{
@@ -353,7 +353,19 @@ class GaleriePresenter extends BasePresenter
 								continue;
 							}
 						}
-						elseif($video['typ'] == 'stream')
+						elseif($video['typ'] == Galerie::$VIDEO_YOUTUBEPLAYLIST)
+						{
+							if(preg_match('~http://www\.youtube\.com/playlist\?list=([^&]+)~', $video['url'], $matched))
+							{
+								$data['identifikator'] = $matched['1'];
+							}
+							else
+							{
+								$this->flashMessage('Nepodařilo se ověřit identifikátor videa *' . $video['url'] . '*.', 'warning');
+								continue;
+							}
+						}
+						elseif($video['typ'] == Galerie::$VIDEO_STREAM)
 						{
 							if(preg_match('/stream\.cz\/[^\/]+\/([^\/?]+)/', $video['url'], $matched))
 							{
