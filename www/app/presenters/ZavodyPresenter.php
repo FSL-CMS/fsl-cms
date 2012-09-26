@@ -927,6 +927,8 @@ class ZavodyPresenter extends BasePresenter
 		{
 			foreach ($kat as $vysledek)
 			{
+				if(empty($vysledek['id'])) continue;
+
 				$katCont = $form->addContainer($vysledek['id']);
 				$katCont->addSelect('id_druzstva', 'Družstvo', $druzstvaModel->findByKategorieToSelect($id_kat)->fetchPairs('id', 'kratke'));
 				$katCont->addSelect('lepsi_terc', 'Lepší terč', array('' => 'neuveden', 'l' => 'levý', 'p' => 'pravý'));
@@ -1194,6 +1196,11 @@ class ZavodyPresenter extends BasePresenter
 		$this->setTitle('Informace pro komentátora, ' . $this->template->zavod['nazev'] . ' ' . $datum->date(substr($this->template->zavod['datum'], 0, 10), 0, 0, 0));
 	}
 
+	/**
+	 * Vyexportuje seznam přihlášených týmů do sešitu MS Excel
+	 * @param int $id ID závodu
+	 * @throws BadRequestException
+	 */
 	public function actionVysledkyExcel($id)
 	{
 		$this->template->zavod = $this->model->find($id)->fetch();
@@ -1349,20 +1356,22 @@ class ZavodyPresenter extends BasePresenter
 					$aktualniRadek++;
 				}
 				$kategoriePosledniPozice[$kategorie] = ++$aktualniRadek;
-			}
-			$list->getColumnDimensionByColumn(0)->setAutoSize(true);
-			$list->getColumnDimensionByColumn(1)->setAutoSize(true);
-			$list->getColumnDimensionByColumn(2)->setAutoSize(true);
-			$list->getColumnDimensionByColumn(3)->setAutoSize(true);
-			$list->getColumnDimensionByColumn(4)->setAutoSize(true);
-			$list->getColumnDimensionByColumn(5)->setAutoSize(true);
 
-			$list->getPageSetup()->setHorizontalCentered(true);
-			$list->getPageSetup()->setVerticalCentered(false);
-			$hf = new PHPExcel_Worksheet_HeaderFooter();
-			$hf->setEvenHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
-			$hf->setOddHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
-			$list->setHeaderFooter($hf);
+				$list->getColumnDimensionByColumn(0)->setAutoSize(true);
+				$list->getColumnDimensionByColumn(1)->setAutoSize(true);
+				$list->getColumnDimensionByColumn(2)->setAutoSize(true);
+				$list->getColumnDimensionByColumn(3)->setAutoSize(true);
+				$list->getColumnDimensionByColumn(4)->setAutoSize(true);
+				$list->getColumnDimensionByColumn(5)->setAutoSize(true);
+
+				$list->getPageSetup()->setHorizontalCentered(true);
+				$list->getPageSetup()->setVerticalCentered(false);
+				$hf = new PHPExcel_Worksheet_HeaderFooter();
+				$hf->setEvenHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+				$hf->setOddHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+				$list->setHeaderFooter($hf);
+
+			}
 		}
 
 		$vlastnosti = $dokument->getProperties();
