@@ -1,10 +1,6 @@
 @{block content}
 
-@{if $typySboru['muze_pridat'] == true}
-	{snippet editForm}
-	{widget editForm}
-	{/snippet}
-@{/if}
+{if $typySboru['muze_pridat'] == true}<p class="config"><a href="{plink add}" class="add">Přidat nový</a></p>{/if}
 
 {snippet typySboru}
 {if count($typySboru['typySboru'])}
@@ -13,12 +9,12 @@
 	<tr>
 	     <th>Název</th>{if $typySboru['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
 	</tr>
-</thead>	
+</thead>
 <tbody>
 	{foreach $typySboru['typySboru'] as $typ}
 		<tr>
 	     	<td>{$typ['nazev']}</td>
-	     	{if $typySboru['muze_editovat'] == true}<td><a href="{plink edit!, $typ['id']}" title="Úprava typu sborů" class="ajax edit">Upravit</a></td>{/if}
+	     	{if $typySboru['muze_editovat'] == true}<td><a href="{plink edit, $typ['id']}" title="Úprava typu sborů" class="edit">Upravit</a></td>{/if}
 	     	{if $typySboru['muze_mazat'] == true}<td><a href="{plink delete!, $typ['id']}" title="Smazání typu sborů" class="ajax delete">Smazat</a></td>{/if}
 		</tr>
 	{/foreach}

@@ -1,6 +1,6 @@
 @{block content}
 
-{if $sbory['muze_pridavat'] == true}<p><a href="{plink Sbory:add}" class="add">Přidat nový sbor</a></p>{/if}
+{if $sbory['muze_pridavat'] == true}<p class="config"><a href="{plink Sbory:add}" class="add">Přidat nový sbor</a></p>{/if}
 
 {if count($sbory['sbory'])}
 <table class="prehled tablesorter">

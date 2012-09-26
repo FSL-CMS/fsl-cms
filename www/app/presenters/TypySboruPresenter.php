@@ -86,10 +86,10 @@ class TypySboruPresenter extends BasePresenter
 		$form->addText('zkratka', 'Zkratka')
 			->addRule(Form::FILLED, 'Je nutné vyplnit zkratku kategorie.');
 
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zpět')
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
-		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 	}
@@ -99,7 +99,7 @@ class TypySboruPresenter extends BasePresenter
 		if($form['cancel']->isSubmittedBy())
 		{
 		}
-		elseif($form['save']->isSubmittedBy())
+		elseif($form['save']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$id = $form['id']->value;
 			try
@@ -127,9 +127,16 @@ class TypySboruPresenter extends BasePresenter
 			}
 		}
 
-		$this->getApplication()->restoreRequest($this->backlink);
-		RequestButtonHelper::redirectBack();
-		$this->redirect('this');
+		if($form['cancel']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
+		{
+			$this->getApplication()->restoreRequest($this->backlink);
+			RequestButtonHelper::redirectBack();
+			$this->redirect('default');
+		}
+		else
+		{
+			$this->redirect('this');
+		}
 	}
 
 }

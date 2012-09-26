@@ -149,4 +149,21 @@ class AktualizaceDB extends BaseModel
 		");
 	}
 
+	private function from3to4()
+	{
+		$this->connection->query("
+			ALTER TABLE `sbory`
+				CHANGE `id_typu` `id_typu` int(11) unsigned NULL AFTER `id`;
+		");
+		$this->connection->query("
+			ALTER TABLE `sbory`
+				DROP FOREIGN KEY `sbory_ibfk_4`,
+				ADD FOREIGN KEY (`id_typu`) REFERENCES `typy_sboru` (`id`) ON DELETE RESTRICT ON UPDATE NO ACTION;
+		");
+		$this->connection->query("
+			UPDATE `verze` SET
+			`verze` = 4;
+		");
+	}
+
 }

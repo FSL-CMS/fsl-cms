@@ -34,7 +34,7 @@ class Clanky extends Zverejnovane implements IUdrzba
 
 	public function findAll()
 	{
-		$dotaz = $this->connection->select('[clanky].*, [kategorie_clanku].[cssstyl], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [autor], COUNT([komentare].[id]) AS [pocet_komentaru]')
+		$dotaz = $this->connection->select('[clanky].*, [kategorie_clanku].[cssstyl], '.Uzivatele::$_UZIVATEL.' AS [autor], COUNT([komentare].[id]) AS [pocet_komentaru]')
 			->from($this->table)
 			->leftJoin('[uzivatele] ON [uzivatele].[id] = [clanky].[id_autora]')
                ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')

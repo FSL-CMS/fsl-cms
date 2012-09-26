@@ -20,6 +20,8 @@ class Uzivatele extends BaseModel implements IAuthenticator
 	/** @var DibiConnection */
 	protected $connection;
 
+	public static $_UZIVATEL = 'CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]))';
+
 	public function __construct()
 	{
 		$this->connection = dibi::getConnection();

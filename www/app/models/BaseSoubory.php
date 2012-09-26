@@ -61,7 +61,7 @@ class BaseSoubory extends BaseModel
 	private function findOne()
 	{
 		return $this->connection
-			->select('soubory.*, CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[nazev], " ", [mista].[obec]) AS [autor]')
+			->select('soubory.*, '.Uzivatele::$_UZIVATEL.' AS [autor]')
 			->from($this->table)
 			->leftJoin('[uzivatele] ON [uzivatele].[id] = [soubory].[id_autora]')
 			->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')

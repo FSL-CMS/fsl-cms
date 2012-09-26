@@ -29,7 +29,7 @@ class Diskuze extends BaseModel implements IUdrzba
 	protected function findBy()
 	{
 		return $this->connection
-					 ->select('[komentare].[id], [diskuze].[id] AS [id_diskuze], [diskuze].[nazev] AS [tema_diskuze], [diskuze].[zamknuto], [komentare].[id] AS [id_komentare], [komentare].[text], [komentare].[datum_pridani], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[nazev], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [autor], [komentare].[id_autora], [diskuze].[id_autora] AS [id_autora_diskuze], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka]')
+					 ->select('[komentare].[id], [diskuze].[id] AS [id_diskuze], [diskuze].[nazev] AS [tema_diskuze], [diskuze].[zamknuto], [komentare].[id] AS [id_komentare], [komentare].[text], [komentare].[datum_pridani], '.Uzivatele::$_UZIVATEL.' AS [autor], [komentare].[id_autora], [diskuze].[id_autora] AS [id_autora_diskuze], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka]')
 					 ->from('[diskuze]')
 					 ->leftJoin('[komentare] ON [komentare].[id_diskuze] = [diskuze].[id]')
 					 ->leftJoin('[temata] ON [temata].[id] = [diskuze].[id_tematu]')
@@ -53,7 +53,7 @@ class Diskuze extends BaseModel implements IUdrzba
 	public function findAll()
 	{
 		return $this->connection
-					 ->select('[diskuze].[id], [diskuze].[nazev], [diskuze].[zamknuto], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[nazev], " ", [mista].[obec]) AS [autor], [diskuze].[id_autora], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka], [diskuze].[uri]')
+					 ->select('[diskuze].[id], [diskuze].[nazev], [diskuze].[zamknuto], '.Uzivatele::$_UZIVATEL.' AS [autor], [diskuze].[id_autora], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka], [diskuze].[uri]')
 					 ->from('[diskuze]')
 					 ->leftJoin('[temata] ON [temata].[id] = [diskuze].[id_tematu]')
 

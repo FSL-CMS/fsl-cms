@@ -4,7 +4,7 @@
 <p>Výsledky se obodují následujícím způsobem: [<a href="{plink Zavody:edit, 'id' => $zavod['id'], 'backlink' => $backlink}">změnit bodovací tabulky závodu</a>]</p>
 <ul>
 {foreach $ucasti as $ucast}
-<li>{$ucast['nazev']} - {$ucast['kategorie']}: {foreach $ucast['bodova_tabulka'] as $tabulka}{$tabulka['body']}, {/foreach}</li>
+<li>{$ucast['nazev']} - {$ucast['kategorie']}: {foreach $ucast['bodova_tabulka'] as $tabulka}{$tabulka['body']}{if !$iterator->isLast()}, {/if}{/foreach}</li>
 {/foreach}
 </ul>
 </div>

@@ -19,6 +19,7 @@ class Sbory extends BaseModel
 
 	/** @var DibiConnection */
 	protected $connection;
+	public static $_NAZEV = 'CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec])';
 
 	public function __construct()
 	{
@@ -34,7 +35,7 @@ class Sbory extends BaseModel
 	protected function findOne()
 	{
 		return $this->connection
-					 ->select('[sbory].*, CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]) AS [nazev], [okresy].[nazev] AS [okres], [uzivatele].[jmeno] AS [kontakt_jmeno], [uzivatele].[prijmeni] AS [kontakt_prijmeni], [uzivatele].[kontakt] AS [kontakt_kontakt], [uzivatele].[id] AS [kontakt_id], [uzivatele].[email] AS [kontakt_email], [spravce].[prijmeni] AS [spravce_prijmeni], [spravce].[jmeno] AS [spravce_jmeno], [spravce].[id] AS [spravce_id], [spravce].[email] AS [spravce_email]')
+					 ->select('[sbory].*, ' . self::$_NAZEV . ' AS [nazev], [okresy].[nazev] AS [okres], [uzivatele].[jmeno] AS [kontakt_jmeno], [uzivatele].[prijmeni] AS [kontakt_prijmeni], [uzivatele].[kontakt] AS [kontakt_kontakt], [uzivatele].[id] AS [kontakt_id], [uzivatele].[email] AS [kontakt_email], [spravce].[prijmeni] AS [spravce_prijmeni], [spravce].[jmeno] AS [spravce_jmeno], [spravce].[id] AS [spravce_id], [spravce].[email] AS [spravce_email]')
 					 ->from($this->table)
 					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
 					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
@@ -61,7 +62,7 @@ class Sbory extends BaseModel
 
 	public function findAlltoSelect()
 	{
-		return $this->findAll()->select('CONCAT(CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]), ", okres ", [okresy].[zkratka]) AS [sbor]')->orderBy('[typy_sboru].[nazev], [mista].[obec]');
+		return $this->findAll()->select('CONCAT(' . self::$_NAZEV . ', ", okres ", [okresy].[zkratka]) AS [sbor]')->orderBy('[typy_sboru].[nazev], [mista].[obec]');
 	}
 
 	public function findTypytoSelect()
@@ -93,39 +94,45 @@ class Sbory extends BaseModel
 
 	private function constructUri($id, $data)
 	{
-		if (isset($data['id_mista']) && isset($data['id_typu']))
+		if(isset($data['id_mista']) && isset($data['id_typu']))
 		{
 			$mista = new Mista;
 			$misto = $mista->find($data['id_mista'])->fetch();
-			$typySboru = new TypySboru;
-			$typSboru = $typySboru->find($data['id_typu'])->fetch();
-			if (empty($data['privlastek']))
-				$data['privlastek'] = '';
-			$data['uri'] = Texy::webalize($typSboru['zkratka'] . ' ' . $data['privlastek'] . ' ' . $misto['obec']);
+
+			if(!empty($data['id_typu']))
+			{
+				$typySboru = new TypySboru;
+				$typSboru = $typySboru->find($data['id_typu'])->fetch();
+			}
+			else $typSboru = array('zkratka' => '');
+
+			if(empty($data['privlastek'])) $data['privlastek'] = '';
+
+			$data['uri'] = '/sbory/'.Texy::webalize($typSboru['zkratka'] . ' ' . $data['privlastek'] . ' ' . $misto['obec']);
 		}
 		return $data;
 	}
 
 	private function pripravData(array &$data)
 	{
-		if (isset($data['id_spravce']))
+		if(isset($data['id_spravce']))
 		{
 			$data['id_spravce%in'] = (int) $data['id_spravce'];
 			unset($data['id_spravce']);
 		}
-		if (isset($data['id_kontaktni_osoby']))
+		if(isset($data['id_kontaktni_osoby']))
 		{
 			$data['id_kontaktni_osoby%in'] = intval($data['id_kontaktni_osoby']);
 			unset($data['id_kontaktni_osoby']);
 		}
-		if (isset($data['id_mista']))
+		if(isset($data['id_mista']))
 		{
 			$data['id_mista%in'] = intval($data['id_mista']);
 			unset($data['id_mista']);
 		}
-		if (isset($data['id_typu']))
+		if(isset($data['id_typu']))
 		{
-			$data['id_typu%in'] = $data['id_typu'];
+			$data['id_typu%in'] = intval($data['id_typu']);
 			unset($data['id_typu']);
 		}
 	}
@@ -143,10 +150,8 @@ class Sbory extends BaseModel
 		}
 		catch (DibiException $e)
 		{
-			if ($e->getCode() == 1062)
-				throw new AlreadyExistException();
-			else
-				throw $e;
+			if($e->getCode() == 1062) throw new AlreadyExistException();
+			else throw $e;
 		}
 	}
 
@@ -156,30 +161,31 @@ class Sbory extends BaseModel
 		{
 			$data = $this->constructUri($id, $data);
 			$this->pripravData($data);
-			return $this->connection->update($this->table, $data)->where('id=%i', $id)->execute();
+			parent::update($id, $data)->execute();
+
+			if(isset($data['uri']))
+			{
+				$urlsModel = new Urls;
+				$urlsModel->setUrl('Sbory', 'sbor', $id, $data['uri']);
+			}
 		}
 		catch (DibiException $e)
 		{
-			if ($e->getCode() == 1062)
-				throw new AlreadyExistException();
-			else
-				throw $e;
+			if($e->getCode() == 1062) throw new AlreadyExistException();
+			else throw $e;
 		}
 	}
 
 	public function delete($id)
 	{
 		$druzstva = new Druzstva;
-		if (count($druzstva->findBySbor($id)) > 0)
-			throw new RestrictionException('Sbor nelze odstranit, obsahuje družstva.');
+		if(count($druzstva->findBySbor($id)) > 0) throw new RestrictionException('Sbor nelze odstranit, obsahuje družstva.');
 
 		$terce = new Terce;
-		if (count($terce->findBySbor($id)) > 0)
-			throw new RestrictionException('Sbor nelze odstranit, vlastní terče.');
+		if(count($terce->findBySbor($id)) > 0) throw new RestrictionException('Sbor nelze odstranit, vlastní terče.');
 
 		$zavody = new Zavody;
-		if (count($zavody->findBySbor($id)) > 0)
-			throw new RestrictionException('Sbor nelze odstranit, pořádal závod.');
+		if(count($zavody->findBySbor($id)) > 0) throw new RestrictionException('Sbor nelze odstranit, pořádal závod.');
 
 		return parent::delete($id)->execute();
 	}

@@ -22,6 +22,9 @@ class Druzstva extends BaseModel
 	/** @var DibiConnection */
 	protected $connection;
 
+	public static $_NAZEV = 'CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [druzstva].[poddruzstvo])';
+
+
 	public function __construct()
 	{
 		$this->connection = dibi::getConnection();
@@ -41,7 +44,7 @@ class Druzstva extends BaseModel
 
 	public function findAll()
 	{
-		return $this->connection->select('[druzstva].[id], [druzstva].[poddruzstvo], [kategorie].[nazev] AS [kategorie], [druzstva].[id_kategorie], SUM([vysledky].[body]) AS [pocet_bodu], COUNT([ucasti].[id_zavodu]) AS [pocet_zavodu], [druzstva].[id_sboru], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]) AS [sbor], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [kategorie].[nazev], [druzstva].[poddruzstvo]) AS [nazev], [okresy].[nazev] AS [okres], [druzstva].[uri]')
+		return $this->connection->select('[druzstva].[id], [druzstva].[poddruzstvo], [kategorie].[nazev] AS [kategorie], [druzstva].[id_kategorie], SUM([vysledky].[body]) AS [pocet_bodu], COUNT([ucasti].[id_zavodu]) AS [pocet_zavodu], [druzstva].[id_sboru], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec]) AS [sbor], '.Druzstva::$_NAZEV.' AS [nazev], [okresy].[nazev] AS [okres], [druzstva].[uri]')
 			->from($this->table)
 			->leftJoin('[vysledky] ON [vysledky].[id_druzstva] = [druzstva].[id]')
 			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
@@ -51,7 +54,7 @@ class Druzstva extends BaseModel
 			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
 			->leftJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
 			->groupBy('[druzstva].[id]')
-			->orderBy('[kategorie].[poradi], [typy_sboru].[nazev], [mista].[obec], [druzstva].[poddruzstvo]');
+			->orderBy('[kategorie].[poradi], [nazev], [mista].[obec], [druzstva].[poddruzstvo]');
 	}
 
 	public function findAllToSelect()
@@ -61,7 +64,7 @@ class Druzstva extends BaseModel
 
 	public function findByKategorieToSelect($id)
 	{
-		return $this->connection->select('[druzstva].[id], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [druzstva].[poddruzstvo]) AS [druzstvo], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], IF(LENGTH([mista].[obec])>15, CONCAT(SUBSTRING([mista].[obec], 1, 5), "...", SUBSTRING([mista].[obec], -5)), [mista].[obec]), [druzstva].[poddruzstvo]) AS [kratke]')
+		return $this->connection->select('[druzstva].[id], '.Druzstva::$_NAZEV.' AS [druzstvo], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], IF(LENGTH([mista].[obec])>15, CONCAT(SUBSTRING([mista].[obec], 1, 5), "...", SUBSTRING([mista].[obec], -5)), [mista].[obec]), [druzstva].[poddruzstvo]) AS [kratke]')
 			->from($this->table)
 			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
 			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
@@ -72,7 +75,7 @@ class Druzstva extends BaseModel
 
 	public function findByUcastiToSelect($id)
 	{
-		return $this->connection->select('[druzstva].[id], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [druzstva].[poddruzstvo]) AS [druzstvo], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], IF(LENGTH([mista].[obec])>15, CONCAT(SUBSTRING([mista].[obec], 1, 5), "...", SUBSTRING([mista].[obec], -5)), [mista].[obec]), [druzstva].[poddruzstvo]) AS [kratke]')
+		return $this->connection->select('[druzstva].[id], '.Druzstva::$_NAZEV.' AS [druzstvo], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], IF(LENGTH([mista].[obec])>15, CONCAT(SUBSTRING([mista].[obec], 1, 5), "...", SUBSTRING([mista].[obec], -5)), [mista].[obec]), [druzstva].[poddruzstvo]) AS [kratke]')
 			->from($this->table)
 			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
 			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')

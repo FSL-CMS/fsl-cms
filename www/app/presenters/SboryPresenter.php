@@ -119,7 +119,7 @@ class SboryPresenter extends BasePresenter
 		$form->addHidden('backlink');
 
 		$form->addGroup('Informace o sboru');
-		$form->addSelect('id_typu', 'Typ sboru', $typy_sboru)
+		$form->addSelect('id_typu', 'Typ sboru', array('0' => 'žádný') + $typy_sboru)
 			   ->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'TypySboru:add'));
 		$form->addText('privlastek', 'Přívlastek sboru');
 		$form->addSelect('id_mista', 'Obec', $mista->findAllToSelect()->fetchPairs('id', 'nazev'))
@@ -135,7 +135,7 @@ class SboryPresenter extends BasePresenter
 			   ->setOption('description', $form->addRequestButton('addSpravceSboru', 'Přidat novou', 'Uzivatele:add'));
 
 
-		$form->addGroup('Uožení');
+		$form->addGroup('Uložení');
 
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');

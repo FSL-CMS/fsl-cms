@@ -7,6 +7,7 @@
 {foreach $nejrychlejsiCasy as $soutez => $foobar}
 	{foreach $foobar as $kategorie => $foo}
 		{foreach $foo as $terce => $bar}
+<a id="{block|webalize}toc-{$soutez}-{$kategorie}-{$terce}{/block}"></a>
 <table class="prehled tablesorter zkraceni">
      <caption>{block|texy:true}Nejrychlejší časy v kategorii **{$kategorie}** na **{$terce} terče** v soutěži **{$soutez}**{/block}</caption>
      <thead>
