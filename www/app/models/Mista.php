@@ -61,9 +61,9 @@ class Mista extends BaseModel
 			if ($sbory->findByMisto($id)->count() > 0)
 				throw new RestrictionException('Nelze odstranit místo, existuje v něm sbor.');
 
-			$zavody = new Zavody;
-			if ($zavody->findBySportoviste($id)->count() > 0)
-				throw new RestrictionException('Nelze odstranit místo, konal/koná se v něm závod.');
+			$sportoviste = new Sportoviste;
+			if($sportoviste->findByMisto($id)->count() > 0)
+				throw new RestrictionException('Nelze odstranit místo, je v něm sportoviště.');
 		}
 
 		return parent::delete($id)->execute();

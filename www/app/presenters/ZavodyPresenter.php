@@ -181,7 +181,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
 
 		$this->template->backlink = $this->application->storeRequest();
-		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme() . '://' . $this->getHttpRequest()->getUri()->getHost();
 	}
 
 	public function actionStartovniPoradi($id = 0)
@@ -319,7 +319,7 @@ class ZavodyPresenter extends BasePresenter
 
 		$f->addGroup('Ročník, ke kterému se vkládá závod');
 		$f->addSelect('id_rocniku', 'Ročník', $rocnikyModel->findAll()->fetchPairs('id', 'rok'))
-			->setDefaultValue($rocnikyModel->findLast()->fetchSingle('id'));
+			   ->setDefaultValue($rocnikyModel->findLast()->fetchSingle('id'));
 		$f->addSubmit('save', 'Změnit');
 
 		$f->onSubmit[] = array($this, 'zmenitRocnikFormSubmitted');
@@ -380,9 +380,9 @@ class ZavodyPresenter extends BasePresenter
 		$form->addRequestButton('addTerce', 'Přidat nové terče', 'Terce:add');
 		$form->addCheckbox('zruseno', 'Zrušený závod', 'ano');
 
-		/*$form->addSelect('ustream_stav', 'Video přenos', array('ne' => 'není/nebude', 'ano' => 'bude', 'live' => 'běží živě', 'zaznam' => 'ze záznamu'))
-			   ->addRule(Form::FILLED, 'Je nutné zvolit, zda bude video přenos.');
-		/* $form->addText('ustream_id', 'Ustream ID videa')
+		/* $form->addSelect('ustream_stav', 'Video přenos', array('ne' => 'není/nebude', 'ano' => 'bude', 'live' => 'běží živě', 'zaznam' => 'ze záznamu'))
+		  ->addRule(Form::FILLED, 'Je nutné zvolit, zda bude video přenos.');
+		  /* $form->addText('ustream_id', 'Ustream ID videa')
 		  ->addConditionOn($form['ustream_stav'], Form::EQUAL, 'live')
 		  ->addRule(Form::FILLED, 'Je nutné vyplnit Ustream ID videa.'); */
 
@@ -438,10 +438,10 @@ class ZavodyPresenter extends BasePresenter
 		}
 
 		$form->addGroup('Uložit');
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
 		$form->addSubmit('saveAndAdd', 'Uložit a přidat nový závod');
-		$form->addSubmit('cancel', 'Zrušit')
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			   ->setValidationScope(FALSE);
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
@@ -453,11 +453,12 @@ class ZavodyPresenter extends BasePresenter
 
 		if($form['cancel']->isSubmittedBy())
 		{
+
 		}
 		elseif($form['save']->isSubmittedBy() || $form['saveAndAdd']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$data = $form->getValues();
-			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], /*'ustream_stav' => $data['ustream_stav'], */'spolecne_startovni_poradi' => true);
+			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], /* 'ustream_stav' => $data['ustream_stav'], */'spolecne_startovni_poradi' => true);
 
 			$fazeUlozeni = 'zavod';
 
@@ -529,20 +530,20 @@ class ZavodyPresenter extends BasePresenter
 				$this->flashMessage('Závod se nepodařilo uložit.', 'error');
 				Debug::processException($e, true);
 			}
+		}
 
-			if($form['save']->isSubmittedBy())
-			{
-				$this->redirect('Zavody:edit', $id, $form['backlink']->value);
-			}
-			elseif($form['saveAndAdd']->isSubmittedBy()) $this->redirect('Zavody:add');
-			else
-			{
-				$this->getApplication()->restoreRequest($form['backlink']->value);
-				RequestButtonHelper::redirectBack();
+		if($form['save']->isSubmittedBy())
+		{
+			$this->redirect('Zavody:edit', $id, $form['backlink']->value);
+		}
+		elseif($form['saveAndAdd']->isSubmittedBy()) $this->redirect('Zavody:add');
+		else
+		{
+			$this->getApplication()->restoreRequest($form['backlink']->value);
+			RequestButtonHelper::redirectBack();
 
-				if($id == 0) $this->redirect('Zavody:default');
-				else $this->redirect('Zavody:zavod', $id);
-			}
+			if($id == 0) $this->redirect('Zavody:default');
+			else $this->redirect('Zavody:zavod', $id);
 		}
 	}
 
@@ -701,7 +702,7 @@ class ZavodyPresenter extends BasePresenter
 		$spm = new StartovniPoradi;
 		$sp = $spm->find($id)->fetch();
 
-		if( !$this->user->isAllowed(new StartovniPoradiResource($sp), 'delete') )
+		if(!$this->user->isAllowed(new StartovniPoradiResource($sp), 'delete'))
 		{
 			$this->flashMessage('Nemáte oprávnění odhlásit toto družstvo.', 'warning');
 			$this->redirect('Zavody:zavod', $id_zavodu);
@@ -800,10 +801,10 @@ class ZavodyPresenter extends BasePresenter
 		$ucasti = $ucastiModel->findByZavod($id);
 		$bodoveTabulkyModel = new Body();
 		$this->template->ucasti = array();
-		foreach($ucasti as $ucast)
+		foreach ($ucasti as $ucast)
 		{
 			$bt = $bodoveTabulkyModel->findByTabulka($ucast['id_bodove_tabulky'])->fetchAll();
-			$this->template->ucasti[] = (array)$ucast + array('bodova_tabulka' => $bt);
+			$this->template->ucasti[] = (array) $ucast + array('bodova_tabulka' => $bt);
 		}
 	}
 
@@ -847,11 +848,11 @@ class ZavodyPresenter extends BasePresenter
 			   ->addCondition(Form::FILLED)
 			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
 		$form->addText('vysledny_cas', 'Výsledný čas')
-			->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-				->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
-			->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-				->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
-			->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
+			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+			   ->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
+			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
+			   ->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
 		$form['vysledny_cas']->getControlPrototype()->autocomplete('off');
 
 		$form->addGroup('Uložení');
@@ -1122,7 +1123,7 @@ class ZavodyPresenter extends BasePresenter
 
 		$this->template->rekordyLigy = array('dosavadni' => array(), 'aktualni' => array());
 		$this->template->rekordyLigy['dosavadni'] = $vysledkyModel->rekordyLigy($id, true)->fetchAssoc('soutez,kategorie,=');
-		if($this->template->zavod['datum'] < Datum::$dnes['dnes'])$this->template->rekordyLigy['aktualni'] = $vysledkyModel->rekordyLigy($id, false)->fetchAssoc('soutez,kategorie,=');
+		if($this->template->zavod['datum'] < Datum::$dnes['dnes']) $this->template->rekordyLigy['aktualni'] = $vysledkyModel->rekordyLigy($id, false)->fetchAssoc('soutez,kategorie,=');
 	}
 
 	public function renderPripravaProKomentatora($id)
@@ -1146,7 +1147,6 @@ class ZavodyPresenter extends BasePresenter
 			//$this->template->informace[$soutez] = array();
 			// přiřadí do soutěže všechna přihlášená družstva
 			//$this->template->informace[$soutez] =
-
 			// žádná družstva nejsou přihlášena
 			if(0 && !count($this->template->informace[$soutez]))
 			{
@@ -1227,18 +1227,18 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
 
 		$this->template->backlink = $this->application->storeRequest();
-		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme() . '://' . $this->getHttpRequest()->getUri()->getHost();
 
 		$kategorie2index = array();
 		$kategoriePosledniPozice = array();
 
-		require LIBS_DIR.'/PHPExcel/PHPExcel.php';
+		require LIBS_DIR . '/PHPExcel/PHPExcel.php';
 		$dokument = new PHPExcel();
 		$dokument->removeSheetByIndex(0);
 
 		$stylZahlaviTabulky = array(
 		    'allborders' => array(
-				'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+			   'style' => PHPExcel_Style_Border::BORDER_MEDIUM
 		    ),
 		    'font' => array(
 			   'bold' => true
@@ -1249,14 +1249,14 @@ class ZavodyPresenter extends BasePresenter
 		);
 
 		$stylRamecekOkolo = array('allborders' => array(
-			'style' => PHPExcel_Style_Border::BORDER_THIN
-		));
+			   'style' => PHPExcel_Style_Border::BORDER_THIN
+			   ));
 
 		$bodoveTabulkyModel = new BodoveTabulky;
 
-		foreach($this->template->vysledky['vysledky'] as $soutez => $foo)
+		foreach ($this->template->vysledky['vysledky'] as $soutez => $foo)
 		{
-			foreach($foo as $kategorie => $bar)
+			foreach ($foo as $kategorie => $bar)
 			{
 				if(!array_key_exists($kategorie, $kategorie2index))
 				{
@@ -1270,11 +1270,11 @@ class ZavodyPresenter extends BasePresenter
 
 				$aktualniRadek = $kategoriePosledniPozice[$kategorie];
 
-				$list->mergeCells('A'.$aktualniRadek.':F'.$aktualniRadek);
-				$styl = $list->getStyle('A'.$aktualniRadek);
+				$list->mergeCells('A' . $aktualniRadek . ':F' . $aktualniRadek);
+				$styl = $list->getStyle('A' . $aktualniRadek);
 				$styl->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 				$styl->getFont()->setBold(true)->setSize(18);
-				$list->setCellValue('A'.$aktualniRadek, $this->zvetsPrvni($soutez), true);
+				$list->setCellValue('A' . $aktualniRadek, $this->zvetsPrvni($soutez), true);
 				$aktualniRadek++;
 
 				$vysledky = $bar['vysledky'];
@@ -1286,7 +1286,7 @@ class ZavodyPresenter extends BasePresenter
 				$list->setCellValueByColumnAndRow(4, $aktualniRadek, 'Výsledný čas', true);
 				$list->setCellValueByColumnAndRow(5, $aktualniRadek, 'Body', true);
 
-				$list->getStyle('A'.$aktualniRadek.':F'.$aktualniRadek)->applyFromArray($stylZahlaviTabulky)->getBorders()->applyFromArray($stylRamecekOkolo);
+				$list->getStyle('A' . $aktualniRadek . ':F' . $aktualniRadek)->applyFromArray($stylZahlaviTabulky)->getBorders()->applyFromArray($stylRamecekOkolo);
 
 				$aktualniRadek++;
 				$offsetPrvnihoDruzstva = NULL;
@@ -1294,25 +1294,25 @@ class ZavodyPresenter extends BasePresenter
 				$bodovaTabulka = $bodoveTabulkyModel->findByUcast($vysledek['id_ucasti'])->fetch();
 				$bodyModel = new Body();
 				$body = $bodyModel->findByTabulka($bodovaTabulka['id']);
-				for($i=0; $i<5; $i++)
+				for ($i = 0; $i < 5; $i++)
 				{
 					$vysledky[] = array();
 				}
-				foreach($vysledky as $vysledek)
+				foreach ($vysledky as $vysledek)
 				{
 					if($offsetPrvnihoDruzstva === NULL) $offsetPrvnihoDruzstva = $aktualniRadek;
 
 					// IF(A2=1,10,IF(A2=2,9,0))
-					$vzorecBody = '=IF(A'.$aktualniRadek.'<>"",IF(D'.$aktualniRadek.'=1000,0,';
+					$vzorecBody = '=IF(A' . $aktualniRadek . '<>"",IF(D' . $aktualniRadek . '=1000,0,';
 					$zavorky = '';
-					foreach($body as $bod)
+					foreach ($body as $bod)
 					{
-						$vzorecBody .= 'IF(A'.$aktualniRadek.'='.$bod['poradi'].','.$bod['body'].',';
+						$vzorecBody .= 'IF(A' . $aktualniRadek . '=' . $bod['poradi'] . ',' . $bod['body'] . ',';
 						$zavorky .= ')';
 					}
-					$vzorecBody .= '0'.$zavorky.'),"")';
+					$vzorecBody .= '0' . $zavorky . '),"")';
 
-					$vzorecPoradi = '=IF(D'.$aktualniRadek.'<>"",RANK(D'.$aktualniRadek.',D$'.$offsetPrvnihoDruzstva.':D$'.($offsetPrvnihoDruzstva+count($vysledky)-1).',1),"")';
+					$vzorecPoradi = '=IF(D' . $aktualniRadek . '<>"",RANK(D' . $aktualniRadek . ',D$' . $offsetPrvnihoDruzstva . ':D$' . ($offsetPrvnihoDruzstva + count($vysledky) - 1) . ',1),"")';
 					// Výsledné pořadí
 					$list->setCellValueByColumnAndRow(0, $aktualniRadek, $vzorecPoradi);
 					$list->getStyleByColumnAndRow(0, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1321,11 +1321,11 @@ class ZavodyPresenter extends BasePresenter
 					if(isset($vysledek['druzstvo'])) $list->setCellValueByColumnAndRow(1, $aktualniRadek, $vysledek['druzstvo']);
 
 					// Okres
-					if(isset($vysledek['okres_zkratka']))$list->setCellValueByColumnAndRow(2, $aktualniRadek, $vysledek['okres_zkratka']);
+					if(isset($vysledek['okres_zkratka'])) $list->setCellValueByColumnAndRow(2, $aktualniRadek, $vysledek['okres_zkratka']);
 					$list->getStyleByColumnAndRow(2, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
 					// Výsledný čas pro tisk
-					$list->setCellValueByColumnAndRow(4, $aktualniRadek, '=IF(D'.$aktualniRadek.'<>"",IF(D'.$aktualniRadek.'>500,"NP",D'.$aktualniRadek.'),"")');
+					$list->setCellValueByColumnAndRow(4, $aktualniRadek, '=IF(D' . $aktualniRadek . '<>"",IF(D' . $aktualniRadek . '>500,"NP",D' . $aktualniRadek . '),"")');
 
 					$list->setCellValueByColumnAndRow(5, $aktualniRadek, $vzorecBody);
 					$list->getStyleByColumnAndRow(5, $aktualniRadek)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1351,7 +1351,7 @@ class ZavodyPresenter extends BasePresenter
 					$list->getColumnDimension('D')->setOutlineLevel(1);
 
 					// rámaček okolo celého řádku
-					$list->getStyle('A'.$aktualniRadek.':F'.$aktualniRadek)->getBorders()->applyFromArray($stylRamecekOkolo);
+					$list->getStyle('A' . $aktualniRadek . ':F' . $aktualniRadek)->getBorders()->applyFromArray($stylRamecekOkolo);
 
 					$aktualniRadek++;
 				}
@@ -1367,33 +1367,32 @@ class ZavodyPresenter extends BasePresenter
 				$list->getPageSetup()->setHorizontalCentered(true);
 				$list->getPageSetup()->setVerticalCentered(false);
 				$hf = new PHPExcel_Worksheet_HeaderFooter();
-				$hf->setEvenHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
-				$hf->setOddHeader('&B&20Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok'].' - &A');
+				$hf->setEvenHeader('&B&20Výsledky ze soutěže ' . $this->template->zavod['nazev'] . ' ' . $this->template->zavod['rok'] . ' - &A');
+				$hf->setOddHeader('&B&20Výsledky ze soutěže ' . $this->template->zavod['nazev'] . ' ' . $this->template->zavod['rok'] . ' - &A');
 				$list->setHeaderFooter($hf);
-
 			}
 		}
 
 		$vlastnosti = $dokument->getProperties();
-		$vlastnosti->setCreator('Informační systém '.self::$liga['zkratka']);
+		$vlastnosti->setCreator('Informační systém ' . self::$liga['zkratka']);
 		$vlastnosti->setCreated(time());
-		$vlastnosti->setTitle('Výsledky ze soutěže '.$this->template->zavod['nazev'].' '.$this->template->zavod['rok']);
+		$vlastnosti->setTitle('Výsledky ze soutěže ' . $this->template->zavod['nazev'] . ' ' . $this->template->zavod['rok']);
 
 		$writer = new PHPExcel_Writer_Excel2007($dokument);
 		$writer->setPreCalculateFormulas(false);
 
 		$this->getHttpResponse()->addHeader('Content-Type', 'pplication/vnd.openxmlformats-officedocument.spreadsheetml.document; charset=utf-8');
-		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename='.String::webalize($this->template->zavod['nazev']).'-'.$this->template->zavod['rok'].'-vysledky.xlsx');
+		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename=' . String::webalize($this->template->zavod['nazev']) . '-' . $this->template->zavod['rok'] . '-vysledky.xlsx');
 
 		$tempDir = Environment::getVariable('tempDir');
 		srand(time('Yhs'));
 		$tmpFile = rand();
 
-		$writer->save($tempDir.'/'.$tmpFile);
+		$writer->save($tempDir . '/' . $tmpFile);
 		$dokument->disconnectWorksheets();
 		unset($dokument);
-		readfile($tempDir.'/'.$tmpFile);
-		unlink($tempDir.'/'.$tmpFile);
+		readfile($tempDir . '/' . $tmpFile);
+		unlink($tempDir . '/' . $tmpFile);
 		$this->terminate();
 	}
 

@@ -52,6 +52,11 @@ class Sportoviste extends BaseModel
 		return $this->findAll()->where('[okresy].[id] = %i', $id);
 	}
 
+	public function findByMisto($id)
+	{
+		return $this->findAll()->where('[mista].[id] = %i', $id);
+	}
+
 	public function muzeEditovat($id, $id_uzivatele)
 	{
 		return (bool)$this->connection
