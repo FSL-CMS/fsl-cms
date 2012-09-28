@@ -45,19 +45,14 @@ class MistaPresenter extends BasePresenter
 		$this->setTitle('Obce sborů nebo sportovišť');
 	}
 
-	public function renderEdit($id = 0)
+	public function renderEdit($id = 0, $backlink = NULL)
 	{
 		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
+
+		if($backlink !== NULL) $this['editForm']['backlink']->setValue($backlink);
 
 		if($id == 0) $this->setTitle('Přidání místa');
 		else $this->setTitle('Úprava místa');
-	}
-
-	public function handleEdit($id = 0)
-	{
-		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
-
-		$this->invalidateControl('editForm');
 	}
 
 	public function createComponentEditForm()
@@ -68,6 +63,8 @@ class MistaPresenter extends BasePresenter
 
 		$okresyModel = new Okresy;
 
+		$form->addHidden('backlink');
+
 		$form->addGroup('Informace o místě');
 		$form->addText('obec', 'Obec')
 			->addRule(Form::FILLED, 'Je nutné vyplnit název obce.');
@@ -76,10 +73,8 @@ class MistaPresenter extends BasePresenter
 		$form->addRequestButton('addOkres', 'Přidat nový', 'Okresy:add');
 
 		$form->addGroup('Uložení');
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(false);
-		$form->addRequestButtonBack('back', 'Vrátit se zpět')
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
@@ -92,18 +87,12 @@ class MistaPresenter extends BasePresenter
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
 		{
-			if( $this->isAjax() )
-			{
-				$this['editForm']->setValues(array(), true);
-				$this->invalidateControl('editForm');
-			}
-			else
-			{
-				$this->getApplication()->restoreRequest($this->backlink);
-				$this->redirect('default');
-			}
+			$this->getApplication()->restoreRequest($form['backlink']->value);
+			RequestButtonHelper::redirectBack();
+
+			$this->redirect('default');
 		}
-		elseif($form['save']->isSubmittedBy())
+		elseif($form['saveAndReturn']->isSubmittedBy())
 		{
 			try
 			{
@@ -121,22 +110,19 @@ class MistaPresenter extends BasePresenter
 
 				$this->flashMessage('Místo bylo úspěšně uloženo.');
 
-				$this['editForm']->setValues(array(), true);
-				$this->invalidateControl('editForm');
+				$this->getApplication()->restoreRequest($form['backlink']->value);
+				RequestButtonHelper::redirectBack();
 
-				$this->getApplication()->restoreRequest($this->backlink);
-
-				if( $this->isAjax() ) $this->invalidateControl('mista');
-				else $this->redirect('default');
+				$this->redirect('default');
 			}
 			catch(AlreadyExistException $e)
 			{
 				$this->flashMessage('Ukládaná obec již existuje.', 'warning');
 
 				$this->getApplication()->restoreRequest($this->backlink);
+				RequestButtonHelper::redirectBack();
 
-				if( $this->isAjax() ) $this->invalidateControl('mista');
-				else $this->redirect('default');
+				$this->redirect('default');
 			}
 			catch(DibiException $e)
 			{

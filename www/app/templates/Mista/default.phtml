@@ -1,12 +1,5 @@
 @{block content}
 
-@{if $mista['muze_pridat'] == true}
-	{snippet editForm}
-	{widget editForm}
-	{/snippet}
-@{/if}
-
-{snippet mista}
 {if count($mista['mista'])}
 <table class="prehled">
 	<thead>
@@ -28,4 +21,3 @@
 {else}
 <p class="warning">Žádná místa nebyla nalezena.</p>
 {/if}
-{/snippet}
