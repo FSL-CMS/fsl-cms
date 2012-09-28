@@ -49,13 +49,15 @@
 		{/if}
 	<p class="warning">Zatím nejsou uvedeny žádné související položky.</p>
 {/if}
-{control pridatSouvisejiciForm begin}
-<fieldset><legend>Přidat novou související položku</legend>{$control['pridatSouvisejiciForm']['souvisejici']->control}
-		<span><span>{$control['pridatSouvisejiciForm']['souvisejici_submit']->control}</span></span>
-		{$control['pridatSouvisejiciForm']['id_souvisejiciho']->control}
-		{$control['pridatSouvisejiciForm']['save']->control}
-		</fieldset>
-	{control pridatSouvisejiciForm end}
+	{if $pouzeSpecialni == false}
+		{control pridatSouvisejiciForm begin}
+		<fieldset><legend>Přidat novou související položku</legend>{$control['pridatSouvisejiciForm']['souvisejici']->control}
+				<span><span>{$control['pridatSouvisejiciForm']['souvisejici_submit']->control}</span></span>
+				{$control['pridatSouvisejiciForm']['id_souvisejiciho']->control}
+				{$control['pridatSouvisejiciForm']['save']->control}
+				</fieldset>
+		{control pridatSouvisejiciForm end}
+	{/if}
 {/if}
 {/snippet}
 
