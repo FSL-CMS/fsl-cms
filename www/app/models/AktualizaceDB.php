@@ -166,4 +166,9 @@ class AktualizaceDB extends BaseModel
 		");
 	}
 
+	private function from4to5()
+	{
+		$this->connection->loadFile(self::$SQL_PATH.'/updates/4to5.sql');
+	}
+
 }
