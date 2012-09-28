@@ -493,7 +493,7 @@ class Vysledky extends BaseModel
 				->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
 				->leftJoin('[sbory] [poradatel] ON [poradatel].[id] = [poradatele].[id_sboru]')
 				->leftJoin('[mista] [mista_poradatele] ON [mista_poradatele].[id] = [poradatel].[id_mista]')
-				->where('[zavody].[id_mista] = (SELECT [id_mista] FROM [zavody] WHERE [zavody].[id] = %i)', $id, ' AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, ' AND [vysledky].[vysledny_cas] = '.$maximum['vysledny_cas'].' AND [druzstva].[id_kategorie] = %i', $maximum['id_kategorie'], ' AND [ucasti].[id_souteze] = %i', $maximum['id_souteze'], 'AND [kategorie].[id] IN (SELECT [ucasti].[id_kategorie] FROM [ucasti] WHERE [id_zavodu] = %i)', $id);
+				->where('[zavody].[id_mista] = (SELECT [id_mista] FROM [zavody] WHERE [zavody].[id] = %i)', $id, 'AND [zavody].[datum] < (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i)', $id, 'AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, ' AND [vysledky].[vysledny_cas] = '.$maximum['vysledny_cas'].' AND [druzstva].[id_kategorie] = %i', $maximum['id_kategorie'], ' AND [ucasti].[id_souteze] = %i', $maximum['id_souteze'], 'AND [kategorie].[id] IN (SELECT [ucasti].[id_kategorie] FROM [ucasti] WHERE [id_zavodu] = %i)', $id);
 			if( $id_druzstva != NULL ) $maximum_->where('[druzstva].[id] = %i', $id_druzstva);
 			$prikaz .= (string)$maximum_;
 			if( $i<count($maxima_) ) $prikaz .= ') UNION (';
