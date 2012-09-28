@@ -36,7 +36,7 @@ abstract class CommonBasePresenter extends Presenter
 	/**
 	 * Verze FSL CMS
 	 */
-	const FSL_CMS_VERZE = '1.0.3';
+	const FSL_CMS_VERZE = '1.0.4-dev';
 
 	/**
 	 * Odkaz na hlavní stránku FSL CMS
@@ -709,6 +709,9 @@ abstract class CommonBasePresenter extends Presenter
 
 				$nod15 = $sprava->add('Místa', $this->link('Mista:'));
 				if($presenter == 'Mista' && $this->getAction() == 'default') $nav->setCurrent($nod15);
+
+				$nod15_ = $nod15->add('Úprava', $this->link('Mista:'));
+				if($presenter == 'Mista' && $this->getAction() == 'edit') $nav->setCurrent($nod15_);
 
 				$nod15_ = $nod15->add('Přidat nové', $this->link('Mista:add'));
 				if($presenter == 'Mista' && $this->getAction() == 'add') $nav->setCurrent($nod15_);
