@@ -42,14 +42,14 @@ class Rocniky extends BaseModel implements IUdrzba
 	public function findLast()
 	{
 		$dotaz = $this->connection->select('[id]')->from($this->table)->orderBy('[rocnik] DESC');
-		if( $this->zverejnene == 1 ) $dotaz->where('[rocniky].[zverejneny] = 1');
+		if( $this->zverejnene == true ) $dotaz->where('[rocniky].[zverejneny] = 1');
 		return $dotaz;
 	}
 
 	public function findAll()
 	{
 		$dotaz = $this->connection->select('[rocniky].[id], [rok], [rocnik], [zverejneny], [pravidla].[id] AS [id_pravidel]')->from($this->table)->leftJoin('[pravidla] ON [pravidla].[id_rocniku] = [rocniky].[id]')->orderBy('[rocnik]');
-		if( $this->zverejnene == 1 ) $dotaz->where('[rocniky].[zverejneny] = 1');
+		if( $this->zverejnene == true ) $dotaz->where('[rocniky].[zverejneny] = 1');
 		return $dotaz;
 	}
 

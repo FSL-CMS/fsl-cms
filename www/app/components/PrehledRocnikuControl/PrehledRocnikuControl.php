@@ -32,6 +32,8 @@ class PrehledRocnikuControl extends BaseControl
 
 	public function render()
 	{
+		if($this->getPresenter()->user->isAllowed('rocniky', 'edit')) $this->model->zobrazitNezverejnene();
+
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/rocniky.phtml');
 

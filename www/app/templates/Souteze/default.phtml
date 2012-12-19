@@ -1,6 +1,6 @@
 @{block content}
 
-{if $souteze['muze_editovat'] == true}<p><a href="{plink add}" class="add">Přidat novou soutěž</a></p>{/if}
+{if $souteze['muze_editovat'] == true}<p class="config"><a href="{plink add}" class="add">Přidat novou soutěž</a></p>{/if}
 
 {if count($souteze['souteze'])}
 {widget soutezeForm begin}

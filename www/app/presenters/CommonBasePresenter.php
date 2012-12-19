@@ -52,7 +52,7 @@ abstract class CommonBasePresenter extends Presenter
 		if(empty(self::$liga['popis'])) self::$liga['popis'] = self::$liga['nazev'];
 
 		// Verze databáze, kterou požaduje aplikace
-		if(!defined('VERZE_DB')) define('VERZE_DB', 4);
+		if(!defined('VERZE_DB')) define('VERZE_DB', 5);
 	}
 
 	protected function startup()
@@ -659,7 +659,7 @@ abstract class CommonBasePresenter extends Presenter
 					$nod3 = $sprava->add('Ročníky', $this->link('Rocniky:'));
 					if($presenter == 'Rocniky' && $this->getAction() == 'default') $nav->setCurrent($nod3);
 
-					$nod4 = $sprava->add('Přidání ročníku', $this->link('Rocniky:add'));
+					$nod4 = $nod3->add('Přidání ročníku', $this->link('Rocniky:add'));
 					if($presenter == 'Rocniky' && $this->getAction() == 'add') $nav->setCurrent($nod4);
 				}
 

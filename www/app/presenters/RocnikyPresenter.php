@@ -103,10 +103,13 @@ class RocnikyPresenter extends BasePresenter
 
 	public function renderEdit($id = 0)
 	{
-		$soutezeRocniku = new SoutezeRocniku;
-		$data = $this->model->find($id)->fetch();
-		$data['souteze'] = $soutezeRocniku->findByRocnik($id)->fetchAssoc('id_souteze,id_kategorie,=');
-		if($id != 0) $this['editForm']->setDefaults($data);
+		if($id != 0)
+		{
+			$soutezeRocniku = new SoutezeRocniku;
+			$data = $this->model->find($id)->fetch();
+			$data['souteze'] = $soutezeRocniku->findByRocnik($id)->fetchAssoc('id_souteze,id_kategorie,=');
+			$this['editForm']->setDefaults($data);
+		}
 
 		if($id == 0) $this->setTitle('Přidání ročníku');
 		else $this->setTitle('Úprava ročníku');
@@ -126,16 +129,20 @@ class RocnikyPresenter extends BasePresenter
 			   ->addRule(Form::INTEGER, 'Rok musí být číslo.')
 			   ->addRule(Form::FILLED, 'Je nutné vyplnit rok ročníku.');
 
+		$form->addGroup('Informace o soutěžích');
+		$form->addSubmit('editSoutezeButton', 'Upravit soutěže a jejich bodové tabulky')->setValidationScope(false);
+
 		$soutezeModel = new Souteze;
 		$souteze = $soutezeModel->findAll()->fetchAssoc('id');
-
-		$form->addGroup('Informace o soutěžích');
 
 		$bodoveTabulkyModel = new BodoveTabulky;
 		$kategorieModel = new Kategorie;
 		$kategorie = $kategorieModel->findAll()->fetchAssoc('id');
 		$bodoveTabulky = $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id', 'nazev');
 		$soutezeCont = $form->addContainer('souteze');
+
+		//$kategorieSoutezeModel = new KategorieSouteze;
+		//$katSout = $kategorieSoutezeModel->findAll()->fetchAssoc('id_souteze,id_kategorie');
 
 		foreach ($souteze as $id_souteze => $soutez)
 		{
@@ -152,9 +159,9 @@ class RocnikyPresenter extends BasePresenter
 		$form->addGroup(null);
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít na ročník');
-		$form->addRequestButtonBack('back', 'Vrátit se zpět')
-			   ->setValidationScope(false);
-		$form->addSubmit('cancel', 'Zrušit')
+		/*$form->addRequestButtonBack('back', 'Vrátit se zpět')
+			   ->setValidationScope(false);*/
+		$form->addSubmit('cancel', 'Zpět')
 			   ->setValidationScope(false);
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
@@ -163,7 +170,11 @@ class RocnikyPresenter extends BasePresenter
 	public function editFormSubmitted(AppForm $form)
 	{
 		$id = (int) $this->getParam('id');
-		if($form['cancel']->isSubmittedBy())
+		if($form['editSoutezeButton']->isSubmittedBy())
+		{
+			$this->redirect('Souteze:', array('backlink' => $this->getApplication()->storeRequest()));
+		}
+		elseif($form['cancel']->isSubmittedBy())
 		{
 
 		}

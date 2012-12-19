@@ -36,7 +36,7 @@ class KategorieSouteze extends BaseModel
 			->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
 			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
 	}
-	
+
 	public function findAllToSelect()
 	{
 		return $this->connection
@@ -46,7 +46,7 @@ class KategorieSouteze extends BaseModel
 			->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
 			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
 	}
-	
+
 	public function insert(array $data)
 	{
 		$ret = parent::insert($data)->execute();
@@ -63,5 +63,5 @@ class KategorieSouteze extends BaseModel
 	{
 		return parent::delete($id)->execute();
 	}
-	
+
 }

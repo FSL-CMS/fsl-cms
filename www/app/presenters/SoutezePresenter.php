@@ -160,7 +160,7 @@ class SoutezePresenter extends SecuredPresenter
 			$kategorieSoutezeModel = new KategorieSouteze;
 			try
 			{
-				$dataDoDb = array('nazev' => $data['nazev'], 'popis' => $data['popis'], 'platnost_od' => $data['platnost_od'], 'platnost_do' => $data['platnost_do']);
+				$dataDoDb = array('nazev' => $data['nazev'], 'popis' => $data['popis'], /*'platnost_od' => $data['platnost_od'], 'platnost_do' => $data['platnost_do']*/);
 
 				if($id == 0)
 				{
