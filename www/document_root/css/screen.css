@@ -253,7 +253,7 @@ a.printer			{padding-left: 20px; background: url('../images/icons/printer.png') 
 a.aktualni-odkaz	{text-decoration: none;}
 /* ----------------------------------------------------------------------mp-- */
 
-p, div.ok, div.error, table.prehled, fieldset {margin-bottom: 1.5em !important;}
+p, div.ok, div.error, div.warning, table.prehled, fieldset {margin-bottom: 1.5em !important;}
 
 /* ----------------------------------------------------------------------mp-- */
 /* Řazení tabulek */
