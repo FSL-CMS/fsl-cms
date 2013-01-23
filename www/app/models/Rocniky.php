@@ -132,11 +132,14 @@ class Rocniky extends BaseModel implements IUdrzba
 	public function update($id, array $data)
 	{
 		$return = parent::update($id, $data)->execute();
-		$data = $this->constructUri($data);
-		$urlsModel = new Urls;
-		$urlsModel->setUrl('Rocniky', 'rocnik', $id, $data['uri']);
-		$urlsModel->setUrl('Rocniky', 'vysledky', $id, $data['uri'].'/vysledky');
-		$urlsModel->setUrl('Pravidla', 'pravidla', $id, $data['uri'].'/pravidla');
+		if(isset($data['rocnik']))
+		{
+			$data = $this->constructUri($data);
+			$urlsModel = new Urls;
+			$urlsModel->setUrl('Rocniky', 'rocnik', $id, $data['uri']);
+			$urlsModel->setUrl('Rocniky', 'vysledky', $id, $data['uri'].'/vysledky');
+			$urlsModel->setUrl('Pravidla', 'pravidla', $id, $data['uri'].'/pravidla');
+		}
 		return $return;
 	}
 
