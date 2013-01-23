@@ -1,7 +1,3 @@
-/www/data/*
-/www/temp/*
-/www/log/*
-/www/nbproject/
+/nbproject/
 /www/app/components/MultipleFileUpload/Models/SQLite/database.*
 /build/
-/nbproject
