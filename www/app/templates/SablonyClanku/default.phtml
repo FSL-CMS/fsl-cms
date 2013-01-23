@@ -1,0 +1,24 @@
+@{block content}
+
+{if $user->isAllowed('sablonyclanku', 'add')}<p class="config"><a href="{plink add}" class="add">Přidat novou šablonu</a></p>{/if}
+
+{if count($sablony['sablony'])}
+<table class="prehled">
+	<thead>
+	<tr>
+	     <th>Název</th>{if $user->isAllowed('sablonyclanku', 'edit')}<th colspan="2">Správa</th>{/if}
+	</tr>
+	</thead>
+	<tbody>
+{foreach $sablony['sablony'] as $sablona}
+	<tr>
+     	<td>{$sablona['nazev']}</td>
+     	{if $user->isAllowed('sablonyclanku', 'edit')}<td><a href="{plink edit, $sablona['id']}" title="Úprava informací" class="edit">Upravit</a></td>{/if}
+     	{if $user->isAllowed('sablonyclanku', 'delete')}<td><a href="{plink delete!, $sablona['id']}" title="Smazání" class="delete">Smazat</a></td>{/if}
+	</tr>
+{/foreach}
+	</tbody>
+</table>
+{else}
+	<p class="warning">Žádné šablony nebyly nalezeny.</p>
+{/if}

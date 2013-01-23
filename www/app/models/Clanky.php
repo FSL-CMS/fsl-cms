@@ -172,4 +172,25 @@ class Clanky extends Zverejnovane implements IUdrzba
 		}
 		return $data;
 	}
+
+	/**
+	 * Nalezne šablony článků pro jeden článek
+	 * @param int $id ID článku
+	 * @return DibiResult
+	 */
+	public function findSablony($id)
+	{
+		$sablonyClankuModel = new SablonyClanku;
+		return $sablonyClankuModel->findByClanek($id);
+	}
+
+	public function pridejSablonu($id, $id_sablony)
+	{
+		$this->connection->insert('clanky_sablony', array('id_clanku%i' => $id, 'id_sablony%i' => $id_sablony))->execute();
+	}
+
+	public function odeberSablonu($id, $id_sablony)
+	{
+		$this->connection->delete('clanky_sablony')->where(array('id_clanku%i' => $id, 'id_sablony%i' => $id_sablony))->execute();
+	}
 }

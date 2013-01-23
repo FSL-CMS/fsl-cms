@@ -146,7 +146,12 @@ class ClankyPresenter extends BasePresenter
 	public function renderEdit($id = 0)
 	{
 		$this->template->clanek = $this->model->find($id)->fetch();
-		if($id != 0) $this['clanekForm']->setDefaults($this->template->clanek);
+		if($id != 0)
+		{
+			$defaults = $this->template->clanek;
+			$defaults['sablony_clanku'] = $this->model->findSablony($id)->fetchPairs('id', 'id');
+			$this['clanekForm']->setDefaults($defaults);
+		}
 
 		if($id != 0) $this->setTitle('Úprava článku');
 		else $this->setTitle('Přidání nového článku');
@@ -157,6 +162,7 @@ class ClankyPresenter extends BasePresenter
 		$id = (int) $this->getParam('id');
 
 		$form = new RequestButtonReceiver($this, 'clanekForm');
+		$sablonyClankuModel = new SablonyClanku;
 
 		$form->getRenderer()->setClientScript(new LiveClientScript($form));
 
@@ -173,6 +179,11 @@ class ClankyPresenter extends BasePresenter
 		$kategorie_clanku = $this->model->findKategorie()->fetchPairs('id', 'nazev');
 		$form->addSelect('id_kategorie', 'Kategorie článku', $kategorie_clanku)
 			   ->setOption('description', $form->addRequestButton('addRocniky', 'Přidat novou', 'KategorieClanku:add'));
+
+		$sablonyClanku = $sablonyClankuModel->findAllToSelect()->fetchPairs('id', 'nazev');
+		$form->addMultiSelect('sablony_clanku', 'Šablony článků', $sablonyClanku, 3)
+			   ->setOption('description', 'Šablona určuje dodatečný vzhled článku, především tématický obrázek. Můžete vybrat více šablon.');
+		$form->addRequestButton('addSablony', 'Přidat novou šablonu', 'SablonyClanku:add');
 
 		$uzivateleModel = new Uzivatele();
 		$form->addSelect('id_autora', 'Autor článku', $uzivateleModel->findAllToSelect()->fetchPairs('id', 'uzivatel'))->setDefaultValue($this->user->getIdentity()->id)
@@ -194,9 +205,9 @@ class ClankyPresenter extends BasePresenter
 		$form->addGroup('Uložit');
 		$form->addCheckbox('saveAsUpdated', 'Označit článek jako aktualizovaný')->setOption('description', 'Datum a čas uložení bude uveden jako datum aktualizace článku.');
 
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('saveAndReturn', 'Uložit a přejít zpět');
-		$form->addSubmit('cancel', 'Zrušit')
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(FALSE);
 
 		$form->onSubmit[] = array($this, 'clanekFormSubmitted');
@@ -238,6 +249,25 @@ class ClankyPresenter extends BasePresenter
 				{
 					if(isset($data['saveAsUpdated']) && $data['saveAsUpdated'] == true) $clanek_data['posledni_aktualizace%sql'] = 'NOW()';
 					$this->model->update($id, $clanek_data);
+				}
+
+				// uložení šablon článku
+				if(isset($data['sablony_clanku']))
+				{
+					$sablony_insert = array();
+					$sablony_delete = $this->model->findSablony($id)->fetchPairs('id', 'id');
+					foreach ($data['sablony_clanku'] as $id_sablony)
+					{
+						if(isset($sablony_delete[$id_sablony]))
+						{
+							unset($sablony_delete[$id_sablony]);
+						}
+						else $sablony_insert[] = $id_sablony;
+					}
+					if(count($sablony_insert)) foreach ($sablony_insert as $poradatel)
+							$this->model->pridejSablonu($id, $poradatel);
+					if(count($sablony_delete)) foreach ($sablony_delete as $poradatel)
+							$this->model->odeberSablonu($id, $poradatel);
 				}
 
 				$this->flashMessage('Článek byl úspěšně uložen.', 'ok');

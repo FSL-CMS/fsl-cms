@@ -1,0 +1,9 @@
+{* Šablona s náhledem fotky *}
+
+{if $control->fotka !== false}
+	<div class="sablonaclanku-nahled">
+		<a href="{plink Fotky:fotka, $control->fotka['id']}" title="Velká fotka" class="zvetsenina" rel="galerie">
+			<img src="{plink Fotky:nahled, $control->fotka['id']}" width="{$control->fotka['sirka']}" height="{$control->fotka['vyska']}" />
+		</a>
+	</div>
+{/if}

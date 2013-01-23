@@ -1,15 +1,15 @@
 @{block content}
 
-{if $kategorie['muze_editovat'] == true}<p><a href="{plink edit}" class="add">Přidat novou kategorii</a></p>{/if}
+{if $kategorie['muze_editovat'] == true}<p class="config"><a href="{plink edit}" class="add">Přidat novou kategorii</a></p>{/if}
 
 {if count($kategorie['kategorie'])}
 {widget kategorieForm begin}
-<table>
+<table class="prehled">
 <thead>
 	<tr>
 	     <th colspan="2">Pořadí</th><th>Kategorie</th>{if $kategorie['muze_editovat'] == true}<th>Správa</th>{/if}
 	</tr>
-</thead>	
+</thead>
 <tbody class="sortable">
 	{foreach $kategorie['kategorie'] as $kat}
 		<tr>

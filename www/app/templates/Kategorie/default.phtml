@@ -1,6 +1,6 @@
 @{block content}
 
-{if $kategorie['muze_pridat'] == true}<p><a href="{plink Kategorie:edit}" class="add">Přidat novou kategorii</a></p>{/if}
+{if $kategorie['muze_pridat'] == true}<p class="config"><a href="{plink Kategorie:edit}" class="add">Přidat novou kategorii</a></p>{/if}
 
 {if count($kategorie['kategorie'])}
 {widget kategorieForm begin}

@@ -52,7 +52,7 @@ abstract class CommonBasePresenter extends Presenter
 		if(empty(self::$liga['popis'])) self::$liga['popis'] = self::$liga['nazev'];
 
 		// Verze databáze, kterou požaduje aplikace
-		if(!defined('VERZE_DB')) define('VERZE_DB', 5);
+		if(!defined('VERZE_DB')) define('VERZE_DB', 6);
 	}
 
 	protected function startup()
@@ -123,6 +123,9 @@ abstract class CommonBasePresenter extends Presenter
 		$slideshow = new SlideshowControl($this, 'slideshow');
 		$this->addComponent($slideshow, 'slideshow');
 
+		$sablonyclanku = new SablonyClankuControl($this, 'sablonyclanku');
+		//$this->addComponent($sablonyclanku, 'sablonyclanku');
+
 		$acl = new Permission;
 
 		$acl->addRole('guest');
@@ -162,6 +165,7 @@ abstract class CommonBasePresenter extends Presenter
 		$acl->addResource('souteze');
 		$acl->addResource('bodovetabulky');
 		$acl->addResource('pravidla');
+		$acl->addResource('sablonyclanku');
 
 		$acl->allow('guest', 'uzivatele', 'add');
 		$acl->allow('guest', 'sbory', 'add');
@@ -632,7 +636,7 @@ abstract class CommonBasePresenter extends Presenter
 			if($this->getAction() == 'poradaneZavody') $nav->setCurrent($nav6);
 		}
 
-		if($vsechno || in_array($presenter, array('Sprava', 'Stranky', 'Rocniky', 'Zavody', 'Kategorie', 'BodoveTabulky', 'Uzivatele', 'Sledovani', 'Mista', 'Okresy', 'Souteze', 'Druzstva', 'Ankety', 'TypySboru')))
+		if($vsechno || in_array($presenter, array('Sprava', 'Stranky', 'Rocniky', 'Zavody', 'Kategorie', 'BodoveTabulky', 'Uzivatele', 'Sledovani', 'Mista', 'Okresy', 'Souteze', 'Druzstva', 'Ankety', 'TypySboru', 'SablonyClanku')))
 		{
 			if($this->user->isAllowed('sprava', 'edit'))
 			{
@@ -773,6 +777,18 @@ abstract class CommonBasePresenter extends Presenter
 
 				$nod21 = $nod20->add('Úprava', $this->link('TypySboru:edit', $this->getParam('id', NULL)));
 				if($presenter == 'TypySboru' && $this->getAction() == 'edit') $nav->setCurrent($nod21);
+
+				$nod18 = $sprava->add('Šablony článků', $this->link('SablonyClanku:'));
+				if($presenter == 'SablonyClanku' && $this->getAction() == 'default') $nav->setCurrent($nod18);
+
+				$nod19 = $nod18->add('Přidat novou', $this->link('SablonyClanku:add'));
+				if($presenter == 'SablonyClanku' && $this->getAction() == 'add') $nav->setCurrent($nod19);
+
+				if($presenter == 'SablonyClanku' && $this->getParam('id', 0) !== 0)
+				{
+					$nod19 = $nod18->add('Úprava', $this->link('SablonyClanku:edit', $this->getParam('id')));
+					if($this->getAction() == 'edit') $nav->setCurrent($nod19);
+				}
 			}
 		}
 	}
@@ -805,7 +821,7 @@ abstract class CommonBasePresenter extends Presenter
 		$this->renderMenu();
 
 		// nastavení identity do šablony
-		$this->template->user = $this->user->isLoggedIn() ? $this->user->getIdentity() : NULL;
+		$this->template->user = $this->user->isLoggedIn() ? $this->user : NULL;
 
 		$this->template->backlink = $this->getApplication()->storeRequest();
 

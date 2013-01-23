@@ -17,20 +17,20 @@ class StrankyPresenter extends BasePresenter
 {
 
 	protected $model;
-	
+
 	protected function startup()
 	{
 		$this->model = new Stranky;
 		parent::startup();
 	}
-	
+
 	public function renderDefault()
 	{
 		$this->template->stranky = array();
-		
+
 		$this->template->stranky['muze_editovat'] = $this->user->isAllowed('stranky', 'edit');
 		$this->template->stranky['stranky'] = $this->model->findAll();
-		
+
 		$this->setTitle('Stránky');
 	}
 
@@ -46,21 +46,21 @@ class StrankyPresenter extends BasePresenter
 		$form = new AppForm;
 
 		$form->getElementPrototype()->class('ajax');
-		
+
 		foreach( $this->model->findAll()->fetchAll() as $stranka )
 		{
 			$poradi = $form->addContainer($stranka['id']);
-				
+
 			$poradi->addHidden('id')->setDefaultValue($stranka['id']);
 			$poradi->addText('poradi', 'Pořadí', 4)->setDefaultValue($stranka['poradi']);
 		}
 		$form->addSubmit('save', 'Uložit');
-		
+
 		$form->onSubmit[] = array($this, 'strankyFormSubmitted');
-		
+
 		return $form;
 	}
-	
+
 	public function strankyFormSubmitted(AppForm $form)
 	{
 		try
@@ -68,7 +68,7 @@ class StrankyPresenter extends BasePresenter
 			$data = $form->getValues();
 			foreach( $data as $poradi )
 			{
-				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );	
+				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );
 			}
 			$this->flashMessage('Údaje o stránkách byly úspěšně uloženy.');
 
@@ -76,22 +76,22 @@ class StrankyPresenter extends BasePresenter
 		}
 		catch(DibiException $e)
 		{
-			$this->flashMessage('Údaje o stránkách se nepodařilo uložit.', 'error');	
-		}	
+			$this->flashMessage('Údaje o stránkách se nepodařilo uložit.', 'error');
+		}
 	}
-	
+
 	public function actionStranka($id)
 	{
 		$this->template->stranka = $this->model->find($id)->fetch();
 		if(!$this->template->stranka) throw new BadRequestException();
 	}
-	
+
 	public function renderStranka($id)
 	{
 		//$id = $this->model->findIdByUri($uri)->fetchSingle();
-		
+
           $this->template->stranka['muze_editovat'] = $this->user->isAllowed('stranky', 'edit');
-		
+
 		$this->setTitle($this->template->stranka['nazev']);
   	}
 
@@ -108,19 +108,20 @@ class StrankyPresenter extends BasePresenter
 		$form = new RequestButtonReceiver;
 
 		$backlink = $this->getApplication()->storeRequest();
-		
+
 		$form->addGroup('Informace o stránce');
 		$form->addText('nazev', 'Název stránky')
 			->addRule(Form::FILLED, 'Je nutné vyplnit název stránky');
-		
+
 		$form->addGroup('Obsah stránky');
-		$form->addAdminTexylaTextArea('text', 'Obsah');	
+		$form->addAdminTexylaTextArea('text', 'Obsah');
 		$form->setCurrentGroup(NULL);
-			
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
+
+		$form->addGroup('Uložení');
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(FALSE);
-			
+
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 
 		return $form;
@@ -144,7 +145,7 @@ class StrankyPresenter extends BasePresenter
 
 			$this->flashMessage('Údaje o stránce byly úspěšně uloženy.');
 		}
-		
+
 		if($id != 0) $this->redirect('Stranky:stranka', $id);
 		else $this->redirect('Stranky:default');
 	}

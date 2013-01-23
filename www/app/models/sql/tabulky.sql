@@ -1,9 +1,6 @@
--- Adminer 3.5.1 MySQL dump
+-- Adminer 3.6.3 MySQL dump
 
 SET NAMES utf8;
-SET foreign_key_checks = 0;
-SET time_zone = 'SYSTEM';
-SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 CREATE TABLE `bodove_tabulky` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -22,7 +19,7 @@ CREATE TABLE `body` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_bodove_tabulky_poradi` (`id_bodove_tabulky`,`poradi`),
   KEY `id_bodove_tabulky` (`id_bodove_tabulky`),
-  CONSTRAINT `body_ibfk_4` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON DELETE CASCADE
+  CONSTRAINT `body_ibfk_5` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -43,9 +40,21 @@ CREATE TABLE `clanky` (
   PRIMARY KEY (`id`),
   KEY `id_kategorie` (`id_kategorie`),
   KEY `id_autora` (`id_autora`),
-  CONSTRAINT `clanky_ibfk_4` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie_clanku` (`id`),
-  CONSTRAINT `clanky_ibfk_5` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`)
+  CONSTRAINT `clanky_ibfk_7` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `clanky_ibfk_6` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie_clanku` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+
+CREATE TABLE `clanky_sablony` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_clanku` int(10) unsigned NOT NULL,
+  `id_sablony` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_clanku` (`id_clanku`),
+  KEY `id_sablony` (`id_sablony`),
+  CONSTRAINT `clanky_sablony_ibfk_2` FOREIGN KEY (`id_sablony`) REFERENCES `sablony_clanku` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `clanky_sablony_ibfk_1` FOREIGN KEY (`id_clanku`) REFERENCES `clanky` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci COMMENT='Vazební tabulka článků a šablon';
 
 
 CREATE TABLE `diskuze` (
@@ -59,8 +68,8 @@ CREATE TABLE `diskuze` (
   PRIMARY KEY (`id`),
   KEY `id_tematu` (`id_tematu`),
   KEY `id_autora` (`id_autora`),
-  CONSTRAINT `diskuze_ibfk_1` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`),
-  CONSTRAINT `diskuze_ibfk_2` FOREIGN KEY (`id_tematu`) REFERENCES `temata` (`id`)
+  CONSTRAINT `diskuze_ibfk_4` FOREIGN KEY (`id_tematu`) REFERENCES `temata` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `diskuze_ibfk_3` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -75,8 +84,8 @@ CREATE TABLE `druzstva` (
   UNIQUE KEY `id_sboru_2` (`id_sboru`,`id_kategorie`,`poddruzstvo`),
   KEY `id_sboru` (`id_sboru`),
   KEY `id_kategorie` (`id_kategorie`),
-  CONSTRAINT `druzstva_ibfk_1` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `druzstva_ibfk_2` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `druzstva_ibfk_4` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `druzstva_ibfk_3` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -104,7 +113,7 @@ CREATE TABLE `galerie` (
   `typ_key` varchar(255) COLLATE utf8_czech_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_autora` (`id_autora`),
-  CONSTRAINT `galerie_ibfk_1` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`)
+  CONSTRAINT `galerie_ibfk_2` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -138,9 +147,9 @@ CREATE TABLE `kategorie_souteze` (
   KEY `id_souteze` (`id_souteze`),
   KEY `id_bodove_tabulky` (`id_bodove_tabulky`),
   KEY `id_kategorie` (`id_kategorie`),
-  CONSTRAINT `kategorie_souteze_ibfk_10` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`),
-  CONSTRAINT `kategorie_souteze_ibfk_16` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `kategorie_souteze_ibfk_5` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON DELETE SET NULL
+  CONSTRAINT `kategorie_souteze_ibfk_19` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `kategorie_souteze_ibfk_17` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `kategorie_souteze_ibfk_18` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci COMMENT='Vazební tabulka pro dvojici kategorie-soutěže';
 
 
@@ -153,8 +162,8 @@ CREATE TABLE `komentare` (
   PRIMARY KEY (`id`),
   KEY `id_autora` (`id_autora`),
   KEY `id_diskuze` (`id_diskuze`),
-  CONSTRAINT `komentare_ibfk_1` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `komentare_ibfk_2` FOREIGN KEY (`id_diskuze`) REFERENCES `diskuze` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `komentare_ibfk_4` FOREIGN KEY (`id_diskuze`) REFERENCES `diskuze` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `komentare_ibfk_3` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -165,7 +174,7 @@ CREATE TABLE `mista` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `obec_id_okresu` (`obec`,`id_okresu`),
   KEY `id_okresu` (`id_okresu`),
-  CONSTRAINT `mista_ibfk_1` FOREIGN KEY (`id_okresu`) REFERENCES `okresy` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `mista_ibfk_2` FOREIGN KEY (`id_okresu`) REFERENCES `okresy` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -215,8 +224,8 @@ CREATE TABLE `poradatele` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_sboru_id_zavodu` (`id_sboru`,`id_zavodu`),
   KEY `id_zavodu` (`id_zavodu`),
-  CONSTRAINT `poradatele_ibfk_1` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`),
-  CONSTRAINT `poradatele_ibfk_2` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`)
+  CONSTRAINT `poradatele_ibfk_4` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `poradatele_ibfk_3` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -226,7 +235,7 @@ CREATE TABLE `pravidla` (
   `id_rocniku` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_rocniku` (`id_rocniku`),
-  CONSTRAINT `pravidla_ibfk_1` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`) ON DELETE CASCADE
+  CONSTRAINT `pravidla_ibfk_2` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -241,9 +250,17 @@ CREATE TABLE `rocniky` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
+CREATE TABLE `sablony_clanku` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nazev` varchar(255) COLLATE utf8_czech_ci NOT NULL,
+  `obrazek_umisteni` enum('vlevo','vpravo') COLLATE utf8_czech_ci NOT NULL DEFAULT 'vlevo',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci COMMENT='Šablony článků';
+
+
 CREATE TABLE `sbory` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `id_typu` int(11) unsigned NOT NULL,
+  `id_typu` int(11) unsigned DEFAULT NULL,
   `id_mista` int(11) unsigned NOT NULL,
   `privlastek` varchar(255) COLLATE utf8_czech_ci NOT NULL,
   `kontakt` text COLLATE utf8_czech_ci NOT NULL,
@@ -257,10 +274,10 @@ CREATE TABLE `sbory` (
   KEY `id_mista` (`id_mista`),
   KEY `id_kontaktni_osoby` (`id_kontaktni_osoby`),
   KEY `id_spravce` (`id_spravce`),
-  CONSTRAINT `sbory_ibfk_5` FOREIGN KEY (`id_kontaktni_osoby`) REFERENCES `uzivatele` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `sbory_ibfk_5` FOREIGN KEY (`id_typu`) REFERENCES `typy_sboru` (`id`) ON UPDATE NO ACTION,
   CONSTRAINT `sbory_ibfk_6` FOREIGN KEY (`id_mista`) REFERENCES `mista` (`id`) ON UPDATE NO ACTION,
-  CONSTRAINT `sbory_ibfk_7` FOREIGN KEY (`id_spravce`) REFERENCES `uzivatele` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  CONSTRAINT `sbory_ibfk_8` FOREIGN KEY (`id_typu`) REFERENCES `typy_sboru` (`id`) ON UPDATE NO ACTION
+  CONSTRAINT `sbory_ibfk_7` FOREIGN KEY (`id_kontaktni_osoby`) REFERENCES `uzivatele` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `sbory_ibfk_8` FOREIGN KEY (`id_spravce`) REFERENCES `uzivatele` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -272,7 +289,7 @@ CREATE TABLE `sledovani` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `tabulka` (`tabulka`,`id_radku`,`id_uzivatele`),
   KEY `id_uzivatele` (`id_uzivatele`),
-  CONSTRAINT `sledovani_ibfk_1` FOREIGN KEY (`id_uzivatele`) REFERENCES `uzivatele` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `sledovani_ibfk_2` FOREIGN KEY (`id_uzivatele`) REFERENCES `uzivatele` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -293,7 +310,7 @@ CREATE TABLE `soubory` (
   KEY `soubor` (`soubor`,`pripona`),
   KEY `id_autora` (`id_autora`),
   KEY `id_souvisejiciho` (`id_souvisejiciho`),
-  CONSTRAINT `soubory_ibfk_1` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `soubory_ibfk_2` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -320,10 +337,10 @@ CREATE TABLE `souteze_rocniku` (
   KEY `id_rocniku` (`id_rocniku`),
   KEY `id_kategorie` (`id_kategorie`),
   KEY `id_bodove_tabulky` (`id_bodove_tabulky`),
-  CONSTRAINT `souteze_rocniku_ibfk_1` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`),
-  CONSTRAINT `souteze_rocniku_ibfk_2` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`),
-  CONSTRAINT `souteze_rocniku_ibfk_3` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`),
-  CONSTRAINT `souteze_rocniku_ibfk_4` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`)
+  CONSTRAINT `souteze_rocniku_ibfk_8` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `souteze_rocniku_ibfk_5` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `souteze_rocniku_ibfk_6` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `souteze_rocniku_ibfk_7` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -346,7 +363,7 @@ CREATE TABLE `sportoviste` (
   `delka` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_mista` (`id_mista`),
-  CONSTRAINT `sportoviste_ibfk_1` FOREIGN KEY (`id_mista`) REFERENCES `mista` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `sportoviste_ibfk_2` FOREIGN KEY (`id_mista`) REFERENCES `mista` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -361,9 +378,9 @@ CREATE TABLE `startovni_poradi` (
   UNIQUE KEY `id_zavodu_2` (`id_zavodu`,`id_druzstva`),
   KEY `id_druzstva` (`id_druzstva`),
   KEY `id_autora` (`id_autora`),
-  CONSTRAINT `startovni_poradi_ibfk_1` FOREIGN KEY (`id_druzstva`) REFERENCES `druzstva` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `startovni_poradi_ibfk_2` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `startovni_poradi_ibfk_3` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `startovni_poradi_ibfk_6` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `startovni_poradi_ibfk_4` FOREIGN KEY (`id_druzstva`) REFERENCES `druzstva` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `startovni_poradi_ibfk_5` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -388,7 +405,7 @@ CREATE TABLE `temata` (
   PRIMARY KEY (`id`),
   KEY `poradi` (`poradi`),
   KEY `id_autora` (`id_autora`),
-  CONSTRAINT `temata_ibfk_1` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `temata_ibfk_2` FOREIGN KEY (`id_autora`) REFERENCES `uzivatele` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -402,8 +419,8 @@ CREATE TABLE `terce` (
   UNIQUE KEY `id_sboru_id_typu` (`id_sboru`,`id_typu`),
   KEY `id_sboru` (`id_sboru`),
   KEY `id_typu` (`id_typu`),
-  CONSTRAINT `terce_ibfk_1` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `terce_ibfk_2` FOREIGN KEY (`id_typu`) REFERENCES `typy_tercu` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `terce_ibfk_4` FOREIGN KEY (`id_typu`) REFERENCES `typy_tercu` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `terce_ibfk_3` FOREIGN KEY (`id_sboru`) REFERENCES `sbory` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -437,10 +454,10 @@ CREATE TABLE `ucasti` (
   KEY `id_souteze` (`id_souteze`),
   KEY `id_kategorie` (`id_kategorie`),
   KEY `id_bodove_tabulky` (`id_bodove_tabulky`),
-  CONSTRAINT `ucasti_ibfk_1` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `ucasti_ibfk_2` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `ucasti_ibfk_3` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `ucasti_ibfk_4` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `ucasti_ibfk_8` FOREIGN KEY (`id_bodove_tabulky`) REFERENCES `bodove_tabulky` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `ucasti_ibfk_5` FOREIGN KEY (`id_zavodu`) REFERENCES `zavody` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `ucasti_ibfk_6` FOREIGN KEY (`id_souteze`) REFERENCES `souteze` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `ucasti_ibfk_7` FOREIGN KEY (`id_kategorie`) REFERENCES `kategorie` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
@@ -493,7 +510,7 @@ CREATE TABLE `verze` (
 CREATE TABLE `videa` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `nazev` varchar(255) COLLATE utf8_czech_ci NOT NULL,
-  `typ` enum('youtube','stream','facebook') COLLATE utf8_czech_ci NOT NULL,
+  `typ` enum('youtube','youtubeplaylist','stream','facebook') COLLATE utf8_czech_ci NOT NULL,
   `identifikator` varchar(255) COLLATE utf8_czech_ci NOT NULL,
   `url` varchar(255) COLLATE utf8_czech_ci NOT NULL,
   `datum_pridani` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -519,14 +536,15 @@ CREATE TABLE `vysledky` (
   UNIQUE KEY `id_druzstva_id_ucasti` (`id_druzstva`,`id_ucasti`),
   KEY `id_tymu` (`id_druzstva`),
   KEY `id_ucasti` (`id_ucasti`),
-  CONSTRAINT `vysledky_ibfk_4` FOREIGN KEY (`id_druzstva`) REFERENCES `druzstva` (`id`) ON UPDATE NO ACTION,
-  CONSTRAINT `vysledky_ibfk_6` FOREIGN KEY (`id_ucasti`) REFERENCES `ucasti` (`id`) ON UPDATE NO ACTION
+  CONSTRAINT `vysledky_ibfk_5` FOREIGN KEY (`id_ucasti`) REFERENCES `ucasti` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `vysledky_ibfk_4` FOREIGN KEY (`id_druzstva`) REFERENCES `druzstva` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
 CREATE TABLE `zavody` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_mista` int(11) unsigned NOT NULL,
+  `id_poradatele` int(11) unsigned DEFAULT NULL,
   `vystaveni_vysledku` datetime DEFAULT NULL,
   `id_rocniku` int(11) unsigned NOT NULL,
   `datum` datetime NOT NULL,
@@ -549,11 +567,13 @@ CREATE TABLE `zavody` (
   KEY `platne_casy` (`platne_casy`),
   KEY `id_tercu` (`id_tercu`),
   KEY `datum` (`datum`),
+  KEY `id_poradatele` (`id_poradatele`),
   KEY `id_mista` (`id_mista`),
-  CONSTRAINT `zavody_ibfk_1` FOREIGN KEY (`id_mista`) REFERENCES `mista` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `zavody_ibfk_3` FOREIGN KEY (`id_tercu`) REFERENCES `terce` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `zavody_ibfk_4` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `zavody_ibfk_10` FOREIGN KEY (`id_rocniku`) REFERENCES `rocniky` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `zavody_ibfk_11` FOREIGN KEY (`id_mista`) REFERENCES `mista` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `zavody_ibfk_12` FOREIGN KEY (`id_poradatele`) REFERENCES `sbory` (`id`) ON UPDATE NO ACTION,
+  CONSTRAINT `zavody_ibfk_9` FOREIGN KEY (`id_tercu`) REFERENCES `terce` (`id`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 
--- 2012-08-13 12:06:28
+-- 2013-01-23 15:45:56

@@ -22,6 +22,8 @@ class BaseModel extends Object
 
 	protected $lastInsertedId = NULL;
 
+	const RESTRICTION_CONSTRAINT = 1062;
+
 	public function getTable()
 	{
 		return $this->table;

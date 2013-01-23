@@ -35,11 +35,17 @@ class FotkaControl extends Control
 		$template->setFile(dirname(__FILE__) . '/fotka.phtml');
 
 		$this->fotka = $fotka;
+
+		if(is_int($this->fotka))
+		{
+			$this->fotka = $this->model->find($this->fotka)->fetch();
+		}
+
 		if( $this->fotka !== false )
 		{
-			$soubor = $this->VELKE_DIR.$this->fotka['id'].'.'.$this->fotka['pripona'];
+			$soubor = $this->VELKE_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
 
-			if( !file_exists($soubor) ) throw new Exception('Fotografie neexistuje.');
+			if( !file_exists($soubor) ) throw new Exception('Fotografie "'.$soubor.'" neexistuje.');
 
 			$rozmery = getimagesize($soubor);
 			$this->fotka['sirka'] = $rozmery[0];
@@ -65,9 +71,9 @@ class FotkaControl extends Control
 		{
 			if( $this->fotka !== false )
 			{
-				$soubor = APP_DIR.'/../data/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
+				$soubor = $this->NAHLED_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
 
-				if( !file_exists($soubor) ) throw new Exception('Fotografie neexistuje.');
+				if( !file_exists($soubor) ) throw new Exception('Fotografie "'.$soubor.'" neexistuje.');
 
 				$rozmery = getimagesize($soubor);
 				$noveRozmery = Image::calculateSize($rozmery[0], $rozmery[1], 380, 380);
@@ -86,6 +92,24 @@ class FotkaControl extends Control
 	{
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/nahled.phtml');
+
+		$this->fotka = $fotka;
+		try
+		{
+			$this->pripravFotku();
+			$template->render();
+		}
+		catch(Exception $e)
+		{
+			//Debug::processException($e, true);
+		}
+
+	}
+
+	public function renderSablonaclanku($fotka)
+	{
+		$template = $this->template;
+		$template->setFile(dirname(__FILE__) . '/sablonaclanku.phtml');
 
 		$this->fotka = $fotka;
 		try

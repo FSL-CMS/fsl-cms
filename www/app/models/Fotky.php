@@ -51,8 +51,8 @@ class Fotky extends BaseSoubory implements IUdrzba
 		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
 		$id_souboru = $this->lastInsertedId();
 
-		if( $fotka->save($this->cestaKsouborum.$id_souboru.'.'.$casti['extension']) == false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
-		if( $nahled->save($this->cestaKsouborum.'nahled/'.$id_souboru.'.'.$casti['extension']) == false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
+		if( $fotka->save($this->cestaKsouborum.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
+		if( $nahled->save($this->cestaKsouborum.'nahled/'.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
 
 		return $id_souboru;
 	}

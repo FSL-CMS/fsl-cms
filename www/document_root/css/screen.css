@@ -66,6 +66,10 @@ form td		{border: 0px;}
 fieldset table	{margin-bottom: 0 !important;}
 fieldset table + table	{margin-bottom: 1.5em;}
 
+fieldset td input + small, fieldset td select + small, fieldset td label + small	{display: block; padding-left: 20px; background: url('../images/icons/help.png') left center no-repeat;}
+
+input[name="save"],input[name="saveAndReturn"], input[name="cancel"]	{font-size: 150%; padding: 10px;}
+
 /* Styly pro vzhled výběru data */
 div.ui-datepicker	{font-size: 80%;}
 .ui-widget dd + dt	{margin-top: 0;}
@@ -154,6 +158,9 @@ h2 + .perex		{margin-top: -0.5em;}
 .kategorie-clanku > h4	{margin-top: 0;}
 .aktivni-diskuze		{float: right; width: 400px;}
 .aktivni-diskuze h2		{margin-top: 0;}
+
+.sablonyclanku-leve		{width: 190px; float: left;}
+.sablonyclanku-prave	{width: 190px; float: right;}
 /* ----------------------------------------------------------------------mp-- */
 
 
@@ -201,6 +208,9 @@ h2 + .perex		{margin-top: -0.5em;}
 .fotka-profilova img {-moz-box-shadow: 3px 3px 4px #000; -webkit-box-shadow: 3px 3px 4px #000; box-shadow: 3px 3px 4px #000;}
 .fotka-nahled a	{}
 .fotka-v-clanku	{text-align: center;}
+
+.sablonaclanku-nahled	{position: relative; width: 180px; height: 135px; float: left; margin-right: 0px; margin-bottom: 10px; text-align: center;}
+.sablonaclanku-nahled img	{}
 
 .nahledy img	{width: 120px; height: 90px;}
 

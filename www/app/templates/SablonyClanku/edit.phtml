@@ -1,0 +1,12 @@
+{* Šablona s editačním formulářem *}
+{block content}
+
+<p>Zadejte údaje o této šabloně článku.</p>
+
+{widget editForm}
+
+{ifset $sablona->obrazek_id}
+	<h2>Náhledy obrázků</h2>
+	<!--p class="ok">Z více obrázků bude vybrán vždy jeden náhodně.</p-->
+	{widget fotka:sablonaclanku, $sablona->obrazek_id}
+{/ifset}
