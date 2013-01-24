@@ -68,7 +68,7 @@ fieldset table + table	{margin-bottom: 1.5em;}
 
 fieldset td input + small, fieldset td select + small, fieldset td label + small	{display: block; padding-left: 20px; background: url('../images/icons/help.png') left center no-repeat;}
 
-input[name="save"],input[name="saveAndReturn"], input[name="cancel"]	{font-size: 150%; padding: 10px;}
+fieldset input[name="save"], fieldset input[name="saveAndReturn"], fieldset input[name="cancel"]	{font-size: 150%; padding: 10px;}
 
 /* Styly pro vzhled výběru data */
 div.ui-datepicker	{font-size: 80%;}

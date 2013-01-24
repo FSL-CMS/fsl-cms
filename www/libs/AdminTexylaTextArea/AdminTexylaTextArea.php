@@ -110,7 +110,7 @@ $.texyla.setDefaults({
 		null,
 		{type: "label", text: "Ostatní"}, ["sup", "sub", "acronym", "hr"],
 		null,
-		{type: "label", text: "Vložit speciální obsah"}, ["prubezneVysledky"]
+		{type: "label", text: "Vložit speciální obsah"}, ["prubezneVysledky", "mapaStranek", "kontakty"]
 	]
 });
 

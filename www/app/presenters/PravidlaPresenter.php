@@ -16,6 +16,8 @@ class PravidlaPresenter extends BasePresenter
 
 	/** @persistent */
 	public $backlink = '';
+
+	/** var Pravidla */
 	protected $model;
 
 	public function startup()
@@ -88,14 +90,13 @@ class PravidlaPresenter extends BasePresenter
 		$form->getRenderer()->setClientScript(new LiveClientScript($form));
 
 		$form->addGroup('Informace o pravidlech');
-		$form->addAdminTexylaTextArea('pravidla', 'Pravidla');
+		$form->addAdminTexylaTextArea('pravidla', 'Pravidla', null, 30);
 
-		$form->setCurrentGroup(NULL);
-
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
+		$form->addGroup();
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			   ->setValidationScope(false);
-		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
 		$form->onSubmit[] = array($this, 'editFormSubmitted');
 	}
@@ -103,11 +104,8 @@ class PravidlaPresenter extends BasePresenter
 	public function editFormSubmitted(AppForm $form)
 	{
 		$id = (int) $this->getParam('id');
-		if($form['cancel']->isSubmittedBy())
-		{
-			$this->redirect('Terce:default');
-		}
-		elseif($form['save']->isSubmittedBy())
+
+		if($form['save']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$dataDoDb = array('pravidla' => $form['pravidla']->value);
 			try
@@ -121,8 +119,8 @@ class PravidlaPresenter extends BasePresenter
 				{
 					$this->model->update($id, $dataDoDb);
 				}
+
 				$this->flashMessage('Pravidla byla uložena.');
-				$this->redirect('Pravidla:pravidla', $id);
 			}
 			catch (DibiException $e)
 			{
@@ -130,6 +128,9 @@ class PravidlaPresenter extends BasePresenter
 				Debug::processException($e, true);
 			}
 		}
+
+		if($form['saveAndReturn']->isSubmittedBy() || $form['cancel']->isSubmittedBy()) $this->redirect('Pravidla:pravidla', $id);
+		else $this->redirect('this');
 	}
 
 }

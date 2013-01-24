@@ -318,7 +318,15 @@ jQuery.texyla.addWindow("prubezneVysledky", {
 		this.texy.update().replace("{{prubezne-poradi:"+txt+"}}");
 	},
 
-	dimensions: [400, 230]
+	dimensions: [500, 300]
+});
+
+$.texyla.addButton("kontakty", function () {
+    this.texy.update().replace("{{kontakty}}");
+});
+
+$.texyla.addButton("mapaStranek", function () {
+    this.texy.update().replace("{{mapaStranek}}");
 });
 
 jQuery.texyla.addStrings("cs", {
@@ -332,8 +340,13 @@ jQuery.texyla.addStrings("cs", {
 	win_facebook: "Facebook video",
 	facebookUrl: "Vlo\u017ete adresu videa nebo jeho ID",
 
-	btn_prubezneVysledky: "Průběžné výsledky",
-	win_prubezneVysledky: "Průběžné výsledky"
+	btn_prubezneVysledky: "Průběžné výsledky po závodu",
+	win_prubezneVysledky: "Průběžné výsledky po závodu",
+
+	btn_mapaStranek: "Mapa stránek",
+	win_mapaStranek: "Mapa stránek",
+	btn_kontakty: "Kontakty",
+	win_kontakty: "Kontakty"
 });
 
 
