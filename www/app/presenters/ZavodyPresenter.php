@@ -429,7 +429,7 @@ class ZavodyPresenter extends BasePresenter
 		{
 			foreach ($val as $kategorie)
 			{
-				if(isset($poradiCont[$kategorie->id_kategorie])) continue;
+				if(isset($sspCont[$kategorie->id_kategorie])) continue;
 
 				$katCont = $sspCont->addContainer($kategorie->id_kategorie);
 				$katCont->addText('pocet', 'Počet startovních míst - ' . $kategorie->kategorie)
@@ -437,7 +437,6 @@ class ZavodyPresenter extends BasePresenter
 			}
 		}
 
-		$zavod = $this->model->find($id)->fetch();
 		$bodoveTabulkyModel = new BodoveTabulky;
 		if(true || strtotime($zavod['datum']) > strtotime('NOW') || $id == 0)
 		{
