@@ -108,9 +108,9 @@
 {/if}
 <dt id="toc-materialy-pro-tisk">Materiály pro pořadatele soutěží určené pro tisk</dt>
 	<dd><a class="printer" href="{plink Zavody:pripravaProKomentatora, $zavod['id']}">Informace o soutěži a soutěžních družstvech pro komentátora</a></dd>
-	<dd><a class="printer" href="{plink Zavody:startovniPoradi, $zavod['id']}">Startovní pořadí</a></dd>
-	<dd><a class="printer" href="{plink Zavody:vysledky, $zavod['id']}">{if count($vysledky['vysledky'])}Výsledky ze závodů{else}Formulář pro zapsání výsledků{/if}</a></dd>
-	<dd><a class="printer" href="{plink Zavody:vysledkyExcel, $zavod['id']}">Tabulka pro Microsoft Excel pro zapsání a tisk výsledků</a></dd>
+	{if $zavod['aktivni_startovni_poradi']}<dd><a class="printer" href="{plink Zavody:startovniPoradi, $zavod['id']}">Startovní pořadí</a></dd>{/if}
+	{if $zavod['aktivni_startovni_poradi']}<dd><a class="printer" href="{plink Zavody:vysledky, $zavod['id']}">{if count($vysledky['vysledky'])}Výsledky ze závodů{else}Formulář pro zapsání výsledků{/if}</a></dd>{/if}
+	{if $zavod['aktivni_startovni_poradi']}<dd><a class="printer" href="{plink Zavody:vysledkyExcel, $zavod['id']}">Tabulka pro Microsoft Excel pro zapsání a tisk výsledků</a></dd>{/if}
 {if 0 && $zavod['muze_hodnotit']}
 	<dt>Ohodnoťte pořádání závodu</dt><dd>{widget hodnoceni $zavod['id']}</dd>
 {/if}
@@ -131,8 +131,10 @@
 
 {include 'vysledky.phtml', 'vysledky' => $vysledky, 'zavod' => $zavod}
 
-{if count($startovni_poradi)}<h2 id="toc-startovni-poradi">Startovní pořadí</h2>{/if}
-{include 'startovniPoradi.phtml', 'startovni_poradi' => $startovni_poradi, 'zavod' => $zavod}
+{if $zavod['aktivni_startovni_poradi'] && count($startovni_poradi)}
+	<h2 id="toc-startovni-poradi">Startovní pořadí</h2>
+	{include 'startovniPoradi.phtml', 'startovni_poradi' => $startovni_poradi, 'zavod' => $zavod}
+{/if}
 
 <h2>Komentáře k závodu</h2>
 @{widget diskuze $zavod->id, "zavody"}

@@ -52,7 +52,7 @@ abstract class CommonBasePresenter extends Presenter
 		if(empty(self::$liga['popis'])) self::$liga['popis'] = self::$liga['nazev'];
 
 		// Verze databáze, kterou požaduje aplikace
-		if(!defined('VERZE_DB')) define('VERZE_DB', 6);
+		if(!defined('VERZE_DB')) define('VERZE_DB', 7);
 	}
 
 	protected function startup()

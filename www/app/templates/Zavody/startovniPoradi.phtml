@@ -1,145 +1,144 @@
 @{block content}
 
-{if count($startovni_poradi)}
-{* Není připravena účast kategorií na závodě *}
-{if $zavod['zruseno']}
-	<p class="warning">Na tento závod se nelze přihlásit.</p>
-{elseif !$startovni_poradi['datum_prihlasovani_uplynulo'] && !$startovni_poradi['datum_prihlasovani_nezacalo'] && !count($startovni_poradi['startovni_poradi'])}
-	<p class="warning">Pro tento závod není možnost rezervace pořadí připravena.</p>
-{else}
-	{* Editační formulář pro správce/pořadatele *}
-	{if $startovni_poradi['muze_editovat'] == true}
-
-		{widget prihlasitSP begin}
-		{widget prihlasitSP errors}
-		{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
-		<table class="prehled">
-			<caption>Kategorie {$kategorie}</caption>
-			<thead>
-				<tr>
-					<th colspan="2">Pořadí</th><th>Družstvo</th><th>Zapsáno</th>
-				</tr>
-			</thead>
-			<tbody class="sortable">
-			{foreach $foo as $sp}
-				<tr>
-					<td class="handle"><span>↕</span></td>
-					<td>{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['id']->setValue($sp['id'])->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['puvodni_poradi']->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['poradi']->control->setSize(3)->class('poradi')}</td>
-					<td>{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['puvodni_id_druzstva']->setValue($sp['id_druzstva'])->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['id_druzstva']->setValue($sp['id_druzstva'])->control} {$control['prihlasitSP'][$sp['id_kategorie']]['addDruzstva']->control}</td>
-					<td>{if $sp['id'] != 0}<p>{$sp['uzivatel']}</p><p>{$sp['datum']|datum:0:0:0} [<a href="{plink Zavody:odepsat, $sp['id'], $zavod['id']}">odepsat</a>]</p>{/if}</td>
-				</tr>
-			{/foreach}
-			</tbody>
-			<tbody>
-				<tr><th colspan="4">{$control['prihlasitSP']['save']->control}</th></tr>
-			</tbody>
-		</table>
-		{/foreach}
-		{widget prihlasitSP end}
-
-	{* Možnosti pro přihlášené/nepřihlášené uživatele *}
+{if $zavod['aktivni_startovni_poradi'] && count($startovni_poradi)}
+	{* Není připravena účast kategorií na závodě *}
+	{if $zavod['zruseno']}
+		<p class="warning">Na tento závod se nelze přihlásit.</p>
+	{elseif !$startovni_poradi['datum_prihlasovani_uplynulo'] && !$startovni_poradi['datum_prihlasovani_nezacalo'] && !count($startovni_poradi['startovni_poradi'])}
+		<p class="warning">Pro tento závod není možnost rezervace pořadí připravena.</p>
 	{else}
+		{* Editační formulář pro správce/pořadatele *}
+		{if $startovni_poradi['muze_editovat'] == true}
+			<p class="ok">Přihlašování pro družstva otevřeno od {$startovni_poradi['datum_prihlasovani_od']|datum:1:1:0} až {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:0}.</p>
+			{widget prihlasitSP begin}
+			{widget prihlasitSP errors}
+			{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
+			<table class="prehled">
+				<caption>Kategorie {$kategorie}</caption>
+				<thead>
+					<tr>
+						<th colspan="2">Pořadí</th><th>Družstvo</th><th>Zapsáno</th>
+					</tr>
+				</thead>
+				<tbody class="sortable">
+				{foreach $foo as $sp}
+					<tr>
+						<td class="handle"><span>↕</span></td>
+						<td>{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['id']->setValue($sp['id'])->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['puvodni_poradi']->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['poradi']->control->setSize(3)->class('poradi')}</td>
+						<td>{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['puvodni_id_druzstva']->setValue($sp['id_druzstva'])->control}{$control['prihlasitSP'][$sp['id_kategorie']][$sp['poradi']]['id_druzstva']->setValue($sp['id_druzstva'])->control} {$control['prihlasitSP'][$sp['id_kategorie']]['addDruzstva']->control}</td>
+						<td>{if $sp['id'] != 0}<p>{$sp['uzivatel']}</p><p>{$sp['datum']|datum:0:0:0} [<a href="{plink Zavody:odepsat, $sp['id'], $zavod['id']}">odepsat</a>]</p>{/if}</td>
+					</tr>
+				{/foreach}
+				</tbody>
+				<tbody>
+					<tr><th colspan="4">{$control['prihlasitSP']['save']->control}</th></tr>
+				</tbody>
+			</table>
+			{/foreach}
+			{widget prihlasitSP end}
 
-		{if $startovni_poradi['datum_prihlasovani_uplynulo'] == true}
-			<p class="warning">Na tento závod se již nelze přihlásit. Přihlašování skončilo {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:1}.</p>
-		{/if}
-
-		{* Není vhodné datum pro přihlašování *}
-		{if $startovni_poradi['datum_prihlasovani_nezacalo'] == true}
-			<p class="ok">Přihlašování bude otevřeno ve dnech {$startovni_poradi['datum_prihlasovani_od']|datum:1:1:0} až {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:0}.</p>
+		{* Možnosti pro přihlášené/nepřihlášené uživatele *}
 		{else}
-			{* Je vhodné datum pro přihlašování *}
 
-				{if $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
-					<p class="warning">Přihlašování skončí {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:1}.</p>
-				{/if}
+			{if $startovni_poradi['datum_prihlasovani_uplynulo'] == true}
+				<p class="warning">Na tento závod se již nelze přihlásit. Přihlašování skončilo {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:1}.</p>
+			{/if}
 
-				{if $startovni_poradi['muze_pridavat'] != true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
-					<p class="warning">Přihlásit pořadí můžou pouze přihlášení uživatelé nebo pořadatel.</p>
-				{/if}
+			{* Není vhodné datum pro přihlašování *}
+			{if $startovni_poradi['datum_prihlasovani_nezacalo'] == true}
+				<p class="ok">Přihlašování bude otevřeno ve dnech {$startovni_poradi['datum_prihlasovani_od']|datum:1:1:0} až {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:0}.</p>
+			{else}
+				{* Je vhodné datum pro přihlašování *}
 
-				{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
+					{if $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
+						<p class="warning">Přihlašování skončí {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:1}.</p>
+					{/if}
 
-					{if $startovni_poradi['muze_pridavat'] == true}
-					<p class="warning">Přihlásit družstvo může kdokoli.</p>
-					<p class="warning">Odhlásit družstvo může ten, kdo ho přihlásil, dále pořadatel, správce daného sboru nebo správce stránek.</p>
-					<table class="prehled">
-							<caption>Kategorie {$kategorie}</caption>
-							<thead>
+					{if $startovni_poradi['muze_pridavat'] != true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
+						<p class="warning">Přihlásit pořadí můžou pouze přihlášení uživatelé nebo pořadatel.</p>
+					{/if}
+
+					{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
+
+						{if $startovni_poradi['muze_pridavat'] == true}
+						<p class="warning">Přihlásit družstvo může kdokoli.</p>
+						<p class="warning">Odhlásit družstvo může ten, kdo ho přihlásil, dále pořadatel, správce daného sboru nebo správce stránek.</p>
+						<table class="prehled">
+								<caption>Kategorie {$kategorie}</caption>
+								<thead>
+									<tr>
+										<th>Pořadí</th><th>Družstvo</th><th>Zapsáno</th>
+									</tr>
+								</thead>
+							<tbody>
+							{if count($foo)}
+								{foreach $foo as $sp}
 								<tr>
-									<th>Pořadí</th><th>Družstvo</th><th>Zapsáno</th>
-								</tr>
-							</thead>
-						<tbody>
-						{if count($foo)}
-							{foreach $foo as $sp}
-							<tr>
-									<td class="poradi">{$sp['poradi']}.</td>
-									<td{if $sp['id'] == 0} colspan="2"{/if}>
-										{if $startovni_poradi['muze_pridavat'] == true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true && isset($sp['id_druzstev'])}
-											{if count($sp['id_druzstev'])}
-												{foreach $sp['id_druzstev'] as $druzstvo}
+										<td class="poradi">{$sp['poradi']}.</td>
+										<td{if $sp['id'] == 0} colspan="2"{/if}>
+											{if $startovni_poradi['muze_pridavat'] == true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true && isset($sp['id_druzstev'])}
+												{if count($sp['id_druzstev'])}
+													{foreach $sp['id_druzstev'] as $druzstvo}
+														{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
+															{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] errors}
+															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['poradi']->control}
+															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['id_druzstva']->setValue($druzstvo['id'])->control}
+															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
+															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['save']->control}
+														{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
+													{/foreach}
+												{else}
 													{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
-														{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] errors}
-														{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['poradi']->control}
-														{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['id_druzstva']->setValue($druzstvo['id'])->control}
-														{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
-														{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['save']->control}
+														Váš sbor nemá družstvo {$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
 													{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
-												{/foreach}
+												{/if}
 											{else}
-												{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
-													Váš sbor nemá družstvo {$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
-												{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
-											{/if}
-										{else}
-											{$sp['druzstvo']}
-										{/if}</td>
-									{if $sp['id'] != 0}
-										<td>
-											{$sp['datum']|datum:0:0:0}
-											{if isset($sp['muze_smazat']) && $sp['muze_smazat'] == true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
-												[<a href="{plink Zavody:odepsat, $sp['id'], $zavod['id']}">odepsat</a>]
-											{/if}
-										</td>
-									{/if}
+												{$sp['druzstvo']}
+											{/if}</td>
+										{if $sp['id'] != 0}
+											<td>
+												{$sp['datum']|datum:0:0:0}
+												{if isset($sp['muze_smazat']) && $sp['muze_smazat'] == true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true}
+													[<a href="{plink Zavody:odepsat, $sp['id'], $zavod['id']}">odepsat</a>]
+												{/if}
+											</td>
+										{/if}
+									</tr>
+								{/foreach}
+							{else}
+								 <tr>
+									<td colspan="3">V této kategorii nejsou přihlášena žádná družstva.</td>
+								</tr>
+							{/if}
+							</tbody>
+							</table>
+						{else}
+						{if !$iterator->isFirst() && $nahled}<h1 class="zalomit-pred">{$nadpis}</h1>{/if}
+						<table class="prehled">
+								 <caption>Kategorie {$kategorie}</caption>
+								<thead>
+									<tr>
+										<th>Pořadí</th><th>Družstvo</th>
+									</tr>
+								</thead>
+							<tbody>
+							{if count($foo)}
+							{foreach $foo as $sp}
+								<tr>
+									<td class="poradi">{$sp['poradi']}.</td>
+									  <td{if $sp['id'] == 0} colspan="2"{/if}>{$sp['druzstvo']}</td>
 								</tr>
 							{/foreach}
-						{else}
-							 <tr>
-								<td colspan="3">V této kategorii nejsou přihlášena žádná družstva.</td>
-							</tr>
-						{/if}
-						</tbody>
-						</table>
-					{else}
-					{if !$iterator->isFirst() && $nahled}<h1 class="zalomit-pred">{$nadpis}</h1>{/if}
-					<table class="prehled">
-							 <caption>Kategorie {$kategorie}</caption>
-							<thead>
-								<tr>
-									<th>Pořadí</th><th>Družstvo</th>
+							{else}
+								 <tr>
+									<td colspan="3">V této kategorii nejsou přihlášena žádná družstva.</td>
 								</tr>
-							</thead>
-						<tbody>
-						{if count($foo)}
-						{foreach $foo as $sp}
-							<tr>
-								<td class="poradi">{$sp['poradi']}.</td>
-								  <td{if $sp['id'] == 0} colspan="2"{/if}>{$sp['druzstvo']}</td>
-							</tr>
-						{/foreach}
-						{else}
-							 <tr>
-								<td colspan="3">V této kategorii nejsou přihlášena žádná družstva.</td>
-							</tr>
+							{/if}
+							</tbody>
+							</table>
 						{/if}
-						</tbody>
-						</table>
-					{/if}
-					{/foreach}
-			 {/if}
+						{/foreach}
+				 {/if}
+		{/if}
 	{/if}
-{/if}
-
 {/if}

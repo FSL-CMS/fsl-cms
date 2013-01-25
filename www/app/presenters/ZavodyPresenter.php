@@ -190,19 +190,25 @@ class ZavodyPresenter extends BasePresenter
 		if($id != 0 && !($zavod = $this->model->find($id)->fetch())) throw new BadRequestException();
 	}
 
+	// TODO dodělat
 	protected function startovniPoradi($id, $nahled = false)
 	{
 		//!TODO: předělat na verzi se soutěžemi
 		//!TODO: opravit když nejsem přihlášen a propadl závod
 		$sp = new StartovniPoradi;
 		$this->template->startovni_poradi = array('startovni_poradi' => array());
+
+		// pokud ještě nebyl získán z DB závod
 		if(!isset($this->template->zavod))
 		{
 			$this->template->zavod = array();
 			$this->template->zavod = $this->model->find($id)->fetch();
 		}
 
-		$this->template->startovni_poradi['muze_editovat'] = !$nahled && ($this->user->isAllowed('startovni_poradi', 'edit') || $this->template->zavod['muze_editovat']);
+		// přihlašování družstev na závody není povoleno
+		if($this->template->zavod['aktivni_startovni_poradi'] == false) return;
+
+		$this->template->startovni_poradi['muze_editovat'] = !$nahled && ($this->user->isAllowed('startovni_poradi', 'edit') || (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit'));
 		$this->template->startovni_poradi['muze_pridavat'] = !$nahled && $this->user->isAllowed('startovni_poradi', 'add');
 
 		$this->template->nahled = $nahled;
@@ -251,8 +257,8 @@ class ZavodyPresenter extends BasePresenter
 		}
 		if(true || count($this->template->startovni_poradi['startovni_poradi']))
 		{
-			$this->template->startovni_poradi['datum_prihlasovani_od'] = date('Y-m-d H:i:s', strtotime('-14 days next monday', strtotime($this->template->zavod['datum'])));
-			$this->template->startovni_poradi['datum_prihlasovani_do'] = date('Y-m-d 20:00:00', strtotime('-1 day', strtotime($this->template->zavod['datum'])));
+			$this->template->startovni_poradi['datum_prihlasovani_od'] = $this->template->zavod['prihlasovani_od'];
+			$this->template->startovni_poradi['datum_prihlasovani_do'] = $this->template->zavod['prihlasovani_do'];
 		}
 		$this->template->startovni_poradi['datum_prihlasovani_uplynulo'] = isset($this->template->startovni_poradi['datum_prihlasovani_do']) && date('Y-m-d H:i:s') > $this->template->startovni_poradi['datum_prihlasovani_do'] || date('Y-m-d H:i:s') > $this->template->zavod['datum'];
 		$this->template->startovni_poradi['datum_prihlasovani_nezacalo'] = isset($this->template->startovni_poradi['datum_prihlasovani_od']) && date('Y-m-d H:i:s') < $this->template->startovni_poradi['datum_prihlasovani_od'];
@@ -268,7 +274,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->setTitle('Startovní pořadí závodu ' . $zavod['nazev'] . ', ' . $datum->date(substr($zavod['datum'], 0, 10), 0, 0, 0));
 	}
 
-	public function actionEdit($id = 0)
+	public function actionEdit($id = 0, $backlink = NULL)
 	{
 		if($id == 0) $this->redirect('add');
 
@@ -295,7 +301,7 @@ class ZavodyPresenter extends BasePresenter
 			$this['zmenitRocnikForm']->setValues(array('id_rocniku' => $id_rocniku));
 			$this['zmenitRocnikForm']['id_rocniku']->setDisabled();
 			$this['zmenitRocnikForm']['id_rocniku']->setOption('description', 'Chcete-li změnit ročník závodu, je nutné závod smazat a vytvořit nový závod.');
-			$this['zmenitRocnikForm']['save']->setDisabled();
+			$this['zmenitRocnikForm']['change']->setDisabled();
 			$this->setTitle('Úprava informací o závodu');
 		}
 		else // $id == 0
@@ -320,7 +326,7 @@ class ZavodyPresenter extends BasePresenter
 		$f->addGroup('Ročník, ke kterému se vkládá závod');
 		$f->addSelect('id_rocniku', 'Ročník', $rocnikyModel->findAll()->fetchPairs('id', 'rok'))
 			   ->setDefaultValue($rocnikyModel->findLast()->fetchSingle('id'));
-		$f->addSubmit('save', 'Změnit');
+		$f->addSubmit('change', 'Změnit');
 
 		$f->onSubmit[] = array($this, 'zmenitRocnikFormSubmitted');
 	}
@@ -392,20 +398,40 @@ class ZavodyPresenter extends BasePresenter
 		$soutezeRocnikuModel = new SoutezeRocniku;
 		$soutezeRocniku = $soutezeRocnikuModel->findByRocnik($id_rocniku)->fetchAssoc('nazev,id');
 
-		$form->addGroup('Informace o soutěžích');
+		$spCont = $form->addContainer('poradi'); // kontejner pro základní nastavení SP
+		$spCont->setCurrentGroup($form->addGroup('Startovní pořadí'));
+		$form->addCheckbox('aktivni_startovni_poradi', 'Používat přihlašování družstev na tyto závody')
+				->setDefaultValue($id == 0) // pokud je nový závod, tak true, jinak false
+				->addCondition(Form::EQUAL, 1)->toggle('spolecneStartovniPoradi');
 
-		$poradiCont = $form->addContainer('poradi');
-		$poradiCont->setCurrentGroup($form->addGroup('Společné startovní pořadí'));
-		$form->addCheckbox('spolecne_startovni_poradi', 'Společné startovní pořadí pro všechny soutěže na tomto závodu', true)->setDisabled(true);
-		$form->addRequestButton('addSouteze', 'Přidat novou soutěž', 'Souteze:add');
+		$form->addCheckbox('spolecne_startovni_poradi', 'Společné startovní pořadí pro všechny soutěžní disciplíny na tomto závodu')
+				->setDefaultValue(true)
+				->setDisabled(true)
+				->setOption('description', 'Startovní pořadí nelze v současnosti nastavit pro každou soutěžní disciplínu zvlášť.');
+
+		$form->addRequestButton('addSouteze', 'Přidat novou soutěžní disciplínu', 'Souteze:add');
 		$form->addRequestButton('addKategorie', 'Přidat novou sportovní kategorii', 'Kategorie:add');
+
+		$sspCont = $form->addContainer('spolecneStartovniPoradi'); // kontejner pro společné startovní pořadí
+		$sspCont->setCurrentGroup($form->addGroup('Společné startovní pořadí')->setOption('container', Html::el('fieldset')->id('spolecneStartovniPoradi')));
+		$form->addDateTimePicker('prihlasovani_od', 'Začátek přihlašování')
+				->setOption('description', 'Výchozí hodnota je druhé pondělí před začátkem závodu.')
+				->addCondition(Form::FILLED)
+					->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) < strtotime($to->value);}, 'Datum začátku přihlašování musí předcházet začátku závodu.', $form['datum']);
+		$form->addDateTimePicker('prihlasovani_do', 'Konec přihlašování')
+				->setOption('description', 'Výchozí hodnota je pátek před začátkem závodu ve 20.00.')
+				->addCondition(Form::FILLED)
+				->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) <= strtotime($to->value);}, 'Datum konce přihlašování musí předcházet začátku závodu.', $form['datum']);
+		$form['prihlasovani_od']->addCondition(Form::FILLED)
+			->addConditionOn($form['prihlasovani_do'], Form::FILLED)
+				->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) <= strtotime($to->value);}, 'Datum začátku přihlašování musí předcházet jeho konci.', $form['prihlasovani_do']);
 		foreach ($soutezeRocniku as $soutez => $val)
 		{
 			foreach ($val as $kategorie)
 			{
 				if(isset($poradiCont[$kategorie->id_kategorie])) continue;
 
-				$katCont = $poradiCont->addContainer($kategorie->id_kategorie);
+				$katCont = $sspCont->addContainer($kategorie->id_kategorie);
 				$katCont->addText('pocet', 'Počet startovních míst - ' . $kategorie->kategorie)
 					   ->setDefaultValue($kategorie->pocet_startovnich_mist);
 			}
@@ -418,7 +444,7 @@ class ZavodyPresenter extends BasePresenter
 			$ucastiCont = $form->addContainer('ucasti');
 			foreach ($soutezeRocniku as $soutez => $val)
 			{
-				$ucastiCont->setCurrentGroup($form->addGroup('Soutěž: ' . $soutez, false));
+				$ucastiCont->setCurrentGroup($form->addGroup('Nastavení soutěžní disciplíny: ' . $soutez, false));
 				$soutCont = $ucastiCont->addContainer(reset($val)->id_souteze);
 				foreach ($val as $kategorie)
 				{
@@ -426,7 +452,7 @@ class ZavodyPresenter extends BasePresenter
 					$katCont->addHidden('id_ucasti');
 					$katCont->addHidden('id_souteze')
 						   ->setDefaultValue($kategorie->id_souteze);
-					$katCont->addCheckBox('id_kategorie', 'Kategorie ' . $kategorie->kategorie);
+					$katCont->addCheckBox('id_kategorie', 'Povolit účast kategorie ' . $kategorie->kategorie);
 					/* $katCont->addText('pocet', 'Počet startovních míst')
 					  //->setOption('container', Html::el('tr')->id('container')->style('text-decoration:underline;'))
 					  ->setDefaultValue($kategorie->pocet_startovnich_mist)
@@ -435,6 +461,7 @@ class ZavodyPresenter extends BasePresenter
 					$katCont->addSelect('id_bodove_tabulky', 'Bodová tabulka', $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id', 'nazev'))->setDefaultValue($kategorie->id_bodove_tabulky);
 				}
 			}
+			$ucastiCont->addRequestButton('editBodoveTabulky', 'Přejít na správu bodových tabulek', 'BodoveTabulky:default');
 		}
 
 		$form->addGroup('Uložit');
@@ -458,12 +485,29 @@ class ZavodyPresenter extends BasePresenter
 		elseif($form['save']->isSubmittedBy() || $form['saveAndAdd']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$data = $form->getValues();
-			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], /* 'ustream_stav' => $data['ustream_stav'], */'spolecne_startovni_poradi' => true);
+			//print_r($data); exit;
+			$zavod_data = array('id_rocniku' => (int) $data['id_rocniku'], 'id_mista%in' => (int) $data['id_mista'], 'text' => $data['text'], 'datum%t' => $data['datum'], 'id_tercu' => (int) $data['id_tercu'], 'zruseno' => (bool) $data['zruseno'], /* 'ustream_stav' => $data['ustream_stav'], */'spolecne_startovni_poradi' => true, 'aktivni_startovni_poradi%i' => $data['aktivni_startovni_poradi']);
+
+			// ošetří se eventuální začátek a konec přihlašování
+			if($data['aktivni_startovni_poradi'])
+			{
+				if(empty($data['prihlasovani_od'])) $data['prihlasovani_od'] = date('Y-m-d 00:00:00', strtotime('-14 days next monday', strtotime($data['datum'])));
+				if(empty($data['prihlasovani_do'])) $data['prihlasovani_do'] = date('Y-m-d 20:00:00', strtotime('last friday', strtotime($data['datum'])));
+
+				$zavod_data['prihlasovani_od'] = $data['prihlasovani_od'];
+				$zavod_data['prihlasovani_do'] = $data['prihlasovani_do'];
+			}
+			else
+			{
+				$zavod_data['prihlasovani_od%in'] = 0;
+				$zavod_data['prihlasovani_do%in'] = 0;
+			}
 
 			$fazeUlozeni = 'zavod';
 
 			try
 			{
+				// uloží se základní údaje o závodu
 				if($id == 0)
 				{
 					$this->model->insert($zavod_data);
@@ -474,6 +518,7 @@ class ZavodyPresenter extends BasePresenter
 					$this->model->update($id, $zavod_data);
 				}
 
+				// uloží se pořadatelé závodu
 				if(isset($data['id_poradatele']))
 				{
 					$poradatele_insert = array();
@@ -494,6 +539,7 @@ class ZavodyPresenter extends BasePresenter
 
 				$fazeUlozeni = 'ucasti';
 
+				// uloží se účasti soutěžních disciplín a jejich sportovních kategorií
 				if(isset($data['ucasti']))
 				{
 					$ucasti_update = array();
@@ -505,8 +551,8 @@ class ZavodyPresenter extends BasePresenter
 					{
 						foreach ($foo as $id_kategorie => $ucast)
 						{
-							if($ucast['id_kategorie'] === true && !isset($ucasti[$id_souteze][$id_kategorie])) $ucasti_insert[] = array('id_zavodu' => (int) $id, 'pocet' => (int) $data['poradi'][$id_kategorie]['pocet'], 'id_bodove_tabulky' => (int) $ucast['id_bodove_tabulky'], 'id_kategorie' => (int) $id_kategorie, 'id_souteze' => (int) $ucast['id_souteze']);
-							if($ucast['id_kategorie'] === true && isset($ucasti[$id_souteze][$id_kategorie])) $ucasti_update[$ucast['id_ucasti']] = array('id_zavodu' => (int) $id, 'pocet' => (int) $data['poradi'][$id_kategorie]['pocet'], 'id_bodove_tabulky' => (int) $ucast['id_bodove_tabulky'], 'id_kategorie' => (int) $id_kategorie, 'id_souteze' => (int) $ucast['id_souteze']);
+							if($ucast['id_kategorie'] === true && !isset($ucasti[$id_souteze][$id_kategorie])) $ucasti_insert[] = array('id_zavodu' => (int) $id, 'pocet' => (int) $data['spolecneStartovniPoradi'][$id_kategorie]['pocet'], 'id_bodove_tabulky' => (int) $ucast['id_bodove_tabulky'], 'id_kategorie' => (int) $id_kategorie, 'id_souteze' => (int) $ucast['id_souteze']);
+							if($ucast['id_kategorie'] === true && isset($ucasti[$id_souteze][$id_kategorie])) $ucasti_update[$ucast['id_ucasti']] = array('id_zavodu' => (int) $id, 'pocet' => (int) $data['spolecneStartovniPoradi'][$id_kategorie]['pocet'], 'id_bodove_tabulky' => (int) $ucast['id_bodove_tabulky'], 'id_kategorie' => (int) $id_kategorie, 'id_souteze' => (int) $ucast['id_souteze']);
 							if($ucast['id_kategorie'] === false && isset($ucasti[$id_souteze][$id_kategorie])) $ucasti_delete[] = $ucast['id_ucasti'];
 						}
 					}

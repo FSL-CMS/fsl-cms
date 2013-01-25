@@ -176,4 +176,9 @@ class AktualizaceDB extends BaseModel
 		$this->connection->loadFile(self::$SQL_PATH.'/updates/5to6.sql');
 	}
 
+	private function from6to7()
+	{
+		$this->connection->loadFile(self::$SQL_PATH.'/updates/6to7.sql');
+	}
+
 }

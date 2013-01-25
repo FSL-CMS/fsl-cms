@@ -12,5 +12,4 @@ RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R,QSA,L]
 # front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule !(xd_receiver\.html|login\.php|prevod\.php)|(\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz))$ /document_root/index.php [L]
-#RewriteRule !(xd_receiver\.html|login\.php|prevod\.php)|(\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz))$ index.php [L]
+RewriteRule !(xd_receiver\.html|login\.php|prevod\.php|deploy\.php)|(\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz))$ /document_root/index.php [L]
