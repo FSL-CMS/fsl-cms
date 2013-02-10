@@ -222,7 +222,7 @@ public static function date( $datum, $pojmenuj = 1, $den_v_tydnu = 1, $pouzij_pr
      //return self::$dnes['den'].'. '.self::$dnes['mesic'].'. '.self::$dnes['hodina'];
 }
 
-    public function iso_datum($zceho) {
+    public static function iso_datum($zceho) {
         if( strpos( $zceho, '0000' ) || empty( $zceho ) ) return NULL;
         $datum = '(?P<den>[0-9]{1,2})([^0-9]+)(?P<mesic>[0-9]{1,2})[^0-9]+(?P<rok>[0-9]{4})';
         $cas = '([^0-9]+(?P<hodiny>[0-9]{1,2})([^0-9]+(?P<minuty>[0-9]{1,2})([^0-9]+(?P<sekundy>[0-9]{1,2}))?)?)?';
@@ -233,7 +233,7 @@ public static function date( $datum, $pojmenuj = 1, $den_v_tydnu = 1, $pouzij_pr
 
         if( !intval( $match['rok'] ) || !intval( $match['mesic'] ) || !intval( $match['den'] ) ) return false;
 
-        return date( 'Y-m-d H:i:s', mktime( intval($match['hodiny']), intval($match['minuty']), intval($match['sekundy']), intval($match['mesic']), intval($match['den']), intval($match['rok']) ) );
+        return date( 'Y-m-d H:i:s', mktime( intval($match['hodiny']), intval($match['minuty']), intval(@$match['sekundy']), intval($match['mesic']), intval($match['den']), intval($match['rok']) ) );
 
     }
 

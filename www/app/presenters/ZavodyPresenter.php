@@ -426,7 +426,7 @@ class ZavodyPresenter extends BasePresenter
 				->addCondition(Form::FILLED)
 				->addRule(function (Nette\Forms\IControl $from, Nette\Forms\IControl $to)
 						{
-							return strtotime($from->value) < strtotime($to->value);
+					return strtotime($from->value) < strtotime($to->value);
 						}, 'Datum začátku přihlašování musí předcházet začátku závodu.', $form['datum']);
 		$form->addDateTimePicker('prihlasovani_do', 'Konec přihlašování')
 				->setOption('description', 'Výchozí hodnota je pátek před začátkem závodu ve 20.00.')
