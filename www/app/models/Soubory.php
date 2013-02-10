@@ -15,10 +15,6 @@
  */
 class Soubory extends BaseSoubory
 {
-	public function __construct(HttpUploadedFile $soubor = NULL)
-	{
-		parent::__construct($soubor);
-	}
 
 	public function insert(array $data)
 	{
@@ -35,12 +31,6 @@ class Soubory extends BaseSoubory
 	public function delete($id)
 	{
 		return parent::delete($id)->execute();
-	}
-
-	public function findIdByUri($uri)
-	{
-		return $this->findBy()
-			->where('%n.uri = %s', $this->table, $uri);
 	}
 
 }

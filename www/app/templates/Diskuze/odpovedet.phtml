@@ -4,12 +4,12 @@
 	{foreach $diskuze['diskuze'] as $disk}
 
 <h2>Odpověď v diskuzi: {$disk['tema_diskuze']}</h2>
-{widget komentarForm}
+{control komentarForm}
 
 		<h3>{$disk['tema']}</h3>
-          
+
           {* Související odkaz *}
-		{widget souvisejici "diskuze", $disk  }
-		
+		{control souvisejici "diskuze", $disk  }
+
 	{/foreach}
 {/if}

@@ -2,7 +2,7 @@
 <form id="vyber-z-galerie">
 	<div>
 	{foreach $soubory['soubory'] as $soubor}
-		{widget fotka:vyber $soubor}
+		{control fotka:vyber $soubor}
 	{/foreach}
 	</div>
 	<input type="submit" value="Použít vybrané fotografie" />

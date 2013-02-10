@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Presenter hlavní stránky
  *
@@ -16,27 +14,16 @@
 class HomepagePresenter extends BasePresenter
 {
 
-	protected $model;
-
-	protected function startup()
-	{
-		parent::startup();
-	}
-
-	public function actionDefault()
-	{
-		//$this->redirect('Clanky:clanek');
-	}
-
 	public function renderDefault()
 	{
-		$clankyModel = new Clanky;
+		$clankyModel = $this->context->clanky;
+
 		$this->template->clanky = array();
 		$result = $clankyModel->findAll();
+		$this->template->clanky['clanky'] = $result->fetchAll(0, 3);
 
 		$this->template->fulltext = false;
 
-		$this->template->clanky['clanky'] = $result->fetchAll( 0, 3 );
 		$this->template->clanky['nezverejnene'] = array();
 
 		$this->setTitle('Úvodní stránka');

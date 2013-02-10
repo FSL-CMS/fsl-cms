@@ -2,7 +2,7 @@
 
 {foreach $komentare as $komentar}
 <div class="vypis-komentaru">
-	<h4><a id="#komentar-{$komentar['id_diskuze']}-{$komentar['id']}"></a><a href="{plink Uzivatele:uzivatel, $komentar['id_autora']}" title="Informace o autorovi">{$komentar['autor']}</a> napsal(a) {$komentar['datum_pridani']|datum}:{if $komentar['muze_smazat'] == true} [{if $komentar['muze_smazat'] == true}<a href="{link smazatKomentar!, $komentar['id']}" title="Smaže tento komentář" class="ajax commentDelete">Smazat!</a>{/if} {if $komentar['muze_upravit'] == true}<a href="{plink Diskuze:upravitKomentar, $komentar['id']}" title="Upraví tento komentář" class="commentEdit">Upravit</a>{/if}]{/if}</h4>
+	<h4><a id="#komentar-{$komentar['id_diskuze']}-{$komentar['id']}"></a><a href="{plink Uzivatele:uzivatel, $komentar['id_autora']}" title="Informace o autorovi">{$komentar['autor']}</a> napsal(a) {$komentar['datum_pridani']|datum}:{if $komentar['muze_smazat'] == true} [{if $komentar['muze_smazat'] == true}<a href="{link smazatKomentar!, $komentar['id']}" title="Smaže tento komentář" class="commentDelete">Smazat!</a>{/if} {if $komentar['muze_upravit'] == true}<a href="{plink Diskuze:upravitKomentar, $komentar['id']}" title="Upraví tento komentář" class="commentEdit">Upravit</a>{/if}]{/if}</h4>
 	{!$komentar['text']|texy}
 </div>
 {/foreach}

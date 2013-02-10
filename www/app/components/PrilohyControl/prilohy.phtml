@@ -1,6 +1,6 @@
 {snippet prilohy}
 {if $prilohy['muze_editovat']}
-	{widget prilohyForm begin}
+	{control prilohyForm begin}
 	<table class="prehled">
 		<caption>Přiložené soubory</caption>
 		<thead>
@@ -29,7 +29,7 @@
 			</tr>
 		</tbody>
 	</table>
-	{widget prilohyForm end}
+	{control prilohyForm end}
 {else}
 	{if count($prilohy['prilohy'])}
 	<table class="prehled tablesort">

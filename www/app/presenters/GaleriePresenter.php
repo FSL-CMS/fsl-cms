@@ -6,6 +6,9 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\UI\Form;
+use Nette\Diagnostics\Debugger;
+
 /**
  * Presenter galerií
  *
@@ -18,7 +21,7 @@ class GaleriePresenter extends BasePresenter
 
 	protected function startup()
 	{
-		$this->model = new Galerie;
+		$this->model = $this->context->galerie;
 		parent::startup();
 		if($this->user->isAllowed('galerie', 'edit')) $this->model->zobrazitNezverejnene();
 	}
@@ -47,7 +50,7 @@ class GaleriePresenter extends BasePresenter
 	{
 		if($id == 0) $this->redirect('Galerie:default');
 
-		$fotky = new Fotky;
+		$fotky = $this->context->fotky;
 		$fotka = (array) $fotky->find($id)->fetch();
 		if($fotka === NULL) throw new BadRequestException('Fotka nebyla nalezena.');
 	}
@@ -102,7 +105,7 @@ class GaleriePresenter extends BasePresenter
 		{
 			if(empty($galerie['id_fotky']))
 			{
-				$fotky = new Fotky;
+				$fotky = $this->context->fotky;
 				$fotka = $fotky->findRandomFromGalerie($galerie['id'])->fetch();
 				$galerie['id_fotky'] = $fotka['id'];
 			}
@@ -122,7 +125,7 @@ class GaleriePresenter extends BasePresenter
 		{
 			if(empty($galerie['id_fotky']))
 			{
-				$fotky = new Fotky;
+				$fotky = $this->context->fotky;
 				$fotka = $fotky->findRandomFromGalerie($galerie['id'])->fetch();
 				$galerie['id_fotky'] = $fotka['id'];
 			}
@@ -133,7 +136,7 @@ class GaleriePresenter extends BasePresenter
 	{
 		$this->getPresenter()->setLayout(false);
 
-		$fotky = new Fotky;
+		$fotky = $this->context->fotky;
 
 		$this->template->galerie += (array) $this->model->find($id)->fetch();
 		$this->template->galerie['muze_pridavat'] |= $this->jeAutor($this->template->galerie['id_autora']);
@@ -145,12 +148,12 @@ class GaleriePresenter extends BasePresenter
 
 		foreach ($this->template->fotky['fotky'] as $key => &$fotka)
 		{
-			if(!file_exists(APP_DIR . '/../data/' . $fotka['id'] . '.' . $fotka['pripona']))
+			if(!file_exists(DATA_DIR . '/' . $fotka['id'] . '.' . $fotka['pripona']))
 			{
 				unset($this->template->fotky['fotky'][$key]);
 				continue;
 			}
-			$rozmery = getimagesize(APP_DIR . '/../data/' . $fotka['id'] . '.' . $fotka['pripona']);
+			$rozmery = getimagesize(DATA_DIR . '/' . $fotka['id'] . '.' . $fotka['pripona']);
 			$fotka['sirka'] = $rozmery[0];
 			$fotka['vyska'] = $rozmery[1];
 		}
@@ -164,7 +167,7 @@ class GaleriePresenter extends BasePresenter
 	 */
 	public function renderGalerie($id)
 	{
-		$fotky = new Fotky;
+		$fotky = $this->context->fotky;
 
 		$this->template->galerie += (array) $this->model->find($id)->fetch();
 		$this->template->galerie['muze_pridavat'] |= $this->jeAutor($this->template->galerie['id_autora']);
@@ -178,17 +181,17 @@ class GaleriePresenter extends BasePresenter
 
 		foreach ($this->template->fotky['fotky'] as $key => &$fotka)
 		{
-			if(!file_exists(APP_DIR . '/../data/' . $fotka['id'] . '.' . $fotka['pripona']))
+			if(!file_exists(DATA_DIR . '/' . $fotka['id'] . '.' . $fotka['pripona']))
 			{
 				unset($this->template->fotky['fotky'][$key]);
 				continue;
 			}
-			$rozmery = getimagesize(APP_DIR . '/../data/' . $fotka['id'] . '.' . $fotka['pripona']);
+			$rozmery = getimagesize(DATA_DIR . '/' . $fotka['id'] . '.' . $fotka['pripona']);
 			$fotka['sirka'] = $rozmery[0];
 			$fotka['vyska'] = $rozmery[1];
 		}
 
-		$videaModel = new Videa;
+		$videaModel = $this->context->videa;
 		$this->template->videa['videa'] = $videaModel->findByGalerie($id);
 
 		$this->setTitle('Galerie: ' . $this->template->galerie['nazev']);
@@ -216,7 +219,7 @@ class GaleriePresenter extends BasePresenter
 			}
 		}
 
-		$videaModel = new Videa;
+		$videaModel = $this->context->videa;
 
 		$this->template->videa['videa'] = $videaModel->findByGalerie($id);
 
@@ -248,7 +251,7 @@ class GaleriePresenter extends BasePresenter
 	{
 		$this->template->galerie = $this->model->find($id)->fetch();
 
-		$videaModel = new Videa;
+		$videaModel = $this->context->videa;
 		$videa = $videaModel->findByGalerie($id)->fetchAssoc('id,=');
 		$this['videosEditForm']->setValues($videa);
 
@@ -257,12 +260,10 @@ class GaleriePresenter extends BasePresenter
 
 	public function createComponentVideosEditForm($name)
 	{
-		$videaModel = new Videa;
+		$videaModel = $this->context->videa;
 		$id = $this->getParam('id');
 
-		$f = new AppForm($this, $name);
-
-		$f->getRenderer()->setClientScript(new LiveClientScript($f));
+		$f = new Nette\Application\UI\Form($this, $name);
 
 		$videa = $videaModel->findByGalerie($id)->fetchAssoc('id,=');
 		$videa += array(0 => array());
@@ -301,12 +302,12 @@ class GaleriePresenter extends BasePresenter
 		$f->addSubmit('cancel', 'Zpět')
 			   ->setValidationScope(FALSE);
 
-		$f->onSubmit[] = array($this, 'videosEditFormSubmitted');
+		$f->onSuccess[] = array($this, 'videosEditFormSubmitted');
 	}
 
-	public function videosEditFormSubmitted(AppForm $f)
+	public function videosEditFormSubmitted(Nette\Application\UI\Form $f)
 	{
-		$videaModel = new Videa;
+		$videaModel = $this->context->videa;
 		$id = $this->getParam('id');
 
 		if($f['cancel']->isSubmittedBy())
@@ -330,7 +331,7 @@ class GaleriePresenter extends BasePresenter
 						catch (DibiException $e)
 						{
 							$this->flashMessage('Nepodařilo se smazat video *'.$video['nazev'].'*', 'error');
-							Debug::processException($e, true);
+							Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 						}
 						continue;
 					}
@@ -394,14 +395,14 @@ class GaleriePresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit videa.', 'error');
-				Debug::processException($e, true);
+				Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 	}
 
 	public function renderFotka($id)
 	{
-		$fotky = new Fotky;
+		$fotky = $this->context->fotky;
 
 		$this->template->fotka = array();
 		$this->template->fotka = $fotky->find($id)->fetch();
@@ -417,14 +418,14 @@ class GaleriePresenter extends BasePresenter
 
 	public function createComponentPridaniFotekDoAlba5Form()
 	{
-		$form = new AppForm($this, 'pridaniFotekDoAlba5Form');
+		$form = new Nette\Application\UI\Form($this, 'pridaniFotekDoAlba5Form');
 
 //$form->addInput('file');
 	}
 
 	public function createComponentPridaniFotekDoAlbaForm($name)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Nette\Application\UI\Form($this, $name);
 		$form->getElementPrototype()->class[] = "ajax";
 
 		$form->addMultipleFileUpload('upload', 'Uložit soubory do alba', 20)
@@ -432,15 +433,15 @@ class GaleriePresenter extends BasePresenter
 		  ->addRule("MultipleFileUpload::validateFileSize", "Soubory jsou dohromady moc veliké!",1024*1024) */;
 
 		$form->addSubmit('save', 'Uložit soubory do alba');
-		$form->onSubmit[] = array($this, 'pridaniFotekDoAlbaFormSubmitted');
+		$form->onSuccess[] = array($this, 'pridaniFotekDoAlbaFormSubmitted');
 
 		$form->addGroup('Vyberte soubory k nahrání', true);
 
 		$form->onInvalidSubmit[] = array($this, "handlePrekresliForm");
-		$form->onSubmit[] = array($this, "handlePrekresliForm");
+		$form->onSuccess[] = array($this, "handlePrekresliForm");
 	}
 
-	public function pridaniFotekDoAlbaFormSubmitted(AppForm $form)
+	public function pridaniFotekDoAlbaFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$data = $form->getValues();
 		$id_galerie = (int) $this->getParam('id');
@@ -451,7 +452,7 @@ class GaleriePresenter extends BasePresenter
 		{
 			try
 			{
-				$fotka = new Fotky($file);
+				$fotka = $this->context->fotky;
 				$fotka->id_autora = $this->user->getIdentity()->id;
 				$fotka->uloz($id_galerie);
 				$this->flashMessage('Soubor ' . $file->getName() . ' byl úspěšně uložen.', 'ok');
@@ -459,7 +460,7 @@ class GaleriePresenter extends BasePresenter
 			catch (Exception $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit soubor ' . $file->getName() . '. Chyba: ' . $e->getMessage(), 'error');
-				//Debug::processException($e, true);
+				//Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
@@ -493,15 +494,15 @@ class GaleriePresenter extends BasePresenter
 
 		switch ($souvisejici)
 		{
-			case 'zavody': $souvisejiciModel = new Zavody;
+			case 'zavody': $souvisejiciModel = $this->context->$souvisejici;
 				break;
-			case 'clanky': $souvisejiciModel = new Clanky;
+			case 'clanky': $souvisejiciModel = $this->context->$souvisejici;
 				break;
-			case 'terce': $souvisejiciModel = new Terce;
+			case 'terce': $souvisejiciModel = $this->context->$souvisejici;
 				break;
-			case 'sbory': $souvisejiciModel = new Sbory;
+			case 'sbory': $souvisejiciModel = $this->context->$souvisejici;
 				break;
-			case 'druzstva': $souvisejiciModel = new Druzstva;
+			case 'druzstva': $souvisejiciModel = $this->context->$souvisejici;
 				break;
 			default: $souvisejiciModel = NULL;
 				break;
@@ -517,9 +518,7 @@ class GaleriePresenter extends BasePresenter
 	{
 		$id = (int) $this->getParam('id');
 
-		$form = new AppForm($this, $name);
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form = new Nette\Application\UI\Form($this, $name);
 
 		$form->addGroup('Informace o galerii');
 		$form->addText('nazev', 'Název galerie', 30)
@@ -565,10 +564,10 @@ class GaleriePresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Zpět')
 			   ->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -608,7 +607,7 @@ class GaleriePresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Galerii se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
 			if($form['saveAndReturn']->isSubmittedBy() || $form['cancel']->isSubmittedBy()) $this->redirect('galerie', $id);
@@ -618,7 +617,7 @@ class GaleriePresenter extends BasePresenter
 
 	public function handleSmazatFotku($id)
 	{
-		$fotky = new Fotky;
+		$fotky = $this->context->fotky;
 		$fotka = $fotky->find($id)->fetch();
 
 		$galerie = $this->model->find($fotka['id_galerie'])->fetch();
@@ -633,7 +632,7 @@ class GaleriePresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Fotku se nepodařilo odstranit.');
-			Debug::processException($e);
+			Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 		$this->invalidateControl('flashes');
@@ -655,7 +654,7 @@ class GaleriePresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Galerii se nepodařilo odstranit.', 'error');
-			Debug::processException($e);
+			Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch (RestrictionException $e)
 		{
@@ -678,7 +677,7 @@ class GaleriePresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Galerii se nepodařilo vyprázdnit.', 'error');
-			Debug::processException($e, true);
+			Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 		$this->redirect('this');

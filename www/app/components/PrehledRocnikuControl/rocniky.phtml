@@ -1,7 +1,7 @@
 <p class="prehled-rocniku">Ročník
 {foreach $rocniky['rocniky'] as $rok}
 	{if $i == ceil(count($rocniky['rocniky'])/2)+3}<br />{/if}
-	| <a href="{plink $presenter->view, $rok->id}" class="{if( $rok->rok == $rocnik->rok )}aktualni-rocnik{/if} {if $rok->zverejneny != true}nezverejneny-rocnik{/if}">{$rok->rok}</a>
+	| <a href="{plink $presenter->view, $rok->id}" class="{if $rok->rok == $rocnik->rok}aktualni-rocnik{/if} {if $rok->zverejneny != true}nezverejneny-rocnik{/if}">{$rok->rok}</a>
 	{? $i++; }
 {/foreach}
 

@@ -24,10 +24,10 @@ class Pravidla extends BaseModel
 
 	protected $zverejnene = true;
 
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
+	public function __construct(\DibiConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
 	public function findAll()
 	{
@@ -50,7 +50,7 @@ class Pravidla extends BaseModel
 
 	public function findLast()
 	{
-		$rocnikyModel = new Rocniky;
+		$rocnikyModel = Nette\Environment::getService('rocniky');
 		$posledni = $rocnikyModel->findLast()->fetch();
 		return $this->findByRocnik($posledni['id']);
 	}
@@ -75,7 +75,7 @@ class Pravidla extends BaseModel
 
 	public function zkopirujPravidlaProRocnik($id)
 	{
-		$rocnikyModel = new Rocniky;
+		$rocnikyModel = Nette\Environment::getService('rocniky');
 		$posledni = $rocnikyModel->findLast()->fetch();
 		if($posledni != false)
 		{

@@ -6,7 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
+use Nette\Application\BadRequestException;
 
 /**
  * Presenter diskuzí
@@ -20,7 +21,7 @@ class DiskuzePresenter extends BasePresenter
 
 	protected function startup()
 	{
-		$this->model = new Diskuze;
+		$this->model = $this->context->diskuze;
 
 		parent::startup();
 	}
@@ -74,11 +75,11 @@ class DiskuzePresenter extends BasePresenter
 
 	public function createComponentZeptatseForm()
 	{
-		$form = new AppForm($this, 'zeptatseForm');
+		$form = new Nette\Application\UI\Form($this, 'zeptatseForm');
 		$form->getElementPrototype()->class('ajax');
-		$temataModel = new Temata();
+		$temataModel = $this->context->temata;
 
-		DependentSelectBox::$disableChilds = false;
+		DependentSelectBox\DependentSelectBox::$disableChilds = false;
 		$form->addGroup('Nový dotaz');
 		$form->addSelect('id_tematu', 'Téma diskuze', $temataModel->findAllToSelect()->fetchPairs('id','nazev'));
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Související', $form['id_tematu'], array($this, 'getSouvisejici'));
@@ -90,32 +91,27 @@ class DiskuzePresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Vrátit se zpět')
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'zeptatseFormSubmitted');
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form->onSuccess[] = array($this, 'zeptatseFormSubmitted');
 	}
 
 	public function createComponentEditForm($name)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Form($this, $name);
 		$form->getElementPrototype()->class('ajax');
-		$temataModel = new Temata();
+		$temataModel = $this->context->temata;
 
-		DependentSelectBox::$disableChilds = false;
+		DependentSelectBox\DependentSelectBox::$disableChilds = false;
 
 		$form->addHidden('id');
 		$form->addGroup('Úprava informací o diskuzi');
 		$form->addSelect('id_tematu', 'Téma diskuze', $temataModel->findAllToSelect()->fetchPairs('id','nazev'))
 			   ->addRule(Form::FILLED, 'Je nutné vybrat téma diskuze.');
-		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Související', $form['id_tematu'], array($this, 'getSouvisejici'))
-			   ->addRule(Form::FILLED, 'Je nutné vybrat související položku.');
+		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Související', $form['id_tematu'], array($this, 'getSouvisejici'));
 		$form->addText('tema_diskuze', 'Název diskuze', 40)
 			->addRule(Form::FILLED, 'Je nutné vyplnit téma diskuze.');
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
 	public function getSouvisejici($form)
@@ -127,7 +123,7 @@ class DiskuzePresenter extends BasePresenter
 		$vystup = array();
 		if( $tabulka == 'Zavody' )
 		{
-			$model = new Zavody;
+			$model = $this->context->zavody;
 			$polozky = $model->findAllToSelect()->fetchAssoc('rok,id,=');
 			foreach( $polozky as &$skupina )
 				foreach( $skupina as &$polozka )
@@ -137,7 +133,7 @@ class DiskuzePresenter extends BasePresenter
 		}
 		elseif( $tabulka == 'Druzstva' )
 		{
-			$model = new Druzstva;
+			$model = $this->context->druzstva;
 			$polozky = $model->findAllToSelect()->fetchAssoc('kategorie,id,=');
 			foreach( $polozky as &$skupina )
 				foreach( $skupina as &$polozka )
@@ -147,7 +143,7 @@ class DiskuzePresenter extends BasePresenter
 		}
 		elseif( $tabulka == 'Fotogalerie' )
 		{
-			$model = new Fotogalerie;
+			$model = $this->context->fotogalerie;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -156,7 +152,7 @@ class DiskuzePresenter extends BasePresenter
 		}
 		elseif( $tabulka == 'Clanky' )
 		{
-			$model = new Clanky;
+			$model = $this->context->clanky;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -165,7 +161,7 @@ class DiskuzePresenter extends BasePresenter
 		}
 		elseif( $tabulka == 'Sbory' )
 		{
-			$model = new Sbory;
+			$model = $this->context->sbory;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -177,7 +173,7 @@ class DiskuzePresenter extends BasePresenter
 		return $vystup;
 	}
 
-	public function zeptatseFormSubmitted(AppForm $form)
+	public function zeptatseFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id_tematu = (int) $form['id_tematu']->value;
 		$id_souvisejiciho = (int) $form['id_souvisejiciho']->value;
@@ -200,7 +196,7 @@ class DiskuzePresenter extends BasePresenter
 		{
 			try
 			{
-				$komentare = new Komentare;
+				$komentare = $this->context->komentare;
 
 				$tema = $this->model->findTema($id_tematu)->fetch();
 				$data = array('nazev' => $form['nazev']->value, 'id_autora' => (int)$this->user->getIdentity()->id, 'id_tematu' => $id_tematu);
@@ -212,19 +208,19 @@ class DiskuzePresenter extends BasePresenter
 
 				if( $id_souvisejiciho != 0 && !empty($tema['souvisejiciTabulka']) )
 				{
-					$souvisejici = new Souvisejici;
+					$souvisejici = $this->context->souvisejici;
 					$souvisejici->insert(array('rodic' => 'diskuze', 'id_rodice' => $id_diskuze, 'souvisejici' => $tema['souvisejiciTabulka'], 'id_souvisejiciho' => $id_souvisejiciho) );
 				}
 
 				$this->flashMessage('Téma bylo úspěšně založeno.', 'ok');
 
-				$sledovani = new Sledovani;
+				$sledovani = $this->context->sledovani;
 
 				// nastaví sledování pro autora nebo správce sboru/závodu
 				if( !empty($tema['souvisejiciTabulka']) && in_array( $tema['souvisejiciTabulka'], array('zavody', 'sbory', 'terce', 'druzstva', 'clanky') ) )
 				{
-					$souvisejiciTabulka = ucfirst($tema['souvisejiciTabulka']);
-					$souvisejiciModel = new $souvisejiciTabulka;
+					$souvisejiciTabulka = $tema['souvisejiciTabulka'];
+					$souvisejiciModel = $this->context->$souvisejiciTabulka;
 					$souvisejiciPrvek = $souvisejiciModel->find($id_souvisejiciho)->fetch();
 					if( $souvisejiciPrvek !== false && isset($souvisejiciPrvek['id_autora']) && !empty($souvisejiciPrvek['id_autora']) ) $sledovani->sledovat("diskuze", $id_diskuze, $souvisejiciPrvek['id_autora']);
 					if( $souvisejiciPrvek !== false && isset($souvisejiciPrvek['id_spravce']) && !empty($souvisejiciPrvek['id_spravce']) ) $sledovani->sledovat("diskuze", $id_diskuze, $souvisejiciPrvek['id_spravce']);
@@ -251,13 +247,18 @@ class DiskuzePresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Téma se nepodařilo založit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 				$this->redirect('this');
+			}
+			catch(Exception $e)
+			{
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
+				$this->flashMessage('Téma se nepodařilo založit.', 'error');
 			}
 		}
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $form['id']->value;
 		$id_tematu = (int) $form['id_tematu']->value;
@@ -270,7 +271,7 @@ class DiskuzePresenter extends BasePresenter
 			{
 				if( $id_souvisejiciho != 0 && !empty($tema['souvisejiciTabulka']) )
 				{
-					$souvisejiciModel = new Souvisejici;
+					$souvisejiciModel = $this->context->souvisejici;
 					$souvisejici = $souvisejiciModel->findByRodic('diskuze', $id)->fetch();
 					if($souvisejici !== false)
 					{
@@ -295,7 +296,7 @@ class DiskuzePresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Téma se nepodařilo založit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 				$this->redirect('this');
 			}
 		}
@@ -306,7 +307,7 @@ class DiskuzePresenter extends BasePresenter
 		$this->template->diskuze = array('id' => $id);
 		$this->template->user = $this->getPresenter()->getUser();
 		$disk = $this->model->find($id)->fetch();
-		$souvisejiciModel = new Souvisejici();
+		$souvisejiciModel = $this->context->souvisejici;
 		$souv = $souvisejiciModel->findByRodic('diskuze', $disk['id_diskuze'])->fetch();
 		$disk['id_souvisejiciho'] = $souv['id_souvisejiciho'];
 		$disk['id'] = $id;
@@ -323,7 +324,7 @@ class DiskuzePresenter extends BasePresenter
 		$this->setTitle('Úprava komentáře');
 	}
 
-	public function komentarFormSubmitted(AppForm $form)
+	public function komentarFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		if( $form['cancel']->isSubmittedBy() )
 		{
@@ -332,7 +333,7 @@ class DiskuzePresenter extends BasePresenter
 		}
 		elseif( $form['save']->isSubmittedBy() )
 		{
-			$komentare = new Komentare;
+			$komentare = $this->context->komentare;
 			$komentare->insert( array( 'id_diskuze' => $form['id_diskuze']->value, 'text' => $form['text']->value, 'id_autora' => (int)$this->user->getIdentity()->__get('id'), 'datum_pridani%sql' => 'NOW()' ) ); //Debug::dump(dibi::$sql);
 			$this->flashMessage('Odpověď byla vložena do diskuze.');
 
@@ -357,7 +358,7 @@ class DiskuzePresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Diskuzi se nepodařilo odstranit.');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->redirect('Diskuze:diskuze', $id);
 		}
 		catch(RestrictionException $e)

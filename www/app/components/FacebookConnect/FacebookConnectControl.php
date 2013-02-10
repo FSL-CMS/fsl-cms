@@ -37,7 +37,7 @@ class FacebookConnectControl extends BaseControl
 
 		$this->template->facebook = $facebook;
 
-		$uzivatele = new Uzivatele;
+		$uzivatele = $this->presenter->context->uzivatele;
 		if( $this->parent->user->getIdentity() !== NULL ) $uzivatel = $uzivatele->find($this->parent->user->getIdentity()->id)->fetch();
 
 		if( $this->parent->user->isLoggedIn() !== false && $this->parent->user->getIdentity() !== NULL && !empty($uzivatel['facebookId']) ) $this->template->zobrazitLogin = false;
@@ -51,7 +51,7 @@ class FacebookConnectControl extends BaseControl
 
 	public function handleFacebookLogin()
 	{
-		$uzivateleModel = new Uzivatele;
+		$uzivateleModel = $this->presenter->context->uzivatele;
 		// Create our Application instance (replace this with your appId and secret).
 		$facebook = new Facebook(array(
 			'appId'  => $this->apiId,
@@ -102,7 +102,7 @@ class FacebookConnectControl extends BaseControl
 			catch(DibiException $e)
 			{
 				$this->getPresenter()->flashMessage('Nepodařilo se provést úpravu údajů uživatelského účtu.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			catch (FacebookApiException $e)
 			{

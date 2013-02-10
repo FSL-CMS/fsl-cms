@@ -25,9 +25,10 @@ class SouboryManager implements IFileUploaderFileManager
 	/** @var int */
 	protected $id_autora = NULL;
 
-	public function save(HttpUploadedFile $soubor)
+	public function save(Nette\Http\FileUpload $soubor)
 	{
-		$fotka = new Soubory($soubor);
+		$fotka = Nette\Environment::getService('soubory');
+		$fotka->setSoubor($soubor);
 		$fotka->setAutor($this->id_autora);
 		$fotka->setSouvisejici($this->id_souvisejiciho);
 		$fotka->uloz($this->id_souvisejiciho, $this->souvisejici);

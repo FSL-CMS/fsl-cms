@@ -3,7 +3,7 @@
 {if count($sablony['leve'])}
 <div class="sablonyclanku-leve">
 	{foreach $sablony['leve'] as $sablona}
-		{widget fotka:sablonaclanku $sablona['obrazek_id']}
+		{control fotka:sablonaclanku $sablona['obrazek_id']}
 	{/foreach}
 	<span class="cleaner"></span>
 </div>
@@ -12,7 +12,7 @@
 {if count($sablony['prave'])}
 <div class="sablonyclanku-prave">
 	{foreach $sablony['prave'] as $sablona}
-		{widget fotka:sablonaclanku $sablona['obrazek_id']}
+		{control fotka:sablonaclanku $sablona['obrazek_id']}
 	{/foreach}
 	<span class="cleaner"></span>
 </div>

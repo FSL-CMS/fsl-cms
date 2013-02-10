@@ -7317,7 +7317,7 @@ class iCalUtilityFunctions {
     $stdIx  = $dlghtIx   = null;
     $prevTrans           = FALSE;
     foreach( $transitions as $tix => $trans ) {                  // all transitions in date-time order!!
-      $date              = new DateTime( "@{$trans['ts']}" );    // set transition date (UTC)
+      $date              = new DateTime( "{$trans['ts']}" );    // set transition date (UTC)
       $transDateYmd      = $date->format('Y-m-d' );
       if ( $transDateYmd < $dateFromYmd ) {
         $prevOffsetfrom  = $trans['offset'];                     // previous trans offset will be 'next' trans offsetFrom
@@ -7366,7 +7366,7 @@ class iCalUtilityFunctions {
     }
     if( empty( $transTemp )) {      // if no match found
       if( $prevTrans ) {            // then we use the last transition (before startdate) for the tz info
-        $date = new DateTime( "@{$prevTrans['ts']}" );           // set transition date (UTC)
+        $date = new DateTime( "{$prevTrans['ts']}" );           // set transition date (UTC)
         $date->modify( $prevTrans['offsetfrom'].'seconds' );     // convert utc date to local date
         $d = $date->format( 'Y-n-j-G-i-s' );                     // set date to array to ease up dtstart setting
         $d = explode( '-', $d );
@@ -9135,7 +9135,7 @@ class iCalUtilityFunctions {
   public static function transformDateTime( & $date, $tzFrom, $tzTo='UTC', $format = 'Ymd\THis' ) {
     if( is_array( $date ) && isset( $date['timestamp'] )) {
       try {
-        $d = new DateTime( "@{$date['timestamp']}" ); // set UTC date
+        $d = new DateTime( "{$date['timestamp']}" ); // set UTC date
         $d->setTimezone(new DateTimeZone( $tzFrom )); // convert to 'from' date
       }
       catch( Exception $e ) { return FALSE; }

@@ -1,9 +1,9 @@
-@{block content}
+{block content}
 
 {if $kategorie['muze_editovat'] == true}<p class="config"><a href="{plink edit}" class="add">Přidat novou kategorii</a></p>{/if}
 
 {if count($kategorie['kategorie'])}
-{widget kategorieForm begin}
+{control kategorieForm begin}
 <table class="prehled">
 <thead>
 	<tr>
@@ -22,7 +22,7 @@
 </tbody>
 </table>
 {$control['kategorieForm']['save']->control}
-{widget kategorieForm end}
+{control kategorieForm end}
 {else}
 	<p class="warning">Žádné kategorie nebyly nalezeny.</p>
 {/if}

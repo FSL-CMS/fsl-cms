@@ -19,14 +19,6 @@ class Ucasti extends BaseModel
 	/** @var string */
 	protected $table = 'ucasti';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	/**
 	 * Najde všechny kategorie a knim přiřadí účasti družstev na soutži
 	 * I nezúčastněné kategorie vybírá kvůli možnosti přihlásit je na soutž
@@ -44,7 +36,7 @@ class Ucasti extends BaseModel
 			->orderBy('[souteze].[poradi], [kategorie].[poradi]')
 			;
 	}
-	
+
 	public function findByZavodToSelect($id)
 	{
 		return $this->findByZavod($id)->select('CONCAT([souteze].[nazev], " - ", [kategorie].[nazev]) AS [nazev]');
@@ -58,7 +50,7 @@ class Ucasti extends BaseModel
 			unset($data['id_souteze']);
 		}
 	}
-	
+
 	public function insert(array $data)
 	{
 		try

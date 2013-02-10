@@ -14,6 +14,9 @@
 class PoradiControl extends BaseControl
 {
 
+	/** @var int */
+	private $pocetPoradi = 3;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -28,9 +31,9 @@ class PoradiControl extends BaseControl
 	 */
 	public function render($id_zavodu = 0)
 	{
-		$vysledkyModel = new Vysledky;
-		$rocniky = new Rocniky;
-		$zavodyModel = new Zavody;
+		$vysledkyModel = $this->presenter->context->vysledky;
+		$rocniky = $this->presenter->context->rocniky;
+		$zavodyModel = $this->presenter->context->zavody;
 
 		$zavod = NULL;
 		if($id_zavodu == 0 || ($zavod = $zavodyModel->find($id_zavodu)->fetch()) === false)
@@ -67,7 +70,7 @@ class PoradiControl extends BaseControl
 				{
 					$template->vysledky[$soutez][$kategorie][$vysledkyKategorie] = $vysledkyPoslednihoRocniku[$soutez][$kategorie][$vysledkyKategorie];
 					$template->vysledky[$soutez][$kategorie][$vysledkyKategorie]['poradi'] = $i++;
-					if($i == 4) break;
+					if($i == $this->pocetPoradi+1) break;
 				}
 			}
 		}

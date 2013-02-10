@@ -19,15 +19,7 @@ class Rocniky extends BaseModel implements IUdrzba
 	/** @var string */
 	protected $table = 'rocniky';
 
-	/** @var DibiConnection */
-	protected $connection;
-
 	protected $zverejnene = true;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
 
 	public function zobrazitNezverejnene()
 	{
@@ -111,7 +103,7 @@ class Rocniky extends BaseModel implements IUdrzba
 
 	public function delete($id, $force = 0)
 	{
-		$zavody = new Zavody();
+		$zavody = Nette\Environment::getService('zavody');
 		if( $force == 0 )
 		{
 			if( $zavody->findByRocnik($id)->count() != 0 ) throw new RestrictionException ('Ročník nelze odstranit, jsou k němu nahlášené závody.');
@@ -124,7 +116,7 @@ class Rocniky extends BaseModel implements IUdrzba
 	{
 		$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
 		$this->lastInsertedId($this->connection->insertId());
-		$pravidlaModel = new Pravidla;
+		$pravidlaModel = Nette\Environment::getService('pravidla');
 		$pravidlaModel->zkopirujPravidlaProRocnik($this->lastInsertedId());
 		return $ret;
 	}
@@ -135,7 +127,7 @@ class Rocniky extends BaseModel implements IUdrzba
 		if(isset($data['rocnik']))
 		{
 			$data = $this->constructUri($data);
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Rocniky', 'rocnik', $id, $data['uri']);
 			$urlsModel->setUrl('Rocniky', 'vysledky', $id, $data['uri'].'/vysledky');
 			$urlsModel->setUrl('Pravidla', 'pravidla', $id, $data['uri'].'/pravidla');

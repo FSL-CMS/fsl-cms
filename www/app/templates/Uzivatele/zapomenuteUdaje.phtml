@@ -13,8 +13,8 @@
 </ol>
 
 {snippet obnoveniHesla}
-{widget zapomenuteUdajeForm begin}
-{widget zapomenuteUdajeForm errors}
+{control zapomenuteUdajeForm begin}
+{control zapomenuteUdajeForm errors}
 <table>
 	<tr>
 		<td>{$control['zapomenuteUdajeForm']['email']->label}</td><td>{$control['zapomenuteUdajeForm']['email']->control}</td>
@@ -23,5 +23,5 @@
 		<td></td><td>{$control['zapomenuteUdajeForm']['send']->control}</td>
 	</tr>
 </table>
-{widget zapomenuteUdajeForm end}
+{control zapomenuteUdajeForm end}
 {/snippet}

@@ -1,6 +1,6 @@
-@{block content}
+{block content}
 
-{widget prehledRocniku}
+{control prehledRocniku}
 
 {if $rocniky['muze_editovat'] == true || $rocniky['muze_smazat'] == true}<p class="config">
 	{if $rocniky['muze_editovat'] == true}<a href="{plink Rocniky:edit, $rocnik->id}" title="Upravit informace o ročníku" class="edit">Upravit ročník</a>{/if}
@@ -22,7 +22,7 @@
 {/if}
 
 <h2>Všechny soutěže tohoto ročníku</h2>
-{widget mapa:prehledZavodu $zavody['pozice']}
+{control mapa:prehledZavodu $zavody['pozice']}
 
 {else}
 	<p class="warning">Nebyly nalezeny žádné závody. {if $zavody['muze_editovat'] == true}<a href="{plink Zavody:add}" title="Přidat nový závod" class="add">Přidat nový závod!</a>{/if}</p>

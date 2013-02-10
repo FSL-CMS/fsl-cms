@@ -6,21 +6,20 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Komponenta vykreslující přehled závodů do postraního menu
  *
  * @author	Milan Pála
-  */
+ */
 class FileUploaderControl extends BaseControl
 {
+
 	private $allowedTypes = array('photos' => array('jpg'), 'images' => array('png', 'gif'), 'docs' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'zip', 'rar'));
 	private $allowedMimeTypes = array('photos' => array('image\/jpeg'), 'images' => array('image\/png', 'image\/gif'), 'docs' => array('application', 'zip', 'rar'));
-
 	private $types;
 
 	/** Klíč do proměnné $_FILES */
+
 	const UPLOADED_KEY = 'fileUploader';
 
 	/**
@@ -55,42 +54,44 @@ class FileUploaderControl extends BaseControl
 				$this->exit_status('Error! Wrong HTTP method!');
 			}
 
-			if(array_key_exists(self::UPLOADED_KEY, $_FILES) && $_FILES[self::UPLOADED_KEY]['error'] == 0 ) {
+			if(array_key_exists(self::UPLOADED_KEY, $_FILES) && $_FILES[self::UPLOADED_KEY]['error'] == 0)
+			{
 
 				$pic = $_FILES[self::UPLOADED_KEY];
 
 				$allowedTypes = array();
-				foreach($this->types as $val)
+				foreach ($this->types as $val)
 				{
 					$allowedTypes = array_merge($allowedTypes, $this->allowedTypes[$val]);
 				}
 
 				if(!in_array($this->get_extension($pic['name']), $allowedTypes))
 				{
-					$this->exit_status('Jsou dovoleny pouze přípony '.implode(', ', $allowedTypes).'.');
+					$this->exit_status('Jsou dovoleny pouze přípony ' . implode(', ', $allowedTypes) . '.');
 				}
 
-				$soubor = new HttpUploadedFile($_FILES[self::UPLOADED_KEY]);
+				$soubor = new Nette\Http\FileUpload($_FILES[self::UPLOADED_KEY]);
 				$this->souborModel->save($soubor);
 
 				$this->exit_status('ok');
 			}
 		}
-		catch(Exception $e)
+		catch (Exception $e)
 		{
-			Debug::processException($e);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->getPresenter()->flashMessage('Nepodařilo se uložit obrázek.', 'error');
 			$this->exit_status($e->getMessage());
 		}
-
 	}
 
-	private function exit_status($str){
-		echo json_encode(array('status'=>$str));
+	private function exit_status($str)
+	{
+		echo json_encode(array('status' => $str));
 		exit;
 	}
 
-	private function get_extension($file_name){
+	private function get_extension($file_name)
+	{
 		$ext = explode('.', $file_name);
 		$ext = array_pop($ext);
 		return strtolower($ext);
@@ -105,7 +106,7 @@ class FileUploaderControl extends BaseControl
 		$template->uploadedKey = self::UPLOADED_KEY;
 		$template->allowedMimeTypes = array();
 		$template->allowedTypes = array();
-		foreach($this->types as $val)
+		foreach ($this->types as $val)
 		{
 			$template->allowedMimeTypes = array_merge($template->allowedMimeTypes, $this->allowedMimeTypes[$val]);
 			$template->allowedTypes = array_merge($template->allowedTypes, $this->allowedTypes[$val]);
@@ -116,51 +117,51 @@ class FileUploaderControl extends BaseControl
 
 	public function createComponentInputFileUploaderForm($name)
 	{
-		$f = new AppForm($this, $name);
+		$f = new Nette\Application\UI\Form($this, $name);
 
 		$f->addGroup('Nahrání souborů');
 		$c = $f->addContainer(self::UPLOADED_KEY);
-		$c->addFile('0', 'Vyberte soubory k nahrání');
-		$c->addFile('1', 'Vyberte soubory k nahrání');
-		$c->addFile('2', 'Vyberte soubory k nahrání');
+		$c->addUpload('0', 'Vyberte soubory k nahrání');
+		$c->addUpload('1', 'Vyberte soubory k nahrání');
+		$c->addUpload('2', 'Vyberte soubory k nahrání');
 
 		$f->addSubmit('save', 'Nahrát soubory');
-		$f->onSubmit[] = array($this, 'inputFileUploaderFormSubmitted');
+		$f->onSuccess[] = array($this, 'inputFileUploaderFormSubmitted');
 	}
 
-	public function inputFileUploaderFormSubmitted(AppForm $form)
+	public function inputFileUploaderFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$data = $form->getValues();
 
-		foreach($data[self::UPLOADED_KEY] AS $soubor)
+		foreach ($data[self::UPLOADED_KEY] AS $soubor)
 		{
 			try
 			{
 				if(!$soubor->isOk()) continue;
 				$allowedTypes = array();
-				foreach($this->types as $val)
+				foreach ($this->types as $val)
 				{
 					$allowedTypes = array_merge($allowedTypes, $this->allowedTypes[$val]);
 				}
 
 				if(!in_array($this->get_extension($soubor->getName()), $allowedTypes))
 				{
-					$this->getPresenter()->flashMessage('Jsou dovoleny pouze přípony '.implode(', ', $allowedTypes).'.', 'warning');
+					$this->getPresenter()->flashMessage('Jsou dovoleny pouze přípony ' . implode(', ', $allowedTypes) . '.', 'warning');
 					continue;
 				}
 				$this->souborModel->save($soubor);
-				$this->parent->flashMessage('Soubor '.$soubor->getName().' byl úspěšně uložen.', 'ok');
+				$this->presenter->flashMessage('Soubor ' . $soubor->getName() . ' byl úspěšně uložen.', 'ok');
 			}
-			catch(Exception $e)
+			catch (Exception $e)
 			{
-				$this->parent->flashMessage('Nepodařilo se uložit soubor '.$soubor->getName().'. Chyba: '.$e->getMessage(), 'error');
-				Debug::processException($e, true);
+				$this->presenter->flashMessage('Nepodařilo se uložit soubor ' . $soubor->getName() . '. Chyba: ' . $e->getMessage(), 'error');
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
 		// Předáme data do šablony
 		//$this->template->values = $data;
-		if(!$this->parent->isAjax()) $this->redirect('this');
+		if(!$this->presenter->isAjax()) $this->redirect('this');
 	}
 
 }

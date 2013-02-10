@@ -15,36 +15,27 @@
  */
 class Body extends BaseModel
 {
-
 	/** @var string */
 	protected $table = 'body';
-
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
 
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
 	}
-	
+
 	public function findByTabulka($id)
 	{
 		return $this->findAll()->where('[id_bodove_tabulky] = %i', $id);
 	}
-	
+
 	public function findAll()
 	{
 		return $this->connection
 			->select('[id], [poradi], [body]')
 		     ->from($this->table)
 		     ->orderBy('[poradi]');
-	}	
-	
+	}
+
 	public function findAllToSelect()
 	{
 		return $this->findAll();
@@ -54,7 +45,7 @@ class Body extends BaseModel
 	{
 		return parent::delete($id)->execute();
 	}
-	
+
 	public function findByZavod($id)
 	{
 		return $this->connection
@@ -69,7 +60,7 @@ class Body extends BaseModel
 	{
 		return parent::delete($id)->where(NULL)->where('[id_bodove_tabulky] = %i AND [poradi] > %i', $id, $poradi)->execute();
 	}
-	
+
 	public function insert(array $data)
 	{
 		$ret = parent::insert($data)->execute(dibi::IDENTIFIER);
@@ -82,5 +73,5 @@ class Body extends BaseModel
 	{
 		return parent::update($id, $data)->execute();
 	}
-	
+
 }

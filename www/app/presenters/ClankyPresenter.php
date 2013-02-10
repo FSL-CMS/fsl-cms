@@ -6,6 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\UI\Form;
+
 /**
  * Presenter článků
  *
@@ -14,11 +16,12 @@
 class ClankyPresenter extends BasePresenter
 {
 
+	/** @var Clanky */
 	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Clanky;
+		$this->model = $this->context->clanky;
 		parent::startup();
 
 		if($this->user->isAllowed('clanky', 'edit')) $this->model->zobrazitNezverejnene();
@@ -162,9 +165,7 @@ class ClankyPresenter extends BasePresenter
 		$id = (int) $this->getParam('id');
 
 		$form = new RequestButtonReceiver($this, 'clanekForm');
-		$sablonyClankuModel = new SablonyClanku;
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$sablonyClankuModel = $this->context->sablonyClanku;
 
 		$form->addGroup('Informace o článku');
 		$form->addText('nazev', 'Název článku', 50)
@@ -185,7 +186,7 @@ class ClankyPresenter extends BasePresenter
 			   ->setOption('description', 'Šablona určuje dodatečný vzhled článku, především tématický obrázek. Můžete vybrat více šablon.');
 		$form->addRequestButton('addSablony', 'Přidat novou šablonu', 'SablonyClanku:add');
 
-		$uzivateleModel = new Uzivatele();
+		$uzivateleModel = $this->context->uzivatele;
 		$form->addSelect('id_autora', 'Autor článku', $uzivateleModel->findAllToSelect()->fetchPairs('id', 'uzivatel'))->setDefaultValue($this->user->getIdentity()->id)
 			   ->addRule(Form::FILLED, 'Je nutné vybrat autora článku.');
 		$form->addRequestButton('addUzivatel', 'Přidat nového', 'Uzivatele:add');
@@ -210,12 +211,12 @@ class ClankyPresenter extends BasePresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'clanekFormSubmitted');
+		$form->onSuccess[] = array($this, 'clanekFormSubmitted');
 
 		return $form;
 	}
 
-	public function clanekFormSubmitted(AppForm $form)
+	public function clanekFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -278,7 +279,7 @@ class ClankyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Článek se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 				$this->redirect('Clanky:edit', $id);
 			}
 		}
@@ -298,7 +299,7 @@ class ClankyPresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Nepodařilo se smazat článek.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('default');
 	}

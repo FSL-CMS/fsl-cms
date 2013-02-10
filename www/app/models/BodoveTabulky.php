@@ -18,15 +18,6 @@ class BodoveTabulky extends BaseModel
 	/** @var string */
 	protected $table = 'bodove_tabulky';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection->select('*')->from($this->table)->orderBy('[platnost_od]');
@@ -54,7 +45,7 @@ class BodoveTabulky extends BaseModel
 	public function update($id, array $data)
 	{
 		$tabulka = $this->find($id)->fetch();
-		$bodyModel = new Body;
+		$bodyModel = Nette\Environment::getService('body');
 		if( $tabulka['pocet_bodovanych_pozic'] < $data['pocet_bodovanych_pozic'] )
 		{
 			for($i=$tabulka['pocet_bodovanych_pozic']; $i<$data['pocet_bodovanych_pozic']; $i++)
@@ -75,7 +66,7 @@ class BodoveTabulky extends BaseModel
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);
 
-		$bodyModel = new Body;
+		$bodyModel = Nette\Environment::getService('body');
 		for($i=0; $i<$data['pocet_bodovanych_pozic']; $i++)
 		{
 			$bodyModel->insert(array('poradi' => $i+1, 'id_bodove_tabulky' => $id));

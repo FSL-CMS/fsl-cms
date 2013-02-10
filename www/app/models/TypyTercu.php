@@ -17,14 +17,6 @@ class TypyTercu extends BaseModel
 	/** @var string */
 	protected $table = 'typy_tercu';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAllToSelect()
 	{
 		return $this->connection
@@ -49,7 +41,7 @@ class TypyTercu extends BaseModel
 	{
 		if ($force == 0 || $force == 1)
 		{
-			$terce = new Terce;
+			$terce = Nette\Environment::getService('terce');
 			if ($terce->findByTyp($id)->count() != 0)
 				throw new RestrictionException('Typ terčů nelze odstranit, je použit u používaných terčů.');
 		}

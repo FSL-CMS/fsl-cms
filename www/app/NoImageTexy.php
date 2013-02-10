@@ -20,4 +20,3 @@ class NoImageTexy extends MyTexy
 		$this->allowed['image'] = FALSE;
 	}
 }
-

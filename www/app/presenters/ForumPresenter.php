@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter diskuzních fór
@@ -19,7 +19,7 @@ class ForumPresenter extends BasePresenter
 
 	protected function startup()
 	{
-		$this->model = new Diskuze;
+		$this->model = $this->context->diskuze;
 
 		parent::startup();
 	}
@@ -60,7 +60,7 @@ class ForumPresenter extends BasePresenter
 		$this->template->diskuze = array();
 		$this->template->diskuze['muze_pridavat'] = $this->user->isAllowed('diskuze', 'add');
 
-		$komentare = new Komentare;
+		$komentare = $this->context->komentare;
 
 		foreach( $this->template->forum['diskuze'] as &$disk )
 		{
@@ -99,7 +99,7 @@ class ForumPresenter extends BasePresenter
 		$this->template->diskuze = array();
 		$this->template->diskuze['muze_pridavat'] = $this->user->isAllowed('diskuze', 'add');
 
-		$komentare = new Komentare;
+		$komentare = $this->context->komentare;
 
 		foreach( $this->template->forum['diskuze'] as &$disk )
 		{
@@ -161,7 +161,7 @@ class ForumPresenter extends BasePresenter
 		$this->setTitle('Položit dotaz na téma: '.$this->template->tema['nazev']);
 	}
 
-	/*public function komentarFormSubmitted(AppForm $form)
+	/*public function komentarFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		if( $form['cancel']->isSubmittedBy() )
 		{
@@ -170,7 +170,7 @@ class ForumPresenter extends BasePresenter
 		}
 		elseif( $form['save']->isSubmittedBy() )
 		{
-			$komentare = new Komentare;
+			$komentare = $this->context->komentare;
 			$komentare->insert( array( 'id_diskuze' => $form['id_diskuze']->value, 'text' => $form['text']->value, 'id_autora' => (int)$this->user->getIdentity()->__get('id'), 'datum_pridani%sql' => 'NOW()' ) ); //Debug::dump(dibi::$sql);
 			$this->flashMessage('Odpověď byla vložena do diskuze.');
 
@@ -185,7 +185,7 @@ class ForumPresenter extends BasePresenter
 
 	public function createComponentEditForm($name)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Nette\Application\UI\Form($this, $name);
 		$form->addHidden('id_souvisejiciho');
 		$form->addText('nazev', 'Téma diskuze', 40)
 			->addRule(Form::FILLED, 'Je nutné vyplnit téma diskuze.');
@@ -195,12 +195,10 @@ class ForumPresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Vrátit se zpět')
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id_tematu = (int) $this->getParam('id');
 		$id_souvisejiciho = (int) $form['id_souvisejiciho']->value;
@@ -223,7 +221,7 @@ class ForumPresenter extends BasePresenter
 		{
 			try
 			{
-				$komentare = new Komentare;
+				$komentare = $this->context->komentare;
 
 				$tema = $this->model->findTema($id_tematu)->fetch();
 				$data = array('nazev' => $form['nazev']->value, 'id_autora' => (int)$this->user->getIdentity()->id, 'id_tematu' => $id_tematu);
@@ -235,7 +233,7 @@ class ForumPresenter extends BasePresenter
 
 				if( $id_souvisejiciho != 0 && !empty($tema['souvisejiciTabulka']) )
 				{
-					$souvisejici = new Souvisejici;
+					$souvisejici = $this->context->souvisejici;
 					$souvisejici->insert(array('rodic' => 'diskuze', 'id_rodice' => $id_diskuze, 'souvisejici' => $tema['souvisejiciTabulka'], 'id_souvisejiciho' => $id_souvisejiciho) );
 				}
 

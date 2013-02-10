@@ -5,9 +5,7 @@
   * @author    Milan Pála
   */
 
- //require_once(LIBS_DIR.'/Nette/Forms/Controls/TextInput.php');
-
- class SouradniceInput extends /*Nette\Forms\*/TextInput
+ class SouradniceInput extends Nette\Forms\Controls\TextInput
  {
    private $sirkaInput;
    private $delkaInput;
@@ -78,7 +76,7 @@
 	$control = parent::getControl();
 
 
-	$el = Html::el('div');
+	$el = Nette\Utils\Html::el('div');
 	$el->create('div')->id('mapa')->class('vyber-polohy');
 	$el->create('div')->add('<script type="text/javascript" src="http://api4.mapy.cz/loader.js"></script>
 <script type="text/javascript">Loader.load();</script>

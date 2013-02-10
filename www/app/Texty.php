@@ -13,9 +13,10 @@
  *
  * @author Milan Pála
  */
-class Texty extends Object
+class Texty extends Nette\Object
 {
 	public static $FORM_CANCEL = 'Zpět';
 	public static $FORM_SAVE = 'Uložit';
 	public static $FORM_SAVEANDRETURN = 'Uložit a přejít zpět';
+	public static $FORM_SAVEGROUP = 'Uložení';
 }

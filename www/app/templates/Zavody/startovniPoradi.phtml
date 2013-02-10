@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 {if $zavod['aktivni_startovni_poradi'] && count($startovni_poradi)}
 	{* Není připravena účast kategorií na závodě *}
@@ -10,8 +10,8 @@
 		{* Editační formulář pro správce/pořadatele *}
 		{if $startovni_poradi['muze_editovat'] == true}
 			<p class="ok">Přihlašování pro družstva otevřeno od {$startovni_poradi['datum_prihlasovani_od']|datum:1:1:0} až {$startovni_poradi['datum_prihlasovani_do']|datum:1:1:0}.</p>
-			{widget prihlasitSP begin}
-			{widget prihlasitSP errors}
+			{control prihlasitSP begin}
+			{control prihlasitSP errors}
 			{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
 			<table class="prehled">
 				<caption>Kategorie {$kategorie}</caption>
@@ -35,7 +35,7 @@
 				</tbody>
 			</table>
 			{/foreach}
-			{widget prihlasitSP end}
+			{control prihlasitSP end}
 
 		{* Možnosti pro přihlášené/nepřihlášené uživatele *}
 		{else}
@@ -79,18 +79,18 @@
 											{if $startovni_poradi['muze_pridavat'] == true && $startovni_poradi['datum_prihlasovani_uplynulo'] != true && isset($sp['id_druzstev'])}
 												{if count($sp['id_druzstev'])}
 													{foreach $sp['id_druzstev'] as $druzstvo}
-														{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
-															{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] errors}
+														{control 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
+															{control 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] errors}
 															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['poradi']->control}
 															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']][$sp['id_kategorie']][$sp['poradi']]['id_druzstva']->setValue($druzstvo['id'])->control}
 															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
 															{$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['save']->control}
-														{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
+														{control 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
 													{/foreach}
 												{else}
-													{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
+													{control 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] begin}
 														Váš sbor nemá družstvo {$control['prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi']]['addDruzstva']->control}
-													{widget 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
+													{control 'prihlasitSP_'.$sp['id_kategorie'].'_'.$sp['poradi'] end}
 												{/if}
 											{else}
 												{$sp['druzstvo']}

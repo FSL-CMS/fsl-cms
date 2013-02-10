@@ -7,15 +7,15 @@
  * @copyright 2009 Petr Procházka
  * @version 0.1
  */
- 
- 
+
+
 require_once dirname(__FILE__) . '/RequestButtonHelper.php';
 
 /**
  * Umožnuje zpracovat a vrátit požadavek od RequestButtonu.
  * Zjednodušuje práci s RequestButtonem (není potřeba volat pomocnou metodu).
  */
-class RequestButtonReceiver extends AppForm
+class RequestButtonReceiver extends Nette\Application\UI\Form
 {
 	/**
 	 * Přidá do action backlink, aby formulář i po odeslání věděl kam se má vrátit.

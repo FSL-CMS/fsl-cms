@@ -13,20 +13,15 @@
  *
  * @author	Milan Pála
   */
-class TocControl extends Control
+class TocControl extends BaseControl
 {
 	private $nadpisy = array();
-	
-	public function __construct()
-	{
-		parent::__construct();
-	}
 
 	public function add($href, $title)
 	{
-		$this->nadpisy['toc-'.String::webalize($href)] = $title;
+		$this->nadpisy['toc-'.Nette\Utils\Strings::webalize($href)] = $title;
 	}
-	
+
 	public function render()
 	{
 		$template = $this->template;

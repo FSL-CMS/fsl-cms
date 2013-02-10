@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Model soutěží
  *
@@ -19,20 +17,12 @@ class Souteze extends BaseModel
 	/** @var string */
 	protected $table = 'souteze';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection
-			->select('*')
-			->from($this->table)
-			->orderBy('[poradi]');
+						->select('*')
+						->from($this->table)
+						->orderBy('[poradi]');
 	}
 
 	public function find($id)
@@ -47,7 +37,11 @@ class Souteze extends BaseModel
 
 	public function pripravData(&$data)
 	{
-		if( isset($data['platnost_do']) && $data['platnost_do'] == '0000-00-00 00:00:00' || empty($data['platnost_do']) ) { unset($data['platnost_do']); $data['platnost_do%sql'] = 'NULL'; }
+		if(isset($data['platnost_do']) && $data['platnost_do'] == '0000-00-00 00:00:00' || empty($data['platnost_do']))
+		{
+			unset($data['platnost_do']);
+			$data['platnost_do%sql'] = 'NULL';
+		}
 	}
 
 	public function insert(array $data)
@@ -56,14 +50,14 @@ class Souteze extends BaseModel
 		{
 			$max = $this->connection->query('SELECT MAX(poradi) FROM %n LIMIT 1', $this->table)->fetchSingle();
 			$this->pripravData($data);
-			$data['poradi%i'] = $max+1;
+			$data['poradi%i'] = $max + 1;
 			$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
 			$this->lastInsertedId($this->connection->insertId());
 			return $ret;
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
-			if( $e->getCode() == 1062 ) throw new AlreadyExistException('Typ terčů již existuje.');
+			if($e->getCode() == 1062) throw new AlreadyExistException('Typ terčů již existuje.');
 			else throw $e;
 		}
 	}
@@ -75,9 +69,9 @@ class Souteze extends BaseModel
 			$this->pripravData($data);
 			return parent::update($id, $data)->execute();
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
-			if( $e->getCode() == 1062 ) throw new AlreadyExistException('Typ terčů již existuje.');
+			if($e->getCode() == 1062) throw new AlreadyExistException('Typ terčů již existuje.');
 			else throw $e;
 		}
 	}
@@ -89,9 +83,9 @@ class Souteze extends BaseModel
 			// TODO: doplnit restrikce
 			return parent::delete($id)->execute();
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
-			if( $e->getCode() == 1451 ) throw new RestrictionException('Soutěž nelze smazat.');
+			if($e->getCode() == 1451) throw new RestrictionException('Soutěž nelze smazat.');
 			else throw $e;
 		}
 	}

@@ -16,11 +16,12 @@
 class StatistikyPresenter extends BasePresenter
 {
 
-	private $model = NULL;
+	/** @var Vysledky */
+	private $model;
 
 	protected function startup()
 	{
-		$this->model = new Vysledky;
+		$this->model = $this->context->vysledky;
 
 		parent::startup();
 	}
@@ -153,14 +154,14 @@ class StatistikyPresenter extends BasePresenter
 		$drahyByCas = $this->model->nejrychlejsiDrahyByCas()->fetchAssoc('soutez,kategorie,terce,#,=');
 		$this->template->nejrychlejsiDrahyByCas = array();
 		$j=0;
-		$kategorie = array();
+		$_kategorie = array();
 		foreach( $drahyByCas as $soutez => $foo)
 		{
 			foreach( $drahyByCas[$soutez] as $kategorie => $bar)
 			{
 				foreach( $drahyByCas[$soutez][$kategorie] as $terce => $bar )
 				{
-					if( !isset($kategorie[$soutez.$kategorie.$terce]) ) $kategorie[$soutez.$kategorie.$terce] = $j++;
+					if( !isset($_kategorie[Nette\Utils\Strings::webalize($soutez.$kategorie.$terce)]) ) $_kategorie[Nette\Utils\Strings::webalize($soutez.$kategorie.$terce)] = $j++;
 					$i=1;
 					foreach( $drahyByCas[$soutez][$kategorie][$terce] as $draha )
 					{
@@ -239,7 +240,7 @@ class StatistikyPresenter extends BasePresenter
 
 	public function renderPoradaneZavody()
 	{
-		$rocniky = new Rocniky;
+		$rocniky = $this->context->rocniky;
 		$poradane = $rocniky->statistikyPoradani()->fetchAssoc('rok,soutez,=');
 
           $this->template->poradaneZavody_zahlavi = array();
@@ -259,7 +260,7 @@ class StatistikyPresenter extends BasePresenter
 
 	public function actionGrafPoradaneZavody()
 	{
-		$rocniky = new Rocniky;
+		$rocniky = $this->context->rocniky;
 		$poradane = $rocniky->statistikyPoradani()->fetchPairs('rok','pocet');
 
 		$data = array();

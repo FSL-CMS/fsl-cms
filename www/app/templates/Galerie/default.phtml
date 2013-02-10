@@ -14,7 +14,7 @@
 					{if $jednaGalerie['muze_editovat']}<a href="{plink Galerie:pridatVidea, $jednaGalerie['id']}" class="add">Přidat videa do galerie</a>{/if}
 				</p>
 			{/if}
-			{widget fotka:profilova, $jednaGalerie['id_fotky']}
+			{control fotka:profilova, $jednaGalerie['id_fotky']}
 			<dl>
 				<dt>Datum zveřejnění</dt>
 					{if $jednaGalerie['datum_zverejneni'] !== NULL}

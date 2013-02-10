@@ -1,7 +1,7 @@
-@{block content}
+{block content}
 
 {if count($vysledky['vysledky'])}
-	{var $isFirst 0; }
+	{var $isFirst=0; }
 	{foreach $vysledky['vysledky'] as $soutez => $vysledkySouteze}
 		{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
 		{? $isFirst++; }
@@ -19,15 +19,15 @@
 	<tbody>
 {foreach $vysledkyKategorie['vysledky'] as $vysledek}
 	<tr>
-	     <td class="poradi">{ifset $vysledek['poradi']}{$vysledek['poradi']}.{/if}</td>
-		<td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a>{else}&nbsp;{/if}</td>
-		<td class="okres">{ifset $vysledek['okres']}<abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}&nbsp;{/if}</td>
+	     <td class="poradi">{ifset $vysledek['poradi']}{$vysledek['poradi']}.{/ifset}</td>
+		<td>{ifset $vysledek['druzstvo']}<a href="{plink Druzstva:druzstvo, $vysledek['id_druzstva']}" title="Zobrazit informace o družstvu">{$vysledek['druzstvo']}</a>{else}&nbsp;{/ifset}</td>
+		<td class="okres">{ifset $vysledek['okres']}<abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}&nbsp;{/ifset}</td>
           {if $vysledkyKategorie['jeLepsiCas']}<td class="cas">{if $vysledek['lepsi_cas'] != 0} {$vysledek['lepsi_cas']} {$vysledek['lepsi_terc']|upper}{/if}</td>{/if}
-          <td class="cas">{ifset $vysledek['vysledny_cas']}{$vysledek['vysledny_cas']|vyslednyCas}{/if}</td>
-          <td class="body">{ifset $vysledek['body']}{$vysledek['body']}{/if}</td>
+          <td class="cas">{ifset $vysledek['vysledny_cas']}{$vysledek['vysledny_cas']|vyslednyCas}{/ifset}</td>
+          <td class="body">{ifset $vysledek['body']}{$vysledek['body']}{/ifset}</td>
 		{if $vysledkyKategorie['jePoradiPred']}<td class="poradi">{if $vysledek['poradiPredZavodem'] != 0}{$vysledek['poradiPredZavodem']}.{/if}</td>{/if}
 		{if $vysledkyKategorie['jePoradiPo'] && $vysledkyKategorie['jePoradiPred']}<td class="ukazatel-prubehu">{if $vysledek['poradiPredZavodem'] > $vysledek['poradiPoZavodu'] && $vysledek['poradiPoZavodu'] != 0}&uarr;{/if}{if $vysledek['poradiPredZavodem'] < $vysledek['poradiPoZavodu'] && $vysledek['poradiPredZavodem'] != 0}&darr;{/if}{if $vysledek['poradiPredZavodem'] == $vysledek['poradiPoZavodu'] && $vysledek['poradiPredZavodem'] != 0}={/if}</td>{/if}
-		{if $vysledkyKategorie['jePoradiPo']}<td class="poradi">{ifset $vysledek['poradiPoZavodu']}{$vysledek['poradiPoZavodu']}.{/if}</td>{/if}
+		{if $vysledkyKategorie['jePoradiPo']}<td class="poradi">{ifset $vysledek['poradiPoZavodu']}{$vysledek['poradiPoZavodu']}.{/ifset}</td>{/if}
 	</tr>
 {/foreach}
 	</tbody>

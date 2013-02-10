@@ -6,28 +6,23 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
 /**
  * Komponenta, z níž vycházejí všechny komponenty. Obsahuje společné prvky.
  *
  * @author Milan Pála
  */
-class BaseControl extends Control
+class BaseControl extends Nette\Application\UI\Control
 {
-	public function __construct(\IComponentContainer $parent = NULL, $name = NULL)
+
+	protected function createTemplate($class = NULL)
 	{
-		parent::__construct($parent, $name);
-	}
+		$template = parent::createTemplate($class = NULL);
 
-	public function createTemplate()
-	{
-		$template = parent::createTemplate();
+		$texy = $this->presenter->context->Texy;
+		$texy2 = $this->presenter->context->Texy;
 
-		$texy = new MyTexy();
-		$texy2 = new MyTexy;
-
-		$texy->addHandler('script', array($this, 'scriptHandler'));
-		$texy->addHandler('image', array($this, 'videoHandler'));
+		/*$texy->addHandler('script', array($this, 'scriptHandler'));
+		$texy->addHandler('image', array($this, 'videoHandler'));*/
 
 		$template->registerHelper('texy', array($texy, 'process'));
 		$template->registerHelper('texy2', array($texy2, 'process'));
@@ -39,4 +34,5 @@ class BaseControl extends Control
 
 		return $template;
 	}
+
 }

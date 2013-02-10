@@ -1,29 +1,29 @@
-{snippet 'nastaveni'.$diskuze['id_diskuze']}
+{* snippet 'nastaveni'.$diskuze['id_diskuze'] *}
 {if $diskuze['sledovano'] == true}
-	<p class="ok">Upozornění na nové příspěvky chodí emailem.{if $diskuze['zamknuto'] == true} <a href="{link nesledovat!, $diskuze['id_diskuze']}" class="ajax odemknout">Nedostávat upozornění na email</a>{/if}</p>
+	<p class="ok">Upozornění na nové příspěvky chodí emailem.{if $diskuze['zamknuto'] == true} <a href="{link nesledovat!, $diskuze['id_diskuze']}" class="odemknout">Nedostávat upozornění na email</a>{/if}</p>
 {/if}
 {if $diskuze['zamknuto'] == false}
-	{if $diskuze['muze_zamknout'] == true || $diskuze['muze_pridat'] == true}<div class="diskuze-nastaveni"><p>{if $diskuze['muze_pridat'] == true}<a href="{link odpovedet! 'id' => $diskuze['id_diskuze']}" class="commentAdd" id="diskuze{$diskuze['id_diskuze']}">Odpovědět!</a> | {/if}<a href="{link zamknout! $diskuze['id_diskuze']}" class="ajax zamknout">Zamknout diskuzi</a> | {if $diskuze['sledovano'] == false}<a href="{link sledovat!, $diskuze['id_diskuze']}" class="ajax commentMonitor">Dostávat upozornění na email!</a>{else}<a href="{link nesledovat!, $diskuze['id_diskuze']}" class="ajax nesledovat">Nedostávat upozornění na email</a>{/if}</p></div>{/if}
+	{if $diskuze['muze_zamknout'] == true || $diskuze['muze_pridat'] == true}<div class="diskuze-nastaveni"><p>{if $diskuze['muze_pridat'] == true}<a href="{link odpovedet! 'id' => $diskuze['id_diskuze']}" class="commentAdd" id="diskuze{$diskuze['id_diskuze']}">Odpovědět!</a> | {/if}<a href="{link zamknout! $diskuze['id_diskuze']}" class="zamknout">Zamknout diskuzi</a> | {if $diskuze['sledovano'] == false}<a href="{link sledovat!, $diskuze['id_diskuze']}" class="commentMonitor">Dostávat upozornění na email!</a>{else}<a href="{link nesledovat!, $diskuze['id_diskuze']}" class="nesledovat">Nedostávat upozornění na email</a>{/if}</p></div>{/if}
 	{if $diskuze['muze_pridat'] == true}
 		{if isset($diskuze['odpovedet']) && $diskuze['odpovedet'] == true}
-			{widget komentarForm begin}
+			{control komentarForm begin}
 				{$control['komentarForm']['id_diskuze']->setValue($diskuze['id_diskuze'])->control}
 				{$control['komentarForm']['text']->control}
 				{$control['komentarForm']['save']->control}
-			{widget komentarForm end}
+			{control komentarForm end}
 		{else}
 			<div id="komentarForm-diskuze{$diskuze['id_diskuze']}" class="komentar-form">
-			{widget komentarForm begin}
+			{control komentarForm begin}
 				{$control['komentarForm']['id_diskuze']->setValue($diskuze['id_diskuze'])->control}
 				{$control['komentarForm']['text']->control}
 				{$control['komentarForm']['save']->control}
-			{widget komentarForm end}
+			{control komentarForm end}
 			</div>
 		{/if}
 	{else}
 		<!--p class="warning">Odpovědět může pouze přihlášený uživatel.</p-->
 	{/if}
 {else}
-	<p class="warning">Diskuze byla zamknuta a nelze do ní přidat odpověď. {if $diskuze['muze_zamknout'] == true}<a href="{link odemknout! $diskuze['id_diskuze']}" class="ajax odemknout">Odemknout diskuzi</a>{/if}</p>
+	<p class="warning">Diskuze byla zamknuta a nelze do ní přidat odpověď. {if $diskuze['muze_zamknout'] == true}<a href="{link odemknout! $diskuze['id_diskuze']}" class="odemknout">Odemknout diskuzi</a>{/if}</p>
 {/if}
-{/snippet}
+{* /snippet *}

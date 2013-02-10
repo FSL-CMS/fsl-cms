@@ -7,7 +7,7 @@
  * @copyright 2009 Petr Procházka
  * @version 0.1
  */
- 
+
 require_once dirname(__FILE__) . '/RequestButton.php';
 require_once dirname(__FILE__) . '/RequestButtonStorage.php';
 require_once dirname(__FILE__) . '/RequestButtonHelper.php';
@@ -16,7 +16,7 @@ require_once dirname(__FILE__) . '/RequestButtonHelper.php';
  * Neuloží formulář a vrátí se zpět na RequestButton.
  * Když není RequestButton požadavek, tak se tento button nezobrazuje.
  */
-class RequestButtonBack extends SubmitButton
+class RequestButtonBack extends Nette\Forms\Controls\SubmitButton
 {
 
 	/**

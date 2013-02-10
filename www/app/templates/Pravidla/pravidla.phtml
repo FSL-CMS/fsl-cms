@@ -1,9 +1,9 @@
-@{block content}
+{block #content}
 
-{widget prehledRocniku}
+{control prehledRocniku}
 
 {if $pravidla['muze_editovat'] == true}<p class="config"><a href="{plink Pravidla:edit, $pravidla['id']}" class="edit">Upravit pravidla</a></p>{/if}
 
 {!$pravidla['pravidla']|texy}
 
-@{widget prilohy}
+{control prilohy}

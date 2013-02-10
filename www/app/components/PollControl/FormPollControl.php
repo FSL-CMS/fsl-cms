@@ -13,7 +13,7 @@
 class FormPollControl extends PollControl {
 
     public function createComponentPollControlForm() {
-        $form = new AppForm();
+        $form = new Nette\Application\UI\Form();
         $form->addProtection('Kontrolní klíč nesouhlasí. Opakujte hlasování.');
 
         $answers = array();
@@ -25,12 +25,12 @@ class FormPollControl extends PollControl {
 
         $form->addSubmit('pollVoteSubmit', 'Hlasovat');
 
-        $form->onSubmit[] = array($this, 'onSubmitVote');
+        $form->onSuccess[] = array($this, 'onSubmitVote');
 
         return $form;
     }
 
-    public function onSubmitVote(AppForm $form) {
+    public function onSubmitVote(Nette\Application\UI\Form $form) {
         try {
             $this->model->vote($form->values['pollVoteRadiolist']);
             $this->flashMessage('Váš hlas byl uložen.');

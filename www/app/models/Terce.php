@@ -19,14 +19,6 @@ class Terce extends BaseModel
 	/** @var string */
 	protected $table = 'terce';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findByMajitel($id)
 	{
 		return $this->findAll()
@@ -143,7 +135,7 @@ class Terce extends BaseModel
 	{
 		if( $force == 0 || $force == 1 )
 		{
-			$zavody = new Zavody;
+			$zavody = Nette\Environment::getService('zavody');
 			if( $zavody->findByTerce($id)->count() != 0 ) throw new RestrictionException('Terče nelze odstranit, běželo se na nich na závodě.');
 		}
 
@@ -154,9 +146,9 @@ class Terce extends BaseModel
 	{
 		if( isset($data['id_sboru']) && isset($data['id_typu']) )
 		{
-			$sborModel = new Sbory;
+			$sborModel = Nette\Environment::getService('sbory');
 			$sbor = $sborModel->find($data['id_sboru'])->fetch();
-			$typyModel = new TypyTercu;
+			$typyModel = Nette\Environment::getService('typyTercu');
 			$typ = $typyModel->find($data['id_typu'])->fetch();
 			$data['uri'] = '/terce/'.$id.'-'.String::webalize(String::webalize($typ['nazev'])).'-'.String::webalize($sbor['nazev']);
 		}
@@ -173,7 +165,7 @@ class Terce extends BaseModel
 			$this->constructUri($id, $data);
 			if(isset($data['uri']))
 			{
-				$urlsModel = new Urls;
+				$urlsModel = Nette\Environment::getService('urls');
 				$urlsModel->setUrl('Terce', 'terce', $id, $data['uri']);
 			}
 			return $ret;
@@ -193,7 +185,7 @@ class Terce extends BaseModel
 			$data = $this->constructUri($id, $data);
 			if(isset($data['uri']))
 			{
-				$urlsModel = new Urls;
+				$urlsModel = Nette\Environment::getService('urls');
 				$urlsModel->setUrl('Terce', 'terce', $id, $data['uri']);
 			}
 		}

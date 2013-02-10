@@ -14,9 +14,9 @@
  * @version    $Id: VisualPaginator.php 4 2009-07-14 15:22:02Z david@grudl.com $
  */
 
-/*use Nette\Application\Control;*/
+use Nette\Application\UI\Control;
 
-/*use Nette\Paginator;*/
+use Nette\Utils\Paginator;
 
 
 

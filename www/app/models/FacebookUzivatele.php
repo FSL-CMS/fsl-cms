@@ -31,11 +31,11 @@ class FacebookUzivatele extends Uzivatele
 		$identita->id_sboru = $row->id_sboru;
 		return $identita;
 	}
-	
+
 	public function findByFacebookId($id)
 	{
 		return $this->findAll()
                ->where('[uzivatele].[facebookId] = %i', $id);
-	}	
+	}
 
 }

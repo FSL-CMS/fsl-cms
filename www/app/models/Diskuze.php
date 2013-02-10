@@ -16,15 +16,9 @@ class Diskuze extends BaseModel implements IUdrzba
 
 	/** @var string */
 	protected $table = 'diskuze';
+
+	/** @var int */
 	private static $DNY_AKTIVNI_DISKUZE = 7;
-
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
 
 	protected function findBy()
 	{
@@ -66,7 +60,7 @@ class Diskuze extends BaseModel implements IUdrzba
 
 	private function najdiSouvisejiciDiskuze($souvisejiciTabulka, $id)
 	{
-		$souvisejici = new Souvisejici;
+		$souvisejici = Nette\Environment::getService('souvisejici');
 		$souvisejiciDiskuze = $souvisejici->findByRodic($souvisejiciTabulka, $id, 'diskuze')->fetchAll();
 		$souvisejiciID = array();
 		foreach ($souvisejiciDiskuze as $souv)
@@ -148,7 +142,7 @@ class Diskuze extends BaseModel implements IUdrzba
 		if($id == 0) throw new DibiException('Nebyl vložený záznam.');
 		$this->lastInsertedId($id);
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Diskuze', 'diskuze', $id, $data['uri']);
 		return $ret;
 	}
@@ -159,7 +153,7 @@ class Diskuze extends BaseModel implements IUdrzba
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Diskuze', 'diskuze', $id, $data['uri']);
 		}
 		return $ret;
@@ -169,15 +163,15 @@ class Diskuze extends BaseModel implements IUdrzba
 	{
 		if($force == 1)
 		{
-			$komentare = new Komentare;
+			$komentare = Nette\Environment::getService('komentare');
 			$komentare->deleteByDiskuze($id);
 
-			$sledovani = new Sledovani;
+			$sledovani = Nette\Environment::getService('sledovani');
 			$sledovani->deleteByDiskuze($id);
 		}
 		else
 		{
-			$komentare = new Komentare;
+			$komentare = Nette\Environment::getService('komentare');
 			if($komentare->findByDiskuze($id)->count() != 0) throw new RestrictionException('Diskuzi nelze odstranit, obsahuje komentáře.');
 		}
 		return parent::delete($id)->execute();
@@ -211,19 +205,19 @@ class Diskuze extends BaseModel implements IUdrzba
 
 	public function sledovat($id, $id_uzivatele)
 	{
-		$sledovani = new Sledovani;
+		$sledovani = Nette\Environment::getService('sledovani');
 		return $sledovani->sledovat("diskuze", $id, $id_uzivatele);
 	}
 
 	public function nesledovat($id, $id_uzivatele)
 	{
-		$sledovani = new Sledovani;
+		$sledovani = Nette\Environment::getService('sledovani');
 		return $sledovani->nesledovat("diskuze", $id, $id_uzivatele);
 	}
 
 	public function jeSledovana($id, $id_uzivatele)
 	{
-		$sledovani = new Sledovani;
+		$sledovani = Nette\Environment::getService('sledovani');
 		return $sledovani->jeSledovana("diskuze", $id, $id_uzivatele);
 	}
 
@@ -238,7 +232,7 @@ class Diskuze extends BaseModel implements IUdrzba
 	{
 		if(isset($data['nazev']) && isset($data['id_tematu']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$url = $urlsModel->findUrlByPresenterAndActionAndParam('Forum', 'forum', $data['id_tematu'])->fetch();
 			if($url != false && !empty($url['url']))
 			{

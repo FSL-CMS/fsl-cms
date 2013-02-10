@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 {if $clanky['muze_pridavat']}<p class="config"><a href="{plink Clanky:add}" title="Přidat nový článek" class="add">Přidat nový článek</a></p>{/if}
 
@@ -13,6 +13,6 @@
 <p class="center"><a href="{plink Clanky:default}">&rArr; Přejít na všechny články</a></p>
 
 <div class="dva-sloupce">
-	<div class="sloupec">@{widget anketa}</div>
+	<div class="sloupec">{control anketa}</div>
 	<div class="sloupec"></div>
 </div>

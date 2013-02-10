@@ -1,9 +1,9 @@
 {* Šablona pro výpis stránky s editací ankety *}
 
-@{block content}
+{block content}
 
-{widget editForm begin}
-{widget editForm errors}
+{control editForm begin}
+{control editForm errors}
 
 <fieldset>
 	<legend>Informace o bodové tabulce</legend>
@@ -44,4 +44,4 @@
 {$control['editForm']['save']->control} {$control['editForm']['saveAndReturn']->control} {$control['editForm']['cancel']->control}
 </fieldset>
 
-{widget editForm end}
+{control editForm end}

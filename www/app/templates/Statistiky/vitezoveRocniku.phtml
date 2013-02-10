@@ -1,6 +1,6 @@
 {* Šablona pro statistiku průměrných časů *}
 
-@{block content}
+{block #content}
 
 {foreach $vitezoveRocniku as $soutez => $vitezoveVsoutezi}
 <table class="prehled">
@@ -19,12 +19,10 @@
 	<tr>
 		<td class="rocnik">{$sezona}</td>
 		{foreach $foo as $kategorie => $druzstvo}
-			<td class="druzstvo">{ifset $druzstvo['id_druzstva']}<a href="{plink Druzstva:druzstvo, $druzstvo['id_druzstva']}">{$druzstvo['druzstvo']}</a>{/if}</td>
+			<td class="druzstvo">{ifset $druzstvo['id_druzstva']}<a href="{plink Druzstva:druzstvo, $druzstvo['id_druzstva']}">{$druzstvo['druzstvo']}</a>{/ifset}</td>
 		{/foreach}
 	</tr>
 	{/foreach}
 </tbody>
 </table>
 {/foreach}
-
-{* widget grafy array(450, 620, 'Statistiky:grafVitezoveRocniku') *}

@@ -19,19 +19,11 @@ class FunkceRady extends BaseModel
 	/** @var string */
 	protected $table = 'funkce_rady';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
 	}
-	
+
 	public function findAll()
 	{
 		return $this->connection
@@ -63,7 +55,7 @@ class FunkceRady extends BaseModel
 
 	public function delete($id, $force = 0)
 	{
-		$uzivateleModel = new Uzivatele;
+		$uzivateleModel = Nette\Environment::getService('uzivatele');
 		if( $force == 0 )
 		{
 			if( $uzivateleModel->findByFunkce($id)->count() != 0 ) throw new RestrictionException('Funkci nelze odstranit, je nastavená u některých uživatelů.');
@@ -74,5 +66,5 @@ class FunkceRady extends BaseModel
 		}
 		return parent::delete($id)->execute();
 	}
-	
+
 }

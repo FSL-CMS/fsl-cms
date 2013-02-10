@@ -6,6 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\UI\Form;
+
 /**
  * Presenter ročníků soutěží
  *
@@ -16,12 +18,15 @@ class RocnikyPresenter extends BasePresenter
 
 	/** @persistent */
 	public $backlink = '';
-	protected $model = NULL;
+
+	/** @var Rocniky */
+	protected $model;
 
 	protected function startup()
 	{
 		parent::startup();
-		$this->model = new Rocniky;
+
+		$this->model = $this->context->rocniky;
 		if($this->user->isAllowed('rocniky', 'edit')) $this->model->zobrazitNezverejnene();
 	}
 
@@ -59,13 +64,13 @@ class RocnikyPresenter extends BasePresenter
 
 	public function beforeRender()
 	{
+		parent::beforeRender();
+
 		$this->template->rocniky = array();
 		$this->template->rocniky['rocniky'] = $this->model->findAll();
 		$this->template->rocniky['muze_editovat'] = $this->user->isAllowed('rocniky', 'edit');
 		$this->template->rocniky['muze_smazat'] = $this->user->isAllowed('rocniky', 'delete');
 		$this->template->rocniky['muze_pridat'] = $this->user->isAllowed('rocniky', 'add');
-
-		parent::beforeRender();
 	}
 
 	public function actionAdd()
@@ -83,15 +88,15 @@ class RocnikyPresenter extends BasePresenter
 	{
 		$this->template->rocnik = $this->model->find($id)->fetch();
 
-		$zavody = new Zavody;
-		if($this->user->isAllowed('rocniky', 'edit')) $zavody->zobrazitNezverejnene();
+		$zavodyModel = $this->context->zavody;
+		if($this->user->isAllowed('rocniky', 'edit')) $zavodyModel->zobrazitNezverejnene();
 		$this->template->zavody = array();
-		$this->template->zavody['zavody'] = $zavody->findByRocnik($id)->fetchAll();
+		$this->template->zavody['zavody'] = $zavodyModel->findByRocnik($id)->fetchAll();
 		$this->template->zavody['sprava'] = false;
 		$this->template->zavody['pozice'] = array();
 		foreach ($this->template->zavody['zavody'] as &$zavod)
 		{
-			$zavod['muze_editovat'] = $this->user->isAllowed('zavody', 'edit');
+			$zavod['muze_editovat'] = $this->user->isAllowed($this->context->zavodResource->setInstance($zavod), 'edit');
 			$this->template->zavody['sprava'] |= $zavod['muze_editovat'];
 			$this->template->zavody['pozice'][] = array('sirka' => $zavod['sirka'], 'delka' => $zavod['delka'], 'nazev' => $zavod['nazev'], 'odkaz' => $this->link('Zavody:zavod', $zavod['id']));
 		}
@@ -105,7 +110,7 @@ class RocnikyPresenter extends BasePresenter
 	{
 		if($id != 0)
 		{
-			$soutezeRocniku = new SoutezeRocniku;
+			$soutezeRocniku = $this->context->soutezeRocniku;
 			$data = $this->model->find($id)->fetch();
 			$data['souteze'] = $soutezeRocniku->findByRocnik($id)->fetchAssoc('id_souteze,id_kategorie,=');
 			$this['editForm']->setDefaults($data);
@@ -119,8 +124,6 @@ class RocnikyPresenter extends BasePresenter
 	{
 		$form = new RequestButtonReceiver($this, 'editForm');
 
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
 		$form->addGroup('Informace o ročníku');
 		$form->addText('rocnik', 'Číslo ročníku')
 			   ->addRule(Form::INTEGER, 'Číslo ročníku musí být číslo.')
@@ -132,11 +135,11 @@ class RocnikyPresenter extends BasePresenter
 		$form->addGroup('Informace o soutěžích');
 		$form->addSubmit('editSoutezeButton', 'Upravit soutěže a jejich bodové tabulky')->setValidationScope(false);
 
-		$soutezeModel = new Souteze;
+		$soutezeModel = $this->context->souteze;
 		$souteze = $soutezeModel->findAll()->fetchAssoc('id');
 
-		$bodoveTabulkyModel = new BodoveTabulky;
-		$kategorieModel = new Kategorie;
+		$bodoveTabulkyModel = $this->context->bodoveTabulky;
+		$kategorieModel = $this->context->kategorie;
 		$kategorie = $kategorieModel->findAll()->fetchAssoc('id');
 		$bodoveTabulky = $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id', 'nazev');
 		$soutezeCont = $form->addContainer('souteze');
@@ -156,18 +159,18 @@ class RocnikyPresenter extends BasePresenter
 			}
 		}
 
-		$form->addGroup(null);
-		$form->addSubmit('save', 'Uložit');
+		$form->addGroup(Texty::$FORM_SAVEGROUP);
+		$form->addSubmit('save', Texty::$FORM_SAVE);
 		$form->addSubmit('saveAndReturn', 'Uložit a přejít na ročník');
 		/*$form->addRequestButtonBack('back', 'Vrátit se zpět')
 			   ->setValidationScope(false);*/
 		$form->addSubmit('cancel', 'Zpět')
 			   ->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 		if($form['editSoutezeButton']->isSubmittedBy())
@@ -198,7 +201,7 @@ class RocnikyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Ročník se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
 			$data = $form->getValues();
@@ -210,7 +213,7 @@ class RocnikyPresenter extends BasePresenter
 					$update = array();
 					$delete = array();
 					$insert = array();
-					$soutezeRocnikuModel = new SoutezeRocniku;
+					$soutezeRocnikuModel = $this->context->soutezeRocniku;
 					$soutezeRocniku = $soutezeRocnikuModel->findByRocnik($id)->fetchAssoc('id_souteze,id_kategorie,=');
 					//var_dump($soutezeRocniku);
 					foreach ($data['souteze'] as $id_souteze => $foo)
@@ -238,7 +241,7 @@ class RocnikyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Informace o soutěžích se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
@@ -249,11 +252,15 @@ class RocnikyPresenter extends BasePresenter
 			if($form['save']->isSubmittedBy()) $this->redirect('Rocniky:edit', $id);
 			else $this->redirect('Rocniky:rocnik', $id);
 		}
+		else
+		{
+			$this->redirect('Rocniky:default');
+		}
 	}
 
 	public function actionVysledkyPredZavodem($id)
 	{
-		$zavody = new Zavody;
+		$zavody = $this->context->zavody;
 		if($this->user->isAllowed('rocniky', 'edit')) $zavody->zobrazitNezverejnene();
 		$zavod = $zavody->find($id)->fetch();
 		if(!$zavod) throw new BadRequestException();
@@ -267,8 +274,8 @@ class RocnikyPresenter extends BasePresenter
 	 */
 	public function renderVysledky($id, $id_zavodu = NULL)
 	{
-		$vysledky = new Vysledky;
-		$zavody = new Zavody;
+		$vysledky = $this->context->vysledky;
+		$zavody = $this->context->zavody;
 
 		if($id_zavodu !== NULL) $this->template->zavod = $zavody->find($id_zavodu)->fetch();
 
@@ -313,7 +320,7 @@ class RocnikyPresenter extends BasePresenter
 			}
 		}
 
-		$this->model = new Rocniky;
+		$this->model = $this->context->rocniky;
 		$this->template->rocnik = $this->model->find($id)->fetch();
 
 		if($id_zavodu === NULL) $this->setTitle('Bodová tabulka ' . $this->template->rocnik['rocnik'] . '. ročníku');
@@ -327,11 +334,11 @@ class RocnikyPresenter extends BasePresenter
 	 */
 	public function actionGrafVysledky($id)
 	{
-		$vysledky = new Vysledky;
+		$vysledky = $this->context->vysledky;
 
 		$data = $vysledky->findByRocnik($id)->fetchAssoc('kategorie,id_druzstva,=');
 
-		$this->model = new Rocniky;
+		$this->model = $this->context->rocniky;
 		$rocnik = $this->model->find($id)->fetch();
 
 		foreach ($data as $kategorie => $foo)
@@ -368,7 +375,7 @@ class RocnikyPresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Ročník se nepodařilo zveřejnit.', 'error');
-			Debug::process($e);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch (RestrictionException $e)
 		{

@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter šablon článků
@@ -15,7 +15,7 @@
  */
 class SablonyClankuPresenter extends SecuredPresenter
 {
-	/** var SablonyClanku */
+	/** @var SablonyClanku */
 	protected $model;
 
 	/** @persistent */
@@ -23,7 +23,7 @@ class SablonyClankuPresenter extends SecuredPresenter
 
 	public function startup()
 	{
-		$this->model = new SablonyClanku;
+		$this->model = $this->context->sablonyClanku;
 		parent::startup();
 	}
 
@@ -72,8 +72,6 @@ class SablonyClankuPresenter extends SecuredPresenter
 		$form = new RequestButtonReceiver($this, $name);
 		$id = $this->getParam('id', 0);
 
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
 		$form->addHidden('backlink');
 
 		$form->addGroup('Informace o šabloně');
@@ -94,10 +92,10 @@ class SablonyClankuPresenter extends SecuredPresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -123,11 +121,12 @@ class SablonyClankuPresenter extends SecuredPresenter
 
 					$stary = $this->model->find($id)->fetch();
 
-					$fotka = new Fotky($form['obrazek']->value);
+					$fotka = $this->context->fotky;
+					$fotka->setSoubor($form['obrazek']->value);
 					$fotka->setAutor($this->user->getIdentity()->id);
 					$fotka->uloz($id, 'sablony_clanku');
 
-					$fotkyModel = new Fotky;
+					$fotkyModel = $this->context->fotky;
 					$fotkyModel->delete($stary['obrazek_id']);
 				}
 
@@ -136,7 +135,7 @@ class SablonyClankuPresenter extends SecuredPresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Informace o šabloně se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			catch(AlreadyExistException $e)
 			{
@@ -145,7 +144,7 @@ class SablonyClankuPresenter extends SecuredPresenter
 			catch(Exception $e)
 			{
 				$this->flashMessage($e->getMessage(), 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
@@ -172,7 +171,7 @@ class SablonyClankuPresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Šablonu se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

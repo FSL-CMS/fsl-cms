@@ -30,7 +30,7 @@ class SlideshowControl extends BaseControl
 		$template->setFile(dirname(__FILE__) . '/slideshow.phtml');
 
 		$slideshow = array();
-		$d = dir(WWW_DIR . $this->slideshowDir);
+		$d = dir($this->presenter->context->parameters['wwwDir'] . $this->slideshowDir);
 		if($d !== false && $d !== NULL)
 		{
 			while (false !== ($fotka = $d->read()))
@@ -42,7 +42,7 @@ class SlideshowControl extends BaseControl
 		}
 		else
 		{
-			Debug::processException(new FileNotFoundException('Neexistuje cesta ('.WWW_DIR . $this->slideshowDir.') ke složce s obrázky pro SlideshowControl.'), true);
+			Debug::processException(new FileNotFoundException('Neexistuje cesta ('.$this->slideshowDir.') ke složce s obrázky pro SlideshowControl.'), true);
 		}
 		$template->slideshow = $slideshow;
 		$template->slideshowDir = $this->slideshowDir;

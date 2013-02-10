@@ -1,0 +1,41 @@
+<div class="anketa">
+{snippet}
+<table>
+	<caption>Anketa</caption>
+	<thead>
+		<tr>
+			<td colspan="2">{block|texy}"{$question}"{/block}</td>
+		</tr>
+	</thead>
+	<tbody>
+{foreach $answers as $answer}
+		<tr>
+			<td class="otazka">
+	{if $isVotable}
+				<a href="{link vote! $answer->id}" class="ajax">{$answer->text}</a>
+	{else}
+				{$answer->text}
+	{/if}
+			</td>
+			<td class="hlasy">
+				{$ratio = $allVotesCount ? round($answer->votesCount/($allVotesCount/100), 2) : 0}%
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><div class="bar-outline"><div class="bar" style="width: {!$ratio}%;">&nbsp;</div></div></td>
+		</tr>
+{/foreach}
+		<tr>
+			<td>Celkem hlasů</td><td class="hlasy">{$allVotesCount}</td>
+	    </tr>
+{if $flashes}
+	{foreach $flashes as $flash}
+		<tr>
+			<td colspan="2">{$flash->message}</td>
+		</tr>
+	{/foreach}
+{/if}
+	</tbody>
+</table>
+{/snippet}
+</div>

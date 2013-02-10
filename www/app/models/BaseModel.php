@@ -13,9 +13,10 @@
  *
  * @author	Milan Pála
  */
-class BaseModel extends Object
+class BaseModel extends Nette\Object
 {
 
+	/** @var \DibiConnection */
 	protected $connection;
 
 	protected $table;
@@ -23,6 +24,11 @@ class BaseModel extends Object
 	protected $lastInsertedId = NULL;
 
 	const RESTRICTION_CONSTRAINT = 1062;
+
+	public function __construct(\DibiConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
 	public function getTable()
 	{

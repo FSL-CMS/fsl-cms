@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter typů sborů
@@ -15,14 +15,15 @@
  */
 class TypySboruPresenter extends BasePresenter
 {
-	protected $model = NULL;
+	/** @var TypySboru */
+	protected $model;
 
 	/** @persistent */
 	public $backlink = '';
 
 	protected function startup()
 	{
-		$this->model = new TypySboru;
+		$this->model = $this->context->typySboru;
 		parent::startup();
 	}
 
@@ -63,7 +64,7 @@ class TypySboruPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Typ sborů se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{
@@ -91,10 +92,10 @@ class TypySboruPresenter extends BasePresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		if($form['cancel']->isSubmittedBy())
 		{
@@ -123,14 +124,14 @@ class TypySboruPresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit typ sboru.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
 		if($form['cancel']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$this->getApplication()->restoreRequest($this->backlink);
-			RequestButtonHelper::redirectBack();
+			RequestButtonHelper::redirectBack($form);
 			$this->redirect('default');
 		}
 		else

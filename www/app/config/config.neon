@@ -1,0 +1,112 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+common:
+	parameters:
+		database:
+
+	php:
+		date.timezone: Europe/Prague
+		# zlib.output_compression: yes
+
+	nette:
+		application:
+			errorPresenter: Error
+
+		session:
+			expiration: 14 days
+
+		debugger:
+			#email:
+
+	services:
+		Texy:
+			class: MyTexy(@httpRequest)
+		Texy2:
+			class: MyTexy(@httpRequest)
+
+		aktualizaceDB:
+			class: AktualizaceDB(@dibi.connection)
+		ankety:
+			class: Ankety(@dibi.connection)
+		bodoveTabulky:
+			class: BodoveTabulky(@dibi.connection)
+		body:
+			class: body(@dibi.connection)
+		clanky:
+			class: Clanky(@dibi.connection)
+		clankyKategorie:
+			class: ClankyKategorie(@dibi.connection)
+		diskuze:
+			class: Diskuze(@dibi.connection)
+		druzstva:
+			class: Druzstva(@dibi.connection)
+		fotky:
+			class: Fotky(@dibi.connection)
+		galerie:
+			class: Galerie(@dibi.connection)
+		kategorie:
+			class: Kategorie(@dibi.connection)
+		komentare:
+			class: Komentare(@dibi.connection)
+		mista:
+			class: Mista(@dibi.connection)
+		nastaveni:
+			class: Nastaveni(@dibi.connection)
+		okresy:
+			class: Okresy(@dibi.connection)
+		pollie:
+			class: OndrejBrejla\Pollie\ModelImpl(@dibi.connection)
+		pravidla:
+			class: Pravidla(@dibi.connection)
+		rocniky:
+			class: Rocniky(@dibi.connection)
+		sablonyClanku:
+			class: SablonyClanku(@dibi.connection)
+		sledovani:
+			class: Sledovani(@dibi.connection)
+		soubory:
+			class: Soubory(@dibi.connection)
+		soutezeRocniku:
+			class: SoutezeRocniku(@dibi.connection)
+		sbory:
+			class: Sbory(@dibi.connection)
+		souteze:
+			class: Souteze(@dibi.connection)
+		souvisejici:
+			class: Souvisejici(@dibi.connection)
+		sportoviste:
+			class: Sportoviste(@dibi.connection)
+		startovniPoradi:
+			class: StartovniPoradi(@dibi.connection)
+		stranky:
+			class: Stranky(@dibi.connection)
+		temata:
+			class: Temata(@dibi.connection)
+		terce:
+			class: Terce(@dibi.connection)
+		typySboru:
+			class: TypySboru(@dibi.connection)
+		ucasti:
+			class: Ucasti(@dibi.connection)
+		urls:
+			class: Urls(@dibi.connection)
+		uzivatele:
+			class: Uzivatele(@dibi.connection)
+		videa:
+			class: Videa(@dibi.connection)
+		vysledky:
+			class: Vysledky(@dibi.connection)
+		zavody:
+			class: Zavody(@dibi.connection)
+		zavodResource:
+			class: ZavodResource(@zavody)
+
+	factories:
+
+development < common:
+
+production < common:

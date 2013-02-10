@@ -28,10 +28,10 @@ class Vysledky extends BaseModel
 	const POUZE_PLATNE_BODY = 1;
 	public static $SPECIALNI_VYSLEDKY = array( self::NEPLATNY_POKUS => 'neplatný pokus' );
 
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
+	public function __construct(\DibiConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
 	public function findAll()
 	{
@@ -641,7 +641,8 @@ class Vysledky extends BaseModel
 			{
 				// seřadí týmy vrámci kategorie
 				// bere v potaz shodu bodů, ale neurčuje nové pořadí, pouze řadí
-				usort($vysledky[$soutez][$kategorie], array($this, "orderVysledky"));
+				// TODO odstranit zavináč, až bude opraven bug s usort https://bugs.php.net/bug.php?id=50688
+				@usort($vysledky[$soutez][$kategorie], array($this, "orderVysledky"));
 			}
 		}
 

@@ -6,7 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
+use Nette\Diagnostics\Debugger;
 
 /**
  * Komponenta vykreslující přiložené soubory
@@ -15,19 +16,16 @@
   */
 class PrilohyControl extends BaseControl
 {
+	/** @var Soubory */
 	protected $model;
+
+	/** @var string */
 	protected $render;
-	//public $template;
 
 	public function __construct()
 	{
-
-		$this->model = new Soubory;
-		$this->render = 'prilohy';
-
-		//$this->template = parent::createTemplate();
-
 		parent::__construct();
+		$this->render = 'prilohy';
 	}
 
 	public function createComponentFileUploader($name)
@@ -46,16 +44,16 @@ class PrilohyControl extends BaseControl
 		return $c;
 	}
 
-	public function createComponentPrilohyForm()
+	public function createComponentPrilohyForm($name)
 	{
-		$form = new AppForm($this, 'prilohyForm');
+		$form = new Form($this, $name);
 
 		$form->getElementPrototype()->class[] = "ajax";
 
 		$souvisejici = $this->getPresenter()->getName();
 		$id_souvisejiciho = $this->getPresenter()->getParam('id');
 
-		$souboryModel = new Soubory;
+		$souboryModel = $this->presenter->context->soubory;
 		$soubory = $souboryModel->findBySouvisejici($id_souvisejiciho, $souvisejici)->fetchAll();
 
 		$prilohyCont = $form->addContainer('prilohy');
@@ -67,16 +65,16 @@ class PrilohyControl extends BaseControl
 			$souborCont->addText('nazev', 255, 30);
 		}
 
-		$form->addSubmit('save', 'Uložit');
+		$form->addGroup('Nahrání nového souboru');
+		$form->addSubmit('save', Texty::$FORM_SAVE);
 		$form->addSubmit('addNew', 'Přiložit nové soubory');
-		$form->onSubmit[] = array($this, 'prilohyFormSubmitted');
-		$form->addGroup('Nahrání nového souboru', true);
-		return $form;
+		$form->onSuccess[] = array($this, 'prilohyFormSubmitted');
 	}
 
-	public function prilohyFormSubmitted(AppForm $form)
+	public function prilohyFormSubmitted(Form $form)
 	{
 		$data = $form->getValues();
+		$this->model = $this->presenter->context->soubory;
 
 		if($form['save']->isSubmittedBy())
 		{
@@ -108,12 +106,12 @@ class PrilohyControl extends BaseControl
 
 	public function createComponentNahraniSouboruForm()
 	{
-		$form = new AppForm;
+		$form = new Form;
 		$form->getElementPrototype()->class[] = "ajax";
 		$form->addSubmit('save', 'Zobrazit nahrané soubory');
-		$form->onSubmit[] = array($this, 'nahraniSouboruFormSubmitted');
+		$form->onSuccess[] = array($this, 'nahraniSouboruFormSubmitted');
 
-		$form->onSubmit[] = array($this,"handlePrekresliForm");
+		$form->onSuccess[] = array($this,"handlePrekresliForm");
 
 		return $form;
 	}
@@ -123,7 +121,7 @@ class PrilohyControl extends BaseControl
 		$this->invalidateControl("prilohy");
 	}
 
-	public function nahraniSouboruFormSubmitted(AppForm $form)
+	public function nahraniSouboruFormSubmitted(Form $form)
 	{
 		if(!$this->parent->isAjax()) $this->redirect('this');
 	}
@@ -138,6 +136,7 @@ class PrilohyControl extends BaseControl
 	{
 		try
 		{
+			$this->model = $this->presenter->context->soubory;
 			$this->model->delete($id);
 			if($this->parent->isAjax()) $this->invalidateControl('prilohy');
 			else $this->redirect('this');
@@ -145,7 +144,7 @@ class PrilohyControl extends BaseControl
 		catch(DibiException $e)
 		{
 			$this->parent->flashMessage('Nepodařilo se smazat soubor.', 'error');
-			Debug::processException($e);
+			Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 	}
@@ -166,8 +165,8 @@ class PrilohyControl extends BaseControl
 
 	public function renderPrehled()
 	{
-		$soubory = new Soubory;
-		$user = Environment::getUser();
+		$soubory = $this->presenter->context->soubory;
+		$user = $this->getPresenter()->getUser();
 
 		$this->template->setFile(dirname(__FILE__).'/prilohy.phtml');
 

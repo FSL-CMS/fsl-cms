@@ -11,25 +11,18 @@
  *
  * @author	Milan Pála
  */
-class Uzivatele extends BaseModel implements IAuthenticator
+class Uzivatele extends BaseModel implements Nette\Security\IAuthenticator
 {
 
 	/** @var string */
 	protected $table = 'uzivatele';
 
-	/** @var DibiConnection */
-	protected $connection;
-
+	/** @var string */
 	public static $_UZIVATEL = 'CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]))';
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
 
 	public function findKontaktniOsoby()
 	{
-		$rocniky = new Rocniky;
+		$rocniky = Nette\Environment::getService('rocniky');
 
 		return $this->connection->query('
 			(SELECT [uzivatele].[id], [uzivatele].[jmeno], [uzivatele].[prijmeni], [uzivatele].[kontakt], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru], "rada" AS [kategorie], [funkce_rady].[nazev] AS [funkce], [funkce_rady].[poradi] AS [funkce_poradi], 0 AS [id_zavodu], 0 AS [datum_zavodu], [uzivatele].[email]
@@ -70,84 +63,84 @@ class Uzivatele extends BaseModel implements IAuthenticator
 
 		if(!$row)
 		{ // uživatel nenalezen?
-			throw new AuthenticationException("Uživatel nebyl nalezen.", self::IDENTITY_NOT_FOUND);
+			throw new Nette\Security\AuthenticationException('Uživatel nebyl nalezen.', self::IDENTITY_NOT_FOUND);
 		}
 
 		if($row->heslo !== $heslo && $row->docasneheslo !== $heslo)
 		{ // hesla se neshodují?
-			throw new AuthenticationException("Špatné heslo.", self::INVALID_CREDENTIAL);
+			throw new Nette\Security\AuthenticationException('Špatné heslo.', self::INVALID_CREDENTIAL);
 		}
 
-		$identita = new Identity($row->jmeno, $row->opravneni); // vrátíme identitu
-		$identita->id = $row->id;
+		$identita = new Nette\Security\Identity($row->id, $row->opravneni); // vrátíme identitu
 		$identita->id_sboru = $row->id_sboru;
+		$identita->name = $row->jmeno;
 		return $identita;
 	}
 
 	public function findLogined()
 	{
 		return $this->connection
-					 ->select('[uzivatele].[jmeno], [uzivatele].[prijmeni], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru]')
-					 ->from('[uzivatele]')
-					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-					 ->where('[uzivatele].[id] = %i', $this->user->getIdentity()->id);
+						->select('[uzivatele].[jmeno], [uzivatele].[prijmeni], CONCAT_WS(" ", [typy_sboru].[zkratka], [mista].[obec]) AS [sbor], [sbory].[id] AS [id_sboru]')
+						->from('[uzivatele]')
+						->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+						->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+						->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+						->where('[uzivatele].[id] = %i', $this->user->getIdentity()->id);
 	}
 
 	public function findAllToSelect()
 	{
 		return $this->connection
-					 ->select('[uzivatele].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel]')
-					 ->from($this->table)
-					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-					 ->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
+						->select('[uzivatele].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [uzivatel]')
+						->from($this->table)
+						->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+						->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+						->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+						->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
 	}
 
 	public function find($id)
 	{
 		return $this->findAll()
-					 ->where('[uzivatele].[id] = %i', $id);
+						->where('[uzivatele].[id] = %i', $id);
 	}
 
 	public function findByEmail($email)
 	{
 		return $this->findAll()
-					 ->where('[uzivatele].[email] = %s', $email);
+						->where('[uzivatele].[email] = %s', $email);
 	}
 
 	public function findBySbor($id)
 	{
 		return $this->findAll()
-					 ->where('[uzivatele].[id_sboru] = %i', $id);
+						->where('[uzivatele].[id_sboru] = %i', $id);
 	}
 
 	public function findByFunkce($id)
 	{
 		return $this->findAll()
-					 ->where('[uzivatele].[id_funkce] = %i', $id);
+						->where('[uzivatele].[id_funkce] = %i', $id);
 	}
 
 	public function findIdByUri($uri)
 	{
 		return $this->findAll()
-					 ->where('[uzivatele].[uri] = %s', $uri);
+						->where('[uzivatele].[uri] = %s', $uri);
 	}
 
 	public function findAll()
 	{
 		return $this->connection
-					 ->select('[uzivatele].*, CONCAT([typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [sbor], [okresy].[nazev] AS [okres], COUNT([komentare].[id]) AS [pocet_komentaru], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [uzivatel]')
-					 ->from($this->table)
-					 ->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-					 ->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
-					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
-					 ->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-					 ->leftJoin('[komentare] ON [komentare].[id_autora] = [uzivatele].[id]')
-					 ->groupBy('[uzivatele].[id]')
-					 ->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
+						->select('[uzivatele].*, CONCAT([typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec]) AS [sbor], [okresy].[nazev] AS [okres], COUNT([komentare].[id]) AS [pocet_komentaru], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[zkratka], " ", [mista].[obec]) AS [uzivatel]')
+						->from($this->table)
+						->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+						->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]')
+						->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
+						->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+						->leftJoin('[komentare] ON [komentare].[id_autora] = [uzivatele].[id]')
+						->groupBy('[uzivatele].[id]')
+						->orderBy('[uzivatele].[aktivni] DESC, [uzivatele].[prijmeni], [uzivatele].[jmeno]');
 	}
 
 	/**
@@ -188,7 +181,7 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Uzivatele', 'uzivatel', $id, $data['uri']);
 
 		// Pokud byl vložen první uživatel, doplní se data, která mají na něj návaznost
@@ -196,7 +189,7 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		// s ID 1, na co mají návaznost doplňovaná data.
 		if($id == 1)
 		{
-			$aktualizaceDBModel = new AktualizaceDB;
+			$aktualizaceDBModel = Nette\Environment::getService('aktualizaceDB');
 			$aktualizaceDBModel->inicializuj2();
 		}
 
@@ -217,7 +210,7 @@ class Uzivatele extends BaseModel implements IAuthenticator
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Uzivatele', 'uzivatel', $id, $data['uri']);
 		}
 	}

@@ -19,14 +19,6 @@ class ClankyKategorie extends BaseModel
 	/** @var string */
 	protected $table = 'kategorie_clanku';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection
@@ -34,7 +26,7 @@ class ClankyKategorie extends BaseModel
 			->from($this->table)
 			->orderBy('[poradi]');
 	}
-	
+
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
@@ -56,5 +48,5 @@ class ClankyKategorie extends BaseModel
 	{
 		return parent::delete($id)->execute();
 	}
-	
+
 }

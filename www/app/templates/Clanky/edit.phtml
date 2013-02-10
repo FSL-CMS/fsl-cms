@@ -1,9 +1,9 @@
 {* Šablona pro výpis stránky s editací článku *}
 
-@{block content}
+{block content}
 
-{widget clanekForm}
+{control clanekForm}
 
-@{if $clanek['id'] != 0}
-	@{widget prilohy}
-@{/if}
+{if $clanek['id'] != 0}
+	{control prilohy}
+{/if}

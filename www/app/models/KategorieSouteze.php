@@ -19,14 +19,6 @@ class KategorieSouteze extends BaseModel
 	/** @var string */
 	protected $table = 'kategorie_souteze';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection

@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter terčů
@@ -19,7 +19,7 @@ class TercePresenter extends BasePresenter
 
 	public function startup()
 	{
-		$this->model = new Terce;
+		$this->model = $this->context->terce;
 		parent::startup();
 	}
 
@@ -49,7 +49,7 @@ class TercePresenter extends BasePresenter
 	public function renderTerce($id)
 	{
 		$this->template->terc = $this->model->find($id)->fetch();
-		$sboryModel = new Sbory;
+		$sboryModel = $this->context->sbory;
 		$sbor = $sboryModel->find($this->template->terc['id_majitele'])->fetch();
 
 		// nejlepší časy na terče
@@ -91,10 +91,8 @@ class TercePresenter extends BasePresenter
 	public function createComponentEditForm($name)
 	{
 		$form = new RequestButtonReceiver($this, $name);
-		$typyTercu = new TypyTercu;
-		$sbory = new Sbory;
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$typyTercu = $this->context->typyTercu;
+		$sbory = $this->context->sbory;
 
 		$form->addHidden('backlink');
 
@@ -115,10 +113,10 @@ class TercePresenter extends BasePresenter
 			->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -143,7 +141,7 @@ class TercePresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Informace o terčích se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			catch(AlreadyExistException $e)
 			{

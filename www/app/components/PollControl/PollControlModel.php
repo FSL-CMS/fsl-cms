@@ -9,7 +9,7 @@
  * @package    Nette\Extras
  * @version    0.1
  */
-class PollControlModel extends Object implements IPollControlModel {
+class PollControlModel extends Nette\Object implements IPollControlModel {
 
     const SESSION_NAMESPACE = '__poll_control';
 

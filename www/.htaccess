@@ -4,4 +4,4 @@
 
 
 RewriteEngine on
-RewriteRule ^(.*)$ /document_root/$1 [L] # pro localhost zakomentovat
+RewriteRule ^(.*)$ /www/$1 [L] # pro localhost zakomentovat

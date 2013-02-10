@@ -5,6 +5,8 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
+use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 
 /**
  * Presenter závodů
@@ -13,21 +15,22 @@
  */
 class ZavodyPresenter extends BasePresenter
 {
-
 	/** @persistent */
 	//public $backlink = '';
+
+	/** @var Zavody */
 	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Zavody;
+		$this->model = $this->context->zavody;
 		parent::startup();
 		if($this->user->isAllowed('rocniky', 'edit')) $this->model->zobrazitNezverejnene();
 	}
 
 	public function actionDefault()
 	{
-		$rocniky = new Rocniky;
+		$rocniky = $this->context->rocniky;
 		$this->redirect('Rocniky:rocnik', $rocniky->findLast()->fetchSingle());
 	}
 
@@ -53,7 +56,7 @@ class ZavodyPresenter extends BasePresenter
 
 		if($id_rocniku == 0)
 		{
-			$rocnikyModel = new Rocniky;
+			$rocnikyModel = $this->context->rocniky;
 			$rocnikyModel->zobrazitNezverejnene();
 			$this->redirect('Zavody:add', $rocnikyModel->findLast()->fetchSingle('id'));
 		}
@@ -73,11 +76,11 @@ class ZavodyPresenter extends BasePresenter
 	 */
 	private function pripravVysledky($id, $nahled = false)
 	{
-		$vysledkyModel = new Vysledky;
+		$vysledkyModel = $this->context->vysledky;
 		$this->template->vysledky = array();
 		$this->template->vysledky['vysledky'] = array();
 		$vysledky = $vysledkyModel->findByZavodZverejnene($id)->fetchAssoc('soutez,kategorie,id,=');
-		$this->template->vysledky['muze_editovat'] = !$nahled && ($this->user->isAllowed('vysledky', 'edit') || $this->user->isAllowed(new ZavodResource($this->template->zavod)));
+		$this->template->vysledky['muze_editovat'] = !$nahled && ($this->user->isAllowed('vysledky', 'edit') || $this->user->isAllowed($this->context->zavodResource->setInstance($this->template->zavod)));
 
 		$vysledkyPredZavodem = $vysledkyModel->findByRocnikAndZavod($this->template->zavod['id_rocniku'], $id)->fetchAssoc('soutez,kategorie,id_druzstva,=');
 		$vysledkyModel->vyhodnotVysledkyRocniku($vysledkyPredZavodem);
@@ -91,10 +94,10 @@ class ZavodyPresenter extends BasePresenter
 		{
 			if(count($vysledky) == 0)
 			{
-				$startovniPoradiModel = new StartovniPoradi;
+				$startovniPoradiModel = $this->context->startovniPoradi;
 				$startovniPoradi = $startovniPoradiModel->findByZavod($id)->fetchAssoc('kategorie,id,=');
 
-				$ucastiModel = new Ucasti;
+				$ucastiModel = $this->context->ucasti;
 				$ucasti = $ucastiModel->findByZavod($id)->fetchAssoc('nazev,kategorie,id');
 				foreach ($ucasti as $soutez => $ucastiVsoutezi)
 				{
@@ -161,7 +164,7 @@ class ZavodyPresenter extends BasePresenter
 	{
 		$this->template->zavod = $this->model->find($id)->fetch();
 		$this->template->zavod['poradatele'] = $this->model->findPoradatele($id);
-		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit');
+		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed($this->context->zavodResource->setInstance($this->template->zavod), 'edit');
 		$this->template->zavod['muze_hodnotit'] = (bool) (strtotime($this->template->zavod['datum']) < strtotime('NOW'));
 
 		$datum = new Datum;
@@ -178,10 +181,10 @@ class ZavodyPresenter extends BasePresenter
 		$this->startovniPoradi($id, false);
 
 		$this->template->predchoziKola = array();
-		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
+		$this->template->predchoziKola = $this->model->findPredchoziKola($id)->fetchAll(); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
 
 		$this->template->backlink = $this->application->storeRequest();
-		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme() . '://' . $this->getHttpRequest()->getUri()->getHost();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUrl()->getScheme() . '://' . $this->getHttpRequest()->getUrl()->getHost();
 	}
 
 	public function actionStartovniPoradi($id = 0)
@@ -190,12 +193,17 @@ class ZavodyPresenter extends BasePresenter
 		if($id != 0 && !($zavod = $this->model->find($id)->fetch())) throw new BadRequestException();
 	}
 
-	// TODO dodělat
+	/**
+	 * Metoda nstavující do šablony informace ohledně startovního pořadí
+	 * @param int $id ID závodu
+	 * @param bool $nahled FALSE, pokud v šabloně nebude možnost editace, jinak TRUE
+	 * @return type
+	 */
 	protected function startovniPoradi($id, $nahled = false)
 	{
 		//!TODO: předělat na verzi se soutěžemi
 		//!TODO: opravit když nejsem přihlášen a propadl závod
-		$sp = new StartovniPoradi;
+		$sp = $this->context->startovniPoradi;
 		$this->template->startovni_poradi = array('startovni_poradi' => array());
 
 		// pokud ještě nebyl získán z DB závod
@@ -208,18 +216,18 @@ class ZavodyPresenter extends BasePresenter
 		// přihlašování družstev na závody není povoleno
 		if($this->template->zavod['aktivni_startovni_poradi'] == false) return;
 
-		$this->template->startovni_poradi['muze_editovat'] = !$nahled && ($this->user->isAllowed('startovni_poradi', 'edit') || (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit'));
+		$this->template->startovni_poradi['muze_editovat'] = !$nahled && ($this->user->isAllowed('startovni_poradi', 'edit') || (bool) $this->user->isAllowed($this->context->zavodResource->setInstance($this->template->zavod), 'edit'));
 		$this->template->startovni_poradi['muze_pridavat'] = !$nahled && $this->user->isAllowed('startovni_poradi', 'add');
 
 		$this->template->nahled = $nahled;
 
 		if($nahled || $this->template->startovni_poradi['muze_editovat'] || strtotime($this->template->zavod['datum']) >= strtotime('NOW'))
 		{
-			$ucasti = new Ucasti;
-			$druzstva = new Druzstva;
+			$ucastiModel = $this->context->ucasti;
+			$druzstvaModel = $this->context->druzstva;
 
-			if($this->user->isLoggedIn()) $uziv_druzstva = $druzstva->findByLoginedUser($this->user->getIdentity()->id)->fetchAssoc('id_kategorie,id,=');
-			$uc = $ucasti->findByZavod($id)->fetchAssoc('kategorie,=');
+			if($this->user->isLoggedIn()) $uziv_druzstva = $druzstvaModel->findByLoginedUser($this->user->getIdentity()->id)->fetchAssoc('id_kategorie,id,=');
+			$uc = $ucastiModel->findByZavod($id)->fetchAssoc('kategorie,=');
 
 			$prihlasenaSP = $sp->findByZavod($id)->fetchAssoc('kategorie,poradi,=');
 			$this->template->startovni_poradi['startovni_poradi'] = array();
@@ -278,12 +286,12 @@ class ZavodyPresenter extends BasePresenter
 	{
 		if($id == 0) $this->redirect('add');
 
-		if($id != 0 && !($zavod = $this->model->find($id)->fetch())) throw new BadRequestException();
+		if($id != 0 && !($this->template->zavod = $this->model->find($id)->fetch())) throw new BadRequestException();
 
 		$backlink = $this->getApplication()->storeRequest();
 		if($this->user === NULL || !$this->user->isLoggedIn()) $this->redirect('Sprava:login', $backlink);
 
-		if(!$this->user->isAllowed(new ZavodResource($zavod), 'edit')) throw new ForbiddenRequestException();
+		if(!$this->user->isAllowed($this->context->zavodResource->setInstance($this->template->zavod), 'edit')) throw new ForbiddenRequestException();
 	}
 
 	public function renderEdit($id = 0, $id_rocniku = NULL, $backlink = NULL)
@@ -291,9 +299,9 @@ class ZavodyPresenter extends BasePresenter
 		if($id != 0)
 		{
 			$defaults = array();
-			$defaults = $this->model->find($id)->fetch();
+			$defaults = $this->template->zavod;
 			$defaults['id_poradatele'] = $this->model->findPoradatele($id)->fetchPairs('id', 'id');
-			$ucastiModel = new Ucasti;
+			$ucastiModel = $this->context->ucasti;
 			$defaults['ucasti'] = $ucastiModel->findByZavod($id)->fetchAssoc('id_souteze,id_kategorie');
 			$defaults['spolecne_startovni_poradi'] = true;
 			$this['editForm']->setValues($defaults);
@@ -319,19 +327,19 @@ class ZavodyPresenter extends BasePresenter
 
 	public function createComponentZmenitRocnikForm()
 	{
-		$f = new AppForm($this, 'zmenitRocnikForm');
-		$rocnikyModel = new Rocniky;
+		$f = new Nette\Application\UI\Form($this, 'zmenitRocnikForm');
+		$rocnikyModel = $this->context->rocniky;
 		$rocnikyModel->zobrazitNezverejnene();
 
 		$f->addGroup('Ročník, ke kterému se vkládá závod');
 		$f->addSelect('id_rocniku', 'Ročník', $rocnikyModel->findAll()->fetchPairs('id', 'rok'))
-			   ->setDefaultValue($rocnikyModel->findLast()->fetchSingle('id'));
+				->setDefaultValue($rocnikyModel->findLast()->fetchSingle('id'));
 		$f->addSubmit('change', 'Změnit');
 
-		$f->onSubmit[] = array($this, 'zmenitRocnikFormSubmitted');
+		$f->onSuccess[] = array($this, 'zmenitRocnikFormSubmitted');
 	}
 
-	public function zmenitRocnikFormSubmitted(AppForm $f)
+	public function zmenitRocnikFormSubmitted(Nette\Application\UI\Form $f)
 	{
 		$id = $this->getParam('id', 0);
 
@@ -343,11 +351,11 @@ class ZavodyPresenter extends BasePresenter
 	{
 		$id = (int) $this->getParam('id', 0);
 
-		$sbory = new Sbory;
-		$terceModel = new Terce;
-		$druzstva = new Druzstva;
-		$ucasti = new Ucasti;
-		$sportovisteModel = new Sportoviste;
+		$sbory = $this->context->sbory;
+		$terceModel = $this->context->terce;
+		$druzstva = $this->context->druzstva;
+		$ucasti = $this->context->ucasti;
+		$sportovisteModel = $this->context->sportoviste;
 
 		$backlink = $this->getApplication()->storeRequest();
 
@@ -366,23 +374,21 @@ class ZavodyPresenter extends BasePresenter
 
 		$form->addHidden('backlink');
 
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
 		$form->addGroup('Informace o závodu');
 		$form->addHidden('id_rocniku', 'Ročník')
-			   ->setRequired('Je nutné vybrat ročník pořádání.');
+				->setRequired('Je nutné vybrat ročník pořádání.');
 		$form->addMultiSelect('id_poradatele', 'Pořadatelé', $sbory->findAlltoSelect()->fetchPairs('id', 'sbor'), 6)
-			   ->setRequired('Je nutné vybrat ročník pořádání.')
-			   ->setOption('description', 'Více pořadatelů vyberete, když podržíte Ctrl a označíte je myší.');
+				->setRequired('Je nutné vybrat ročník pořádání.')
+				->setOption('description', 'Více pořadatelů vyberete, když podržíte Ctrl a označíte je myší.');
 		$form->addRequestButton('addSbory', 'Přidat nového pořadatele', 'Sbory:add');
 		$form->addSelect('id_mista', 'Sportoviště', $mistaPoradani)
-			   ->setRequired('Je nutné vybrat místo konání závodů.')
-			   ->setOption('description', $form->addRequestButton('addSportoviste', 'Přidat nové sportoviště', 'Sportoviste:add'));
+				->setRequired('Je nutné vybrat místo konání závodů.');
+		$form->addRequestButton('addSportoviste', 'Přidat nové sportoviště', 'Sportoviste:add');
 		$form->addDatetimePicker('datum', 'Datum a čas')
-			   ->setRequired('Je nutné vyplnit datum závodu.')
-			   ->setDefaultValue(date('Y-m-d H:i'));
+				->setRequired('Je nutné vyplnit datum závodu.')
+				->setDefaultValue(date('Y-m-d H:i'));
 		$form->addSelect('id_tercu', 'Terče', $terce)
-			   ->setRequired('Je nutné vybrat terče.');
+				->setRequired('Je nutné vybrat terče.');
 		$form->addRequestButton('addTerce', 'Přidat nové terče', 'Terce:add');
 		$form->addCheckbox('zruseno', 'Zrušený závod', 'ano');
 
@@ -393,16 +399,17 @@ class ZavodyPresenter extends BasePresenter
 		  ->addRule(Form::FILLED, 'Je nutné vyplnit Ustream ID videa.'); */
 
 		$form->addAdminTexylaTextArea('text', 'Poznámka k závodu')
-			   ->addRule(Form::MAX_LENGTH, 'Maximální délka poznámky je %d znaků.', 65535);
+				->addRule(Form::MAX_LENGTH, 'Maximální délka poznámky je %d znaků.', 65535);
 
-		$soutezeRocnikuModel = new SoutezeRocniku;
+		$soutezeRocnikuModel = $this->context->soutezeRocniku;
 		$soutezeRocniku = $soutezeRocnikuModel->findByRocnik($id_rocniku)->fetchAssoc('nazev,id');
 
 		$spCont = $form->addContainer('poradi'); // kontejner pro základní nastavení SP
-		$spCont->setCurrentGroup($form->addGroup('Startovní pořadí'));
+		$spCont->setCurrentGroup($form->addGroup('Startovní pořadí')->setOption('embedNext', true));
 		$form->addCheckbox('aktivni_startovni_poradi', 'Používat přihlašování družstev na tyto závody')
 				->setDefaultValue($id == 0) // pokud je nový závod, tak true, jinak false
-				->addCondition(Form::EQUAL, 1)->toggle('spolecneStartovniPoradi');
+				->addCondition(Form::EQUAL, true)
+					->toggle('spolecneStartovniPoradi');
 
 		$form->addCheckbox('spolecne_startovni_poradi', 'Společné startovní pořadí pro všechny soutěžní disciplíny na tomto závodu')
 				->setDefaultValue(true)
@@ -417,14 +424,23 @@ class ZavodyPresenter extends BasePresenter
 		$form->addDateTimePicker('prihlasovani_od', 'Začátek přihlašování')
 				->setOption('description', 'Výchozí hodnota je druhé pondělí před začátkem závodu.')
 				->addCondition(Form::FILLED)
-					->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) < strtotime($to->value);}, 'Datum začátku přihlašování musí předcházet začátku závodu.', $form['datum']);
+				->addRule(function (Nette\Forms\IControl $from, Nette\Forms\IControl $to)
+						{
+							return strtotime($from->value) < strtotime($to->value);
+						}, 'Datum začátku přihlašování musí předcházet začátku závodu.', $form['datum']);
 		$form->addDateTimePicker('prihlasovani_do', 'Konec přihlašování')
 				->setOption('description', 'Výchozí hodnota je pátek před začátkem závodu ve 20.00.')
 				->addCondition(Form::FILLED)
-				->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) <= strtotime($to->value);}, 'Datum konce přihlašování musí předcházet začátku závodu.', $form['datum']);
+				->addRule(function (Nette\Forms\IControl $from, Nette\Forms\IControl $to)
+						{
+							return strtotime($from->value) <= strtotime($to->value);
+						}, 'Datum konce přihlašování musí předcházet začátku závodu.', $form['datum']);
 		$form['prihlasovani_od']->addCondition(Form::FILLED)
-			->addConditionOn($form['prihlasovani_do'], Form::FILLED)
-				->addRule(function (IFormControl $from, IFormControl $to) { return strtotime($from->value) <= strtotime($to->value);}, 'Datum začátku přihlašování musí předcházet jeho konci.', $form['prihlasovani_do']);
+				->addConditionOn($form['prihlasovani_do'], Form::FILLED)
+				->addRule(function (Nette\Forms\IControl $from, Nette\Forms\IControl $to)
+						{
+							return strtotime($from->value) <= strtotime($to->value);
+						}, 'Datum začátku přihlašování musí předcházet jeho konci.', $form['prihlasovani_do']);
 		foreach ($soutezeRocniku as $soutez => $val)
 		{
 			foreach ($val as $kategorie)
@@ -433,11 +449,11 @@ class ZavodyPresenter extends BasePresenter
 
 				$katCont = $sspCont->addContainer($kategorie->id_kategorie);
 				$katCont->addText('pocet', 'Počet startovních míst - ' . $kategorie->kategorie)
-					   ->setDefaultValue($kategorie->pocet_startovnich_mist);
+						->setDefaultValue($kategorie->pocet_startovnich_mist);
 			}
 		}
 
-		$bodoveTabulkyModel = new BodoveTabulky;
+		$bodoveTabulkyModel = $this->context->bodoveTabulky;
 		if(true || strtotime($zavod['datum']) > strtotime('NOW') || $id == 0)
 		{
 			$ucastiCont = $form->addContainer('ucasti');
@@ -450,7 +466,7 @@ class ZavodyPresenter extends BasePresenter
 					$katCont = $soutCont->addContainer($kategorie->id_kategorie);
 					$katCont->addHidden('id_ucasti');
 					$katCont->addHidden('id_souteze')
-						   ->setDefaultValue($kategorie->id_souteze);
+							->setDefaultValue($kategorie->id_souteze);
 					$katCont->addCheckBox('id_kategorie', 'Povolit účast kategorie ' . $kategorie->kategorie);
 					/* $katCont->addText('pocet', 'Počet startovních míst')
 					  //->setOption('container', Html::el('tr')->id('container')->style('text-decoration:underline;'))
@@ -468,12 +484,12 @@ class ZavodyPresenter extends BasePresenter
 		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
 		$form->addSubmit('saveAndAdd', 'Uložit a přidat nový závod');
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
-			   ->setValidationScope(FALSE);
+				->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -544,7 +560,7 @@ class ZavodyPresenter extends BasePresenter
 					$ucasti_update = array();
 					$ucasti_delete = array();
 					$ucasti_insert = array();
-					$ucastiModel = new Ucasti;
+					$ucastiModel = $this->context->ucasti;
 					$ucasti = $ucastiModel->findByZavod($id)->fetchAssoc('id_souteze,id_kategorie');
 					foreach ($data['ucasti'] as $id_souteze => $foo)
 					{
@@ -573,7 +589,7 @@ class ZavodyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Závod se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
@@ -581,11 +597,14 @@ class ZavodyPresenter extends BasePresenter
 		{
 			$this->redirect('Zavody:edit', $id, $form['backlink']->value);
 		}
-		elseif($form['saveAndAdd']->isSubmittedBy()) $this->redirect('Zavody:add');
+		elseif($form['saveAndAdd']->isSubmittedBy())
+		{
+			$this->redirect('Zavody:add', $form['backlink']->value);
+		}
 		else
 		{
 			$this->getApplication()->restoreRequest($form['backlink']->value);
-			RequestButtonHelper::redirectBack();
+			RequestButtonHelper::redirectBack($form);
 
 			if($id == 0) $this->redirect('Zavody:default');
 			else $this->redirect('Zavody:zavod', $id);
@@ -620,9 +639,9 @@ class ZavodyPresenter extends BasePresenter
 
 	protected function createInstancePrihlasitSP($name, $id_kategorie, $poradi)
 	{
-		$druzstva = new Druzstva;
+		$druzstva = $this->context->druzstva;
 
-		$form = new RequestButtonReceiver();
+		$form = new RequestButtonReceiver($this, $name);
 
 		$kategorie_form = $form->addContainer($id_kategorie);
 		$poradi_form = $kategorie_form->addContainer($poradi);
@@ -632,16 +651,14 @@ class ZavodyPresenter extends BasePresenter
 		$form->addRequestButton('addDruzstva', 'Nové', 'Druzstva:add', array('id_kategorie' => $id_kategorie));
 		$form->addSubmit('save', 'Přihlásit');
 
-		$form->onSubmit[] = array($this, 'prihlasitSPSubmitted');
-
-		return $form;
+		$form->onSuccess[] = array($this, 'prihlasitSPSubmitted');
 	}
 
-	public function createComponentPrihlasitSP()
+	public function createComponentPrihlasitSP($name)
 	{
-		$druzstva = new Druzstva;
-		$ucasti = new Ucasti;
-		$form = new RequestButtonReceiver;
+		$druzstva = $this->context->druzstva;
+		$ucasti = $this->context->ucasti;
+		$form = new RequestButtonReceiver($this, $name);
 		$id = (int) $this->getParam('id');
 
 		$uc = $ucasti->findByZavod($id)->fetchAssoc('id_kategorie,id');
@@ -666,7 +683,7 @@ class ZavodyPresenter extends BasePresenter
 				$poradiCont->addHidden('puvodni_poradi')->setValue($i);
 				$poradiCont->addHidden('puvodni_id_druzstva');
 				$poradiCont->addText('poradi', 'Pořadí')
-					   ->setValue($i);
+						->setValue($i);
 				$poradiCont->addSelect('id_druzstva', 'Družstvo', $druzstva_v_kategorii);
 			}
 			$kategorieCont->addRequestButton('addDruzstva', 'Nové', 'Druzstva:add', array('id_kategorie' => $kategorie['id']));
@@ -678,12 +695,12 @@ class ZavodyPresenter extends BasePresenter
 
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'prihlasitSPSubmitted');
+		$form->onSuccess[] = array($this, 'prihlasitSPSubmitted');
 
 		return $form;
 	}
 
-	public function prihlasitSPSubmitted(AppForm $form)
+	public function prihlasitSPSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -691,7 +708,7 @@ class ZavodyPresenter extends BasePresenter
 
 		try
 		{
-			$sp = new StartovniPoradi;
+			$sp = $this->context->startovniPoradi;
 			foreach ($form->getValues() as $id_kategorie => $foo)
 			{
 				foreach ($foo as $bar)
@@ -730,7 +747,7 @@ class ZavodyPresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Startovní pořadí se nepodařilo uložit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch (AlreadyExistException $e)
 		{
@@ -744,7 +761,7 @@ class ZavodyPresenter extends BasePresenter
 
 	public function actionOdepsat($id, $id_zavodu)
 	{
-		$spm = new StartovniPoradi;
+		$spm = $this->context->startovniPoradi;
 		$sp = $spm->find($id)->fetch();
 
 		if(!$this->user->isAllowed(new StartovniPoradiResource($sp), 'delete'))
@@ -794,7 +811,7 @@ class ZavodyPresenter extends BasePresenter
 
 	public function renderPridatVysledky($id)
 	{
-		$vysledky = new Vysledky;
+		$vysledky = $this->context->vysledky;
 		$this->template->vysledky = array();
 		$this->template->vysledky['vysledky'] = $vysledky->findByZavod($id)->fetchAssoc('soutez,kategorie,id,=');
 		$this->template->vysledky['jeLepsiCas'] = false;
@@ -842,9 +859,10 @@ class ZavodyPresenter extends BasePresenter
 
 		$this['vysledkyForm']['zverejnit']->setDisabled(!$this->template->lzeZverejnit);
 
-		$ucastiModel = new Ucasti;
+		$ucastiModel = $this->context->ucasti;
 		$ucasti = $ucastiModel->findByZavod($id);
-		$bodoveTabulkyModel = new Body();
+		$bodoveTabulkyModel = $this->context->body;
+		;
 		$this->template->ucasti = array();
 		foreach ($ucasti as $ucast)
 		{
@@ -855,60 +873,60 @@ class ZavodyPresenter extends BasePresenter
 
 	public function getDruzstva($form)
 	{
-		$druzstva = new Druzstva;
+		$druzstva = $this->context->druzstva;
 		return $druzstva->findByUcastiToSelect($form['id_ucasti']->getValue())->fetchPairs('id', 'druzstvo');
 	}
 
 	public function createComponentPridatVysledekForm($name)
 	{
 		$form = new RequestButtonReceiver($this, $name);
-		$kategorie = new Kategorie;
-		$druzstva = new Druzstva;
-		$ucastiModel = new Ucasti;
+		//$form = new Form($this, $name);
+		$kategorie = $this->context->kategorie;
+		$druzstva = $this->context->druzstva;
+		$ucastiModel = $this->context->ucasti;
 		$id_zavodu = $this->getParam('id');
 
-		DependentSelectBox::$disableChilds = false;
+		//DependentSelectBox\DependentSelectBox::$disableChilds = false;
 
 		$form->getElementPrototype()->class('ajax');
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
 
 		$form->addGroup('Informace o družstvu');
 
 		$form->addSelect('id_ucasti', 'Soutěž a kategorie', $ucastiModel->findByZavodToSelect($id_zavodu)->fetchPairs('id', 'nazev'))
-			   ->addRule(Form::FILLED, 'Je nutné vybrat soutěž a kategorii.');
+				->addRule(Form::FILLED, 'Je nutné vybrat soutěž a kategorii.');
 
 		$form->addJsonDependentSelectBox('id_druzstva', 'Družstvo', $form['id_ucasti'], array($this, "getDruzstva"))
-			   ->addRule(Form::FILLED, 'Je nutné vybrat soutěžní družstvo.')
-			   ->setOption('description', $form->addRequestButton('addDruzstvo', 'Přidat nové', 'Druzstva:add'));
+				->addRule(Form::FILLED, 'Je nutné vybrat soutěžní družstvo.');
+		$form->addRequestButton('addDruzstvo', 'Přidat nové', 'Druzstva:add');
 
 		$form->addSelect('specialni_vysledek', 'Typ času', array('1' => 'platný pokus') + Vysledky::$SPECIALNI_VYSLEDKY)
-			   ->addRule(Form::FILLED, 'Je nutné vybrat typ času')
-			   ->addCondition(Form::EQUAL, 1)->toggle('platnyPokus');
+				->addRule(Form::FILLED, 'Je nutné vybrat typ času')
+				->addCondition(Form::EQUAL, 1)
+					->toggle('platnyPokus');
 
 		$form->addGroup('Platný pokus')->setOption('container', Html::el('fieldset')->id('platnyPokus'));
-		$form->addSelect('lepsi_terc', 'Lepší terč', array('' => 'neuveden který', 'l' => 'levý', 'p' => 'pravý'))
-			   ->addRule(Form::FILLED, 'Je nutné vybrat lepší terč.')
-			   ->addCondition(Form::EQUAL, '')->toggle('lepsiCas');
+		$form->addSelect('lepsi_terc', 'Lepší terč', array('n' => 'neuveden který', 'l' => 'levý', 'p' => 'pravý'))
+				->addRule(Form::FILLED, 'Je nutné vybrat lepší terč.');
 		$form->addText('lepsi_cas', 'Lepší čas')
-			   ->addCondition(Form::FILLED)
-			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
+				->addCondition(Form::FILLED)
+				->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
 		$form->addText('vysledny_cas', 'Výsledný čas')
-			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-			   ->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
-			   ->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
-			   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
-			   ->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
+				->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+					->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
+				->addConditionOn($form['specialni_vysledek'], Form::EQUAL, '1')
+					->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.')
+				->addCondition(Form::FILLED, 'Je nutné zadat jiný čas než nula.', 0);
 		$form['vysledny_cas']->getControlPrototype()->autocomplete('off');
 
 		$form->addGroup('Uložení');
 
 		$form->addSubmit('save', 'Uložit výsledek družstva');
-		$form->onSubmit[] = callback($this, 'pridatVysledekFormSubmitted');
+		$form->onSuccess[] = callback($this, 'pridatVysledekFormSubmitted');
 
 		return $form;
 	}
 
-	public function pridatVysledekFormSubmitted(AppForm $form)
+	public function pridatVysledekFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$data = $form->getValues();
 		$id = (int) $this->getParam('id');
@@ -923,7 +941,7 @@ class ZavodyPresenter extends BasePresenter
 
 			if((int) $data['specialni_vysledek'] < Vysledky::HRANICE_PLATNYCH_CASU)
 			{
-				$dataDoDB['lepsi_terc'] = $data['lepsi_terc'];
+				$dataDoDB['lepsi_terc'] = $data['lepsi_terc'] != 'n' ? $data['lepsi_terc'] : '';
 				$dataDoDB['lepsi_cas'] = self::float($data['lepsi_cas']);
 				$dataDoDB['vysledny_cas'] = self::float($data['vysledny_cas']);
 			}
@@ -932,7 +950,7 @@ class ZavodyPresenter extends BasePresenter
 				$dataDoDB['vysledny_cas%i'] = $data['specialni_vysledek'];
 			}
 
-			$vysledky = new Vysledky;
+			$vysledky = $this->context->vysledky;
 
 			try
 			{
@@ -951,7 +969,7 @@ class ZavodyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit nový výsledek. ' . $e->getCode(), 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			if(!$this->isAjax()) $this->redirect('this');
 		}
@@ -961,13 +979,13 @@ class ZavodyPresenter extends BasePresenter
 	{
 		$id = (int) $this->getParam('id');
 
-		$form = new AppForm($this, $name);
+		$form = new Nette\Application\UI\Form($this, $name);
 		//$form->getElementPrototype()->class('ajax');
 
-		$vysledky = new Vysledky;
+		$vysledky = $this->context->vysledky;
 		$vysledkyZavodu = $vysledky->findByZavod($id)->fetchAssoc('id_kategorie,id,=');
 
-		$druzstvaModel = new Druzstva;
+		$druzstvaModel = $this->context->druzstva;
 
 		foreach ($vysledkyZavodu as $id_kat => $kat)
 		{
@@ -979,15 +997,15 @@ class ZavodyPresenter extends BasePresenter
 				$katCont->addSelect('id_druzstva', 'Družstvo', $druzstvaModel->findByKategorieToSelect($id_kat)->fetchPairs('id', 'kratke'));
 				$katCont->addSelect('lepsi_terc', 'Lepší terč', array('' => 'neuveden', 'l' => 'levý', 'p' => 'pravý'));
 				$katCont->addText('lepsi_cas', 'Lepší čas', 5)
-					   ->addCondition(Form::FILLED)
-					   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
+						->addCondition(Form::FILLED)
+						->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
 				$katCont->addSelect('specialni_vysledek', 'Typ času', array('1' => 'platný pokus') + Vysledky::$SPECIALNI_VYSLEDKY)
-					   ->addCondition(Form::EQUAL, 1)->toggle('frmvysledkyForm-' . $vysledek['id'] . '-vysledny_cas');
+						->addCondition(Form::EQUAL, 1)->toggle('frmvysledkyForm-' . $vysledek['id'] . '-vysledny_cas');
 				$katCont->addText('vysledny_cas', 'Výsledný čas', 5)
-					   ->addConditionOn($katCont['specialni_vysledek'], Form::EQUAL, 1)
-					   ->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
-					   ->addConditionOn($katCont['specialni_vysledek'], Form::EQUAL, 1)
-					   ->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
+						->addConditionOn($katCont['specialni_vysledek'], Form::EQUAL, 1)
+						->addRule(Form::FILLED, 'Je nutné vyplnit výsledný čas.')
+						->addConditionOn($katCont['specialni_vysledek'], Form::EQUAL, 1)
+						->addRule(Form::FLOAT, 'Čas musí být zadaný jako číslo.');
 				//$katCont['vysledny_cas']->getControlPrototype()->id('vyslednyCas'.$vysledek['id']);
 				$katCont->addCheckbox('platne_body', 'Platné body');
 				$katCont->addCheckbox('platne_casy', 'Platný čas');
@@ -999,11 +1017,11 @@ class ZavodyPresenter extends BasePresenter
 
 		$form->addSubmit('save', '1. Uložit změny');
 		$form->addSubmit('vyhodnot', '2. Určit pořadí a body')
-			   ->setValidationScope(false);
+				->setValidationScope(false);
 		$form->addSubmit('zverejnit', '3. Zveřejnit výsledky')
-			   ->setValidationScope(false);
+				->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'vysledkyFormSubmitted');
+		$form->onSuccess[] = array($this, 'vysledkyFormSubmitted');
 	}
 
 	protected function seradPodleCasu($a, $b)
@@ -1013,17 +1031,17 @@ class ZavodyPresenter extends BasePresenter
 		else return 0;
 	}
 
-	public function vysledkyFormSubmitted(AppForm $form)
+	public function vysledkyFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 		if($form['vyhodnot']->isSubmittedBy())
 		{
 			try
 			{
-				$vysledky = new Vysledky;
+				$vysledky = $this->context->vysledky;
 				$vysledkyZavodu = $vysledky->findByZavod($id)->fetchAssoc('id_souteze,id_kategorie,id,=');
 
-				$bodoveHodnoceni = new Body;
+				$bodoveHodnoceni = $this->context->body;
 				$body = $bodoveHodnoceni->findByZavod($id)->fetchAssoc('id_souteze,id_kategorie,poradi,=');
 				foreach ($vysledkyZavodu as $id_souteze => $foo)
 				{
@@ -1065,14 +1083,14 @@ class ZavodyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Pořadí a bodové hodnocení se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			if(!$this->isAjax()) $this->redirect('this');
 		}
 		elseif($form['save']->isSubmittedBy())
 		{
 			$data = $form->getValues();
-			$vysledky = new Vysledky;
+			$vysledky = $this->context->vysledky;
 			try
 			{
 				$this->model->nezverejnitVysledky($id);
@@ -1099,7 +1117,7 @@ class ZavodyPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Výsledky se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			if(!$this->isAjax()) $this->redirect('this');
 		}
@@ -1123,7 +1141,7 @@ class ZavodyPresenter extends BasePresenter
 	{
 		try
 		{
-			$vysledky = new Vysledky;
+			$vysledky = $this->context->vysledky;
 			$vysledky->delete($id_vysledku);
 			$this->flashMessage('Výsledek byl úspěšně odstraněn.', 'ok');
 			$this->invalidateControl('vysledky');
@@ -1141,7 +1159,7 @@ class ZavodyPresenter extends BasePresenter
 
 	private function pripravRekordy($id)
 	{
-		$vysledkyModel = new Vysledky;
+		$vysledkyModel = $this->context->vysledky;
 
 		$this->template->zavod['dosavadniRekordy'] = $vysledkyModel->dosavadniRekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
 		foreach ($this->template->zavod['dosavadniRekordy'] as $soutez)
@@ -1173,9 +1191,9 @@ class ZavodyPresenter extends BasePresenter
 
 	public function renderPripravaProKomentatora($id)
 	{
-		$ucastiModel = new Ucasti;
-		$startovniPoradiModel = new StartovniPoradi;
-		$vysledkyModel = new Vysledky();
+		$ucastiModel = $this->context->ucasti;
+		$startovniPoradiModel = $this->context->startovniPoradi;
+		$vysledkyModel = $this->context->vysledky;
 
 		$this->template->zavod = (array) $this->model->find($id)->fetch();
 
@@ -1252,7 +1270,7 @@ class ZavodyPresenter extends BasePresenter
 		if(!$this->template->zavod) throw new BadRequestException('Závod nebyl nalezen.');
 
 		$zavod['poradatele'] = $this->model->findPoradatele($id);
-		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed(new ZavodResource($this->template->zavod), 'edit');
+		$this->template->zavod['muze_editovat'] = (bool) $this->user->isAllowed($this->context->zavodResource->setInstance($this->template->zavod), 'edit');
 		$this->template->zavod['muze_hodnotit'] = (bool) (strtotime($this->template->zavod['datum']) < strtotime('NOW'));
 
 		$datum = new Datum;
@@ -1272,7 +1290,7 @@ class ZavodyPresenter extends BasePresenter
 		$this->template->predchoziKola = $this->model->findPredchoziKola($id); //Poradatel($this->template->zavod['id_poradatele'])->where('[zavody].[id] != %i', $id);
 
 		$this->template->backlink = $this->application->storeRequest();
-		$this->template->adresaLigy = $this->getHttpRequest()->getUri()->getScheme() . '://' . $this->getHttpRequest()->getUri()->getHost();
+		$this->template->adresaLigy = $this->getHttpRequest()->getUrl()->getScheme() . '://' . $this->getHttpRequest()->getUrl()->getHost();
 
 		$kategorie2index = array();
 		$kategoriePosledniPozice = array();
@@ -1282,22 +1300,22 @@ class ZavodyPresenter extends BasePresenter
 		$dokument->removeSheetByIndex(0);
 
 		$stylZahlaviTabulky = array(
-		    'allborders' => array(
-			   'style' => PHPExcel_Style_Border::BORDER_MEDIUM
-		    ),
-		    'font' => array(
-			   'bold' => true
-		    ),
-		    'alignment' => array(
-			   'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
-		    )
+			'allborders' => array(
+				'style' => PHPExcel_Style_Border::BORDER_MEDIUM
+			),
+			'font' => array(
+				'bold' => true
+			),
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+			)
 		);
 
 		$stylRamecekOkolo = array('allborders' => array(
-			   'style' => PHPExcel_Style_Border::BORDER_THIN
-			   ));
+				'style' => PHPExcel_Style_Border::BORDER_THIN
+				));
 
-		$bodoveTabulkyModel = new BodoveTabulky;
+		$bodoveTabulkyModel = $this->context->bodoveTabulky;
 
 		foreach ($this->template->vysledky['vysledky'] as $soutez => $foo)
 		{
@@ -1337,7 +1355,7 @@ class ZavodyPresenter extends BasePresenter
 				$offsetPrvnihoDruzstva = NULL;
 				$vysledek = reset($vysledky);
 				$bodovaTabulka = $bodoveTabulkyModel->findByUcast($vysledek['id_ucasti'])->fetch();
-				$bodyModel = new Body();
+				$bodyModel = $this->context->body;
 				$body = $bodyModel->findByTabulka($bodovaTabulka['id']);
 				for ($i = 0; $i < 5; $i++)
 				{
@@ -1427,12 +1445,11 @@ class ZavodyPresenter extends BasePresenter
 		$writer->setPreCalculateFormulas(false);
 
 		$this->getHttpResponse()->addHeader('Content-Type', 'pplication/vnd.openxmlformats-officedocument.spreadsheetml.document; charset=utf-8');
-		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename=' . String::webalize($this->template->zavod['nazev']) . '-' . $this->template->zavod['rok'] . '-vysledky.xlsx');
+		$this->getHttpResponse()->addHeader('Content-Disposition', 'attachment; filename=' . \Nette\Utils\Strings::webalize($this->template->zavod['nazev']) . '-' . $this->template->zavod['rok'] . '-vysledky.xlsx');
 
-		$tempDir = Environment::getVariable('tempDir');
+		$tempDir = $this->context->params['tempDir'];
 		srand(time('Yhs'));
 		$tmpFile = rand();
-
 		$writer->save($tempDir . '/' . $tmpFile);
 		$dokument->disconnectWorksheets();
 		unset($dokument);

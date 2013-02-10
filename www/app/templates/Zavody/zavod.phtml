@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 {* Odkazy na předchozí a následující závody *}
 <div class="relativni-odkazy">
@@ -12,7 +12,7 @@
 <h2>Informace o závodu{if $zavod['muze_editovat'] == true} [<a href="{plink Zavody:edit, $zavod['id']}" title="Úprava informací o závodu" class="edit">upravit informace o závodu</a>]{/if}</h2>
 
 <div class="sdileni-zavodu">
-	{widget mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
+	{control mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
 
 	<dl>
 		<dt>Exportovat do kalendáře</dt>
@@ -112,16 +112,16 @@
 	{if $zavod['aktivni_startovni_poradi']}<dd><a class="printer" href="{plink Zavody:vysledky, $zavod['id']}">{if count($vysledky['vysledky'])}Výsledky ze závodů{else}Formulář pro zapsání výsledků{/if}</a></dd>{/if}
 	{if $zavod['aktivni_startovni_poradi']}<dd><a class="printer" href="{plink Zavody:vysledkyExcel, $zavod['id']}">Tabulka pro Microsoft Excel pro zapsání a tisk výsledků</a></dd>{/if}
 {if 0 && $zavod['muze_hodnotit']}
-	<dt>Ohodnoťte pořádání závodu</dt><dd>{widget hodnoceni $zavod['id']}</dd>
+	<dt>Ohodnoťte pořádání závodu</dt><dd>{control hodnoceni $zavod['id']}</dd>
 {/if}
 
-{widget souvisejici "zavody", $zavod['id']}
+{control souvisejici "zavody", $zavod['id']}
 
 </dl>
 
-{widget souvisejici "zavody", $zavod['id'], true}
+{control souvisejici "zavody", $zavod['id'], true}
 
-@{widget prilohy "zavody", $zavod['id']}
+{control prilohy "zavody", $zavod['id']}
 
 {if $zavod['ustream_stav'] == 'ano'}<h2>Video přenos</h2><p class="ok">Z toho závodu je plánován živý video přenos.</p>{/if}
 
@@ -137,4 +137,4 @@
 {/if}
 
 <h2>Komentáře k závodu</h2>
-@{widget diskuze $zavod->id, "zavody"}
+{control diskuze $zavod->id, "zavody"}

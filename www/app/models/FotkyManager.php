@@ -27,7 +27,8 @@ class FotkyManager implements IFileUploaderFileManager
 
 	public function save(HttpUploadedFile $soubor)
 	{
-		$fotka = new Fotky($soubor);
+		$fotka = Nette\Environment::getService('fotky');
+		$fotka->setSoubor($soubor);
 		$fotka->setAutor($this->id_autora);
 		$fotka->setSouvisejici($this->id_souvisejiciho);
 		$fotka->uloz($this->id_souvisejiciho);

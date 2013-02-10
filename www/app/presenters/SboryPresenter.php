@@ -6,6 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\UI\Form;
+
 /**
  * Presenter sborů
  *
@@ -13,11 +15,12 @@
  */
 class SboryPresenter extends BasePresenter
 {
+	/** @var Sbory */
 	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Sbory;
+		$this->model = $this->context->sbory;
 		parent::startup();
 	}
 
@@ -64,7 +67,7 @@ class SboryPresenter extends BasePresenter
 		catch (DibiException $e)
 		{
 			$this->flashMessage('Nepodařilo se smazat sbor.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('default');
 	}
@@ -82,17 +85,17 @@ class SboryPresenter extends BasePresenter
 
 		$this->template->sbor['muze_editovat'] = $this->user->isAllowed('sbory', 'edit') || $this->jeAutor($this->template->sbor['id_kontaktni_osoby']) || $this->jeAutor($this->template->sbor['id_spravce']);
 
-		$zavody = new Zavody;
+		$zavody = $this->context->zavody;
 		$this->template->zavody = array();
 		$this->template->zavody['zavody'] = $zavody->findByPoradatel($id);
 
-		$terce = new Terce;
+		$terce = $this->context->terce;
 		$this->template->terce = $terce->findByMajitel($id);
 
-		$druzstva = new Druzstva;
+		$druzstva = $this->context->druzstva;
 		$this->template->druzstva = $druzstva->findBySbor($id);
 
-		$uzivateleModel = new Uzivatele();
+		$uzivateleModel = $this->context->uzivatele;
 		$this->template->sbor['uzivatele'] = $uzivateleModel->findBySbor($id);
 
 		$this->setTitle('Sbor ' . $this->template->sbor['nazev']);
@@ -110,8 +113,8 @@ class SboryPresenter extends BasePresenter
 	public function createComponentEditForm($name)
 	{
 		$form = new RequestButtonReceiver($this, $name);
-		$uzivatele = new Uzivatele;
-		$mista = new Mista;
+		$uzivatele = $this->context->uzivatele;
+		$mista = $this->context->mista;
 		$backlink = $this->getApplication()->storeRequest();
 
 		$typy_sboru = $this->model->findTypytoSelect()->fetchPairs('id', 'nazev');
@@ -143,10 +146,10 @@ class SboryPresenter extends BasePresenter
 			   ->setValidationScope(FALSE);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -175,7 +178,7 @@ class SboryPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Údaje o sboru se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 

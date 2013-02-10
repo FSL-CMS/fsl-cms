@@ -19,14 +19,6 @@ class Stranky extends BaseModel
 	/** @var string */
 	protected $table = 'stranky';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findIdByUri($uri)
 	{
 		return $this->connection
@@ -89,7 +81,7 @@ class Stranky extends BaseModel
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Stranky', 'stranka', $id, $data['uri']);
 		return $ret;
 	}
@@ -98,7 +90,7 @@ class Stranky extends BaseModel
 	{
 		parent::update($id, $data)->execute();
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Stranky', 'stranka', $id, $data['uri']);
 	}
 

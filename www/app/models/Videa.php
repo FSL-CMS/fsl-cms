@@ -18,15 +18,6 @@ class Videa extends BaseModel
 	/** @var string */
 	protected $table = 'videa';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection->select('*')->from($this->table)->orderBy('[datum_pridani] ASC');

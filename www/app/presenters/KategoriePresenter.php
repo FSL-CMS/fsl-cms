@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter sportovních kategorií
@@ -21,7 +21,7 @@ class KategoriePresenter extends SecuredPresenter
 
 	public function startup()
 	{
-		$this->model = new Kategorie;
+		$this->model = $this->context->kategorie;
 
 		parent::startup();
 	}
@@ -47,7 +47,7 @@ class KategoriePresenter extends SecuredPresenter
 
 	public function createComponentKategorieForm()
 	{
-		$form = new AppForm;
+		$form = new Nette\Application\UI\Form;
 
 		$form->getElementPrototype()->class('ajax');
 
@@ -60,12 +60,12 @@ class KategoriePresenter extends SecuredPresenter
 		}
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'kategorieFormSubmitted');
+		$form->onSuccess[] = array($this, 'kategorieFormSubmitted');
 
 		return $form;
 	}
 
-	public function kategorieFormSubmitted(AppForm $form)
+	public function kategorieFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
@@ -99,8 +99,6 @@ class KategoriePresenter extends SecuredPresenter
 	{
 		$form = new RequestButtonReceiver($this, 'editForm');
 
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
 		$form->addGroup('Informace o kategorii');
 		$form->addText('nazev', 'Název')
 			->addRule(Form::FILLED, 'Je nutné vyplnit název kategorie.');
@@ -115,12 +113,12 @@ class KategoriePresenter extends SecuredPresenter
 			->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -157,7 +155,7 @@ class KategoriePresenter extends SecuredPresenter
 			catch( DibiException $e )
 			{
 				$this->flashMessage('Informace o kategorii se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 	}
@@ -173,7 +171,7 @@ class KategoriePresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Kategorii se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

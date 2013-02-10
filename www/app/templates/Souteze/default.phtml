@@ -1,9 +1,9 @@
-@{block content}
+{block content}
 
 {if $souteze['muze_editovat'] == true}<p class="config"><a href="{plink add}" class="add">Přidat novou soutěž</a></p>{/if}
 
 {if count($souteze['souteze'])}
-{widget soutezeForm begin}
+{control soutezeForm begin}
 <table class="prehled">
 <thead>
 	<tr>
@@ -27,7 +27,7 @@
 	{/foreach}
 </tbody>
 </table>
-{widget soutezeForm end}
+{control soutezeForm end}
 {else}
 	<p class="warning">Žádné soutěže nebyly nalezeny.</p>
 {/if}

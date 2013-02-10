@@ -20,11 +20,6 @@ class SablonyClanku extends BaseModel
 	/** @var DibiConnection */
 	protected $connection;
 
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('%n.[id] = %i', $this->table, $id);

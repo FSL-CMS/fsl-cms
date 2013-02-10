@@ -7,8 +7,8 @@
  * @copyright 2009 Petr Procházka
  * @version 0.1
  */
- 
- 
+
+
 require_once dirname(__FILE__) . '/RequestButton.php';
 require_once dirname(__FILE__) . '/RequestButtonStorage.php';
 require_once dirname(__FILE__) . '/RequestButtonHelper.php';
@@ -18,7 +18,7 @@ require_once dirname(__FILE__) . '/RequestButtonHelper.php';
  * Pomocná trída.
  * Pro použítí vlastností RequestButtonu bez RequestButtonReceiveru.
  */
-final class RequestButtonHelper extends Object
+final class RequestButtonHelper extends Nette\Object
 {
 
 	/**
@@ -33,11 +33,11 @@ final class RequestButtonHelper extends Object
 	 * Přidá do action backlink, aby formulář i po odeslání věděl kam se má vrátit.
 	 *
 	 * @see RequestButtonReceiver::setAction()
-	 * @param AppForm
+	 * @param Nette\Application\UI\Form
 	 * @param Link|string
 	 * @return Link|string
 	 */
-	static public function prepareAction(AppForm $form, $url)
+	static public function prepareAction(Nette\Application\UI\Form $form, $url)
 	{
 		if ($url instanceof Link)
 		{
@@ -53,16 +53,16 @@ final class RequestButtonHelper extends Object
 	/**
 	 * Když je vráceno na určitý stav formuláře, vrátí jeho data.
 	 *
-	 * @param AppForm
+	 * @param Nette\Application\UI\Form
 	 * @param array Data odeslaná např POSTem. Má přednost před stavem formuláře.
 	 * @return array
 	 */
-	static public function prepareHttpData(AppForm $form, $data)
+	static public function prepareHttpData(Nette\Application\UI\Form $form, $data)
 	{
 	  if (!$data)
 	  {
 			$receivedId = $form->presenter->getParam(RequestButton::RECEIVED_KEY);
-			if ($receivedId AND $form->lookupPath('Nette\Application\Presenter', TRUE) === RequestButtonStorage::getFormName($receivedId) AND RequestButtonStorage::is($receivedId))
+			if ($receivedId AND $form->lookupPath('Nette\Application\UI\Presenter', TRUE) === RequestButtonStorage::getFormName($receivedId) AND RequestButtonStorage::is($receivedId))
 			{
 				$data = RequestButtonStorage::getData($receivedId);
 			}
@@ -74,13 +74,13 @@ final class RequestButtonHelper extends Object
 	 * Přesměruje zpět na RequestButton, když je z něj požadavek.
 	 * Používá ho RequestButtonReceiver a tuto funkcy lze zavolat i třeba v signálu.
 	 *
-	 * @param AppForm|PresenterComponent|NULL Null znamená vzít presenter z prostředí, u AppForm se kontroluje jestli nebyl stisknut další RequestButton.
+	 * @param Nette\Application\UI\Form|PresenterComponent|NULL Null znamená vzít presenter z prostředí, u Nette\Application\UI\Form se kontroluje jestli nebyl stisknut další RequestButton.
 	 * @throw AbortException
 	 */
 	static public function redirectBack($form = NULL)
 	{
-		if ($form === NULL) $presenter = Environment::getApplication()->getPresenter();
-		else if ($form instanceof PresenterComponent OR $form instanceof AppForm) $presenter = $form->getPresenter();
+		if ($form === NULL) $presenter = Nette\Environment::getApplication()->getPresenter();
+		else if ($form instanceof PresenterComponent OR $form instanceof Nette\Application\UI\Form) $presenter = $form->getPresenter();
     $backlinkId = $presenter->getParam(RequestButton::BACKLINK_KEY);
     if ($backlinkId AND ($form === NULL OR !($form->isSubmitted() instanceof RequestButton)) AND RequestButtonStorage::is($backlinkId))
 		{
@@ -95,11 +95,11 @@ final class RequestButtonHelper extends Object
 	 * MUSÍ SE VOLAT PO přidání všech FormControlů do Formu a po připojení na Presenter.
 	 * MÍSTO VOLÁNÍ TÉTO FUNCKE SE MÚŽE POUŽÍT JAKO FORM RequestButtonReceiver
 	 *
-	 * @param AppForm
+	 * @param Nette\Application\UI\Form
 	 * @see RequestButtonReceiver
 	 *
 	 */
-	static public function prepareForm(AppForm $form)
+	static public function prepareForm(Nette\Application\UI\Form $form)
 	{
 		if (!($form instanceof RequestButtonReceiver))
 		{
@@ -116,7 +116,7 @@ final class RequestButtonHelper extends Object
 			else throw new InvalidStateException("Form is not attached to Presenter.");
 		}
 	}
-	
+
 	/**
 	 * Přidá RequestButton do Formu.
 	 * Pro object extension:
@@ -132,11 +132,11 @@ final class RequestButtonHelper extends Object
 	 * @param array Kam se RequestButtonem dostanu (parametry).
 	 * @return RequestButton
 	 */
-	static public function addRequestButton(FormContainer $form, $name, $caption = NULL, $destination = NULL, $destinationArgs = array())
+	static public function addRequestButton(Nette\Forms\Container $form, $name, $caption = NULL, $destination = NULL, $destinationArgs = array())
 	{
     return $form[$name] = new RequestButton($caption, $destination, $destinationArgs);
 	}
-	
+
 	/**
 	 * Přidá RequestButtonBack do Formu.
 	 * Pro object extension:
@@ -150,7 +150,7 @@ final class RequestButtonHelper extends Object
 	 * @param string
 	 * @return RequestButtonBack
 	 */
-	static public function addRequestButtonBack(FormContainer $form, $name, $caption = NULL)
+	static public function addRequestButtonBack(Nette\Forms\Container $form, $name, $caption = NULL)
 	{
 	  return $form[$name] = new RequestButtonBack($caption);
 	}

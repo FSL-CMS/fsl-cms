@@ -5,35 +5,43 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
-
-
+use Nette\Security\IResource;
 
 /**
  * Resource pro závody
  * @author Milan Pála
  */
-class ZavodResource implements IResource
+class ZavodResource extends Nette\Object implements IResource
 {
+
 	private $data;
 
+	/** @var Zavody */
+	private $model;
+
+	public function __construct(Zavody $model)
+	{
+		$this->model = $model;
+	}
+
 	/**
-	 * Konsktruktor příjmá data o jednom závodu.
 	 * @param array $data Jeden konkrétní závod.
 	 */
-	public function __construct($data)
+	public function setInstance($data)
 	{
 		$this->data = $data;
 	}
 
-	public function __get($name)
+	public function &__get($name)
 	{
 		if($name == 'poradatele' && !isset($this->data['poradatele']))
 		{
-			$zavodyModel = new Zavody;
-			return $zavodyModel->findPoradatele($this->getId());
+			return $this->model->findPoradatele($this->getId());
 		}
 
-		return $this->data[$name];
+		if(isset($this->data[$name])) return $this->data[$name];
+
+		return parent::__get($name);
 	}
 
 	public function getId()

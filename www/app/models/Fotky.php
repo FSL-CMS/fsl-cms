@@ -16,11 +16,6 @@
 class Fotky extends BaseSoubory implements IUdrzba
 {
 
-	public function __construct(HttpUploadedFile $soubor = NULL)
-	{
-		parent::__construct($soubor);
-	}
-
 	public function find($id)
 	{
 		return parent::find($id)->select('id_souvisejiciho AS id_galerie');
@@ -51,8 +46,8 @@ class Fotky extends BaseSoubory implements IUdrzba
 		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
 		$id_souboru = $this->lastInsertedId();
 
-		if( $fotka->save($this->cestaKsouborum.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
-		if( $nahled->save($this->cestaKsouborum.'nahled/'.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
+		if( $fotka->save($this->cestaKsouborum.'/'.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
+		if( $nahled->save($this->cestaKsouborum.'/'.'nahled/'.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
 
 		return $id_souboru;
 	}
@@ -78,7 +73,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 		$id = $this->connection->insertId();
 		$this->lastInsertedId($id);
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Fotky', 'fotka', $id, $data['uri']);
 
 		return $ret;
@@ -88,7 +83,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 	{
 		parent::update($id, $data)->execute();
 		$data = $this->constructUri($id, $data);
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
 		$urlsModel->setUrl('Fotky', 'fotka', $id, $data['uri']);
 
 	}
@@ -109,7 +104,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 	{
 		if( isset($data['soubor']) && isset($data['pripona']) && isset($data['id_souvisejiciho']) )
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$url = (array)$urlsModel->findUrlByPresenterAndActionAndParam('Galerie', 'galerie', $data['id_souvisejiciho'])->fetch();
 			$data['uri'] = $url['url'].$id.'-'.Texy::webalize($data['soubor']).'-'.Texy::webalize($data['pripona']);
 		}

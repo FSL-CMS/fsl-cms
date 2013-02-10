@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Model vazby kategorií a soutěží
  *
@@ -19,22 +17,14 @@ class SoutezeRocniku extends BaseModel
 	/** @var string */
 	protected $table = 'souteze_rocniku';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection
-			->select('%n.[id], [souteze].[nazev], [kategorie].[nazev] AS [kategorie], %n.[id_kategorie], %n.[id_souteze], [kategorie].[pocet_startovnich_mist], %n.[id_bodove_tabulky]', $this->table, $this->table, $this->table, $this->table)
-			->from($this->table)
-			->leftJoin('[souteze] ON [souteze].[id] = %n.[id_souteze]', $this->table)
-			->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
-			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
+						->select('%n.[id], [souteze].[nazev], [kategorie].[nazev] AS [kategorie], %n.[id_kategorie], %n.[id_souteze], [kategorie].[pocet_startovnich_mist], %n.[id_bodove_tabulky]', $this->table, $this->table, $this->table, $this->table)
+						->from($this->table)
+						->leftJoin('[souteze] ON [souteze].[id] = %n.[id_souteze]', $this->table)
+						->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
+						->orderBy('[souteze].[poradi], [kategorie].[poradi]');
 	}
 
 	public function findByRocnik($id_rocniku)
@@ -45,11 +35,11 @@ class SoutezeRocniku extends BaseModel
 	public function findAllToSelect()
 	{
 		return $this->connection
-			->select('%n.[id], CONCAT([souteze].[nazev], " ", [kategorie].[nazev]) AS [nazev]', $this->table)
-			->from($this->table)
-			->leftJoin('[souteze] ON [souteze].[id] = %n.[id_souteze]', $this->table)
-			->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
-			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
+						->select('%n.[id], CONCAT([souteze].[nazev], " ", [kategorie].[nazev]) AS [nazev]', $this->table)
+						->from($this->table)
+						->leftJoin('[souteze] ON [souteze].[id] = %n.[id_souteze]', $this->table)
+						->leftJoin('[kategorie] ON [kategorie].[id] = %n.[id_kategorie]', $this->table)
+						->orderBy('[souteze].[poradi], [kategorie].[poradi]');
 	}
 
 	public function insert(array $data)

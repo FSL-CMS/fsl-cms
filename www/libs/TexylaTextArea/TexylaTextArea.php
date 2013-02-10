@@ -1,6 +1,6 @@
 <?php
 
-class TexylaTextArea extends /*Nette\Forms\*/TextArea
+class TexylaTextArea extends Nette\Forms\Controls\TextArea
 {
 
 	/**
@@ -22,36 +22,21 @@ class TexylaTextArea extends /*Nette\Forms\*/TextArea
 	 */
 	public function getControl()
 	{
-		$presenter = $this->getParent()->getParent();
-
 		$control = parent::getControl();
 		$control->class = 'texyla';
 
-		$el = Html::el();
+		$zavodyModel = Nette\Environment::getService('zavody');
+		$zavody = $zavodyModel->findAllToSelect();
+
+		$options = '';
+		foreach($zavody as $v)
+		{
+			$options .= '<option value="'.$v->id.'">'.$v->nazev.', '.datum::date($v->datum, 0, 0, 0).'</option>';
+		}
+
+		$el = Nette\Utils\Html::el();
 		$el->add($control);
-		$el->add('
-<script type="text/javascript">
-$.texyla.setDefaults({
-	texyCfg: "guestbook",
-	previewPath: "'.$presenter->link('').'",
-	baseDir: "'.Environment::getVariable('baseUri').'",
-	iconPath: "'.Environment::getVariable('baseUri').'" + "js/texyla/icons/%var%.png",
-	toolbar: [
-		"h2", "h3", "h4",
-		null,
-		"bold", "italic",
-		null,
-		"center", ["left", "right"],
-		null,
-		"ul", "ol",
-		null,
-		{type: "label", text: "Vložit"}, "link", "table",
-		null,
-		"blockquote",
-	],
-	bottomLeftToolbar: []
-});
-</script>');
+		$el->add('<select class="odkazy-na-zavody">'.$options.'</select>' );
 
 		return $el;
 	}

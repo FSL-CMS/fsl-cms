@@ -17,12 +17,15 @@ class PravidlaPresenter extends BasePresenter
 	/** @persistent */
 	public $backlink = '';
 
-	/** var Pravidla */
+	/** @var Pravidla */
 	protected $model;
+
+	/** @var DibiRow */
+	protected $pravidla;
 
 	public function startup()
 	{
-		$this->model = new Pravidla;
+		$this->model = $this->context->pravidla;
 		parent::startup();
 	}
 
@@ -45,7 +48,8 @@ class PravidlaPresenter extends BasePresenter
 	public function actionPravidla($id = 0)
 	{
 		if($id == 0) $this->redirect('default');
-		if(!$this->model->find($id)->fetch())
+		$this->template->pravidla = $this->model->find($id)->fetch();
+		if(!$this->template->pravidla)
 		{
 			$this->flashMessage('Požadovaná pravidla neexistují.', 'warning');
 			$this->redirect('default');
@@ -58,7 +62,6 @@ class PravidlaPresenter extends BasePresenter
 	 */
 	public function renderPravidla($id)
 	{
-		$this->template->pravidla = $this->model->find($id)->fetch();
 		$this->template->pravidla['muze_editovat'] = $this->user->isAllowed('pravidla', 'edit');
 
 		$this['prehledRocniku']->setRocnik($this->template->pravidla['id_rocniku']);
@@ -87,8 +90,6 @@ class PravidlaPresenter extends BasePresenter
 	{
 		$form = new RequestButtonReceiver($this, 'editForm');
 
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-
 		$form->addGroup('Informace o pravidlech');
 		$form->addAdminTexylaTextArea('pravidla', 'Pravidla', null, 30);
 
@@ -98,10 +99,10 @@ class PravidlaPresenter extends BasePresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			   ->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -125,7 +126,7 @@ class PravidlaPresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Pravidla se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 

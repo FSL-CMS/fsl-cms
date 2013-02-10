@@ -1,0 +1,15 @@
+# configure PHP
+#php_flag magic_quotes_gpc off
+#php_flag register_globals off
+
+# mod_rewrite
+RewriteEngine On
+#RewriteBase /www2/www/ # pro localhost zakomentovat
+
+RewriteCond %{HTTP_HOST} ^([^.]*)\.([^.]*)$
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R,QSA,L]
+
+# front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule !(xd_receiver\.html|login\.php|prevod\.php|deploy\.php)|(\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz))$ /www/index.php [L]

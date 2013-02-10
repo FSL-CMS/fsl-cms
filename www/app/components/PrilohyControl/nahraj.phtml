@@ -1,10 +1,10 @@
-@{block content}
+{block content}
 
 {snippet prilohy}
 <h2>Přiložit nové soubory</h2>
-{widget fileUploader}
+{control fileUploader}
 
-{widget nahraniSouboruForm begin}
+{control nahraniSouboruForm begin}
 {$control['nahraniSouboruForm']['save']->control}
-{widget nahraniSouboruForm end}
+{control nahraniSouboruForm end}
 {/snippet}

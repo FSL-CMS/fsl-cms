@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter fotek
@@ -19,7 +19,7 @@ class FotkyPresenter extends BasePresenter
 
 	protected function startup()
 	{
-		$this->model = new Fotky;
+		$this->model = $this->context->fotky;
 		parent::startup();
 	}
 
@@ -29,7 +29,7 @@ class FotkyPresenter extends BasePresenter
 
 		if( $fotka === false ) throw new BadRequestException('Fotografie nebyla nalezena');
 
-		$soubor = APP_DIR.'/../data/'.$fotka['id'].'.'.$fotka['pripona'];
+		$soubor = DATA_DIR . '/'.$fotka['id'].'.'.$fotka['pripona'];
 
 		if( !file_exists($soubor) ) throw new BadRequestException('Fotografie nebyla nalezena');
 
@@ -39,8 +39,8 @@ class FotkyPresenter extends BasePresenter
 		session_cache_limiter('public');
 		$last_modified_time = strtotime( $fotka['datum_pridani'] );
 
-		$res = Environment::getHttpResponse();
-		$req = Environment::getHttpRequest();
+		$res = $this->getHttpResponse();
+		$req = $this->getHttpRequest();
 
 		$res->setHeader('Cache-Control', 'public');
 		$res->setHeader('Pragma', 'public'); // Fix for IE - Content-Disposition
@@ -83,7 +83,7 @@ class FotkyPresenter extends BasePresenter
 
 		if( $fotka === false ) throw new BadRequestException('Fotografie nebyla nalezena');
 
-		$soubor = APP_DIR.'/../data/nahled/'.$fotka['id'].'.'.$fotka['pripona'];
+		$soubor = DATA_DIR . '/nahled/'.$fotka['id'].'.'.$fotka['pripona'];
 
 		if( !file_exists($soubor) ) throw new BadRequestException('Fotografie nebyla nalezena');
 
@@ -93,8 +93,8 @@ class FotkyPresenter extends BasePresenter
 		session_cache_limiter('public');
 		$last_modified_time = strtotime( $fotka['datum_pridani'] );
 
-		$res = Environment::getHttpResponse();
-		$req = Environment::getHttpRequest();
+		$res = $this->getHttpResponse();
+		$req = $this->getHttpRequest();
 
 		$res->setHeader('Expires', gmdate("D, d M Y H:i:s", strtotime('+1 month') )." GMT");
 		$res->setHeader('Cache-Control', 'public');
@@ -135,8 +135,8 @@ class FotkyPresenter extends BasePresenter
 
 	public function createComponentEditForm()
 	{
-		$form = new AppForm;
-		$uzivatele = new Uzivatele;
+		$form = new Form;
+		$uzivatele = $this->context->uzivatele;
 
 		$form->addText('nazev', 'Popis fotky');
 		$form->addSelect('id_autora', 'Autor', $uzivatele->findAllToSelect()->fetchPairs('id', 'uzivatel'));
@@ -145,12 +145,12 @@ class FotkyPresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Form $form)
 	{
 		$id = (int)$this->getParam('id');
 

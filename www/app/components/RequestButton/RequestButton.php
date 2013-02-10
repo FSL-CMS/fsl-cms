@@ -7,7 +7,7 @@
  * @copyright 2009 Petr Procházka
  * @version 0.1
  */
- 
+
 /*
 TODO
 kdyz je RequestButton prvni tak ho enterem odeslu (viz listopadova PS)
@@ -25,18 +25,18 @@ require_once dirname(__FILE__) . '/RequestButtonHelper.php';
  * Uloží stav formuláře a přesměruje se jinam,
  * kde je možné vrátit se zpět na formulár.
  */
-class RequestButton extends SubmitButton
+class RequestButton extends Nette\Forms\Controls\SubmitButton
 {
 
 	/** @var string Klíč do url, kterí určije na který RequestButton se mám vrátit. */
 	const BACKLINK_KEY = '__rbb';
-	
+
 	/** @var string Klíč do url, kterí určije jaký stav formuláře mám obnovit. */
 	const RECEIVED_KEY = '__rbr';
 
 	/** @var string Kam se RequestButtonem dostanu (presenter a action). */
 	private $destination;
-	
+
 	/** @var string Kam se RequestButtonem dostanu (parametry). */
 	private $destinationArgs = array();
 
@@ -85,13 +85,13 @@ class RequestButton extends SubmitButton
 		}
 		parent::attached($parent);
 	}
-	
+
 	/**
-	 * @param AppForm
+	 * @param Nette\Application\UI\Form
 	 */
 	protected function detached($parent)
 	{
-		if ($parent instanceof AppForm)
+		if ($parent instanceof Nette\Application\UI\Form)
 		{
 			$this->formIsPrepared = false;
 		}
@@ -111,7 +111,7 @@ class RequestButton extends SubmitButton
 	{
 	  if (!$this->formIsPrepared)
 	  {
-			throw new InvalidStateException('Use RequestButtonReceiver instead AppForm , or call method `RequestButtonHelper::prepareForm($form);` after added all FormControls.');
+			throw new InvalidStateException('Use RequestButtonReceiver instead Nette\Application\UI\Form , or call method `RequestButtonHelper::prepareForm($form);` after added all FormControls.');
 		}
 		return parent::getControl();
 	}
@@ -126,8 +126,8 @@ class RequestButton extends SubmitButton
 	  $key = RequestButtonStorage::save(
 			$this->form->presenter->backlink(),
 			$this->form->presenter->getParam(),
-			$this->lookupPath('Nette\Application\Presenter', TRUE),
-			$this->form->lookupPath('Nette\Application\Presenter', TRUE),
+			$this->lookupPath('Nette\Application\UI\Presenter', TRUE),
+			$this->form->lookupPath('Nette\Application\UI\Presenter', TRUE),
 			$this->form->getValues()
 		);
 		$this->form->presenter->redirect($this->getDestination(), array(RequestButton::BACKLINK_KEY => $key) + $this->getDestinationArgs());
@@ -153,7 +153,7 @@ class RequestButton extends SubmitButton
 	{
 		return $this->destinationArgs;
 	}
-	
+
 	/**
 	 * Kam se RequestButtonem dostanu.
 	 *

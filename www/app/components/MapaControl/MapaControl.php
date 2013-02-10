@@ -6,21 +6,20 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Komponenta vykreslující mapy
  *
  * @author	Milan Pála
-  */
+ */
 class MapaControl extends BaseControl
 {
+
 	protected $render;
 
-	public function __construct(IComponentContainer $parent, $name)
+	public function __construct()
 	{
+		parent::__construct();
 		$this->render = 'mapa';
-		parent::__construct($parent, $name);
 	}
 
 	public function renderMapa($atributy)
@@ -30,18 +29,17 @@ class MapaControl extends BaseControl
 
 		$template->body = array();
 		$template->stred = array('sirka' => 0, 'delka' => 0);
-		foreach($atributy as $bod)
+		foreach ($atributy as $bod)
 		{
-			if( isset($bod['sirka']) && $bod['sirka'] != 0 )
+			if(isset($bod['sirka']) && $bod['sirka'] != 0)
 			{
-				$template->body[] = array('sirka' => (int)$bod['sirka'], 'delka' => (int)$bod['delka'], 'id' => 'marker'.(int)$bod['sirka'], 'nazev' => $bod['nazev']);
+				$template->body[] = array('sirka' => (int) $bod['sirka'], 'delka' => (int) $bod['delka'], 'id' => 'marker' . (int) $bod['sirka'], 'nazev' => $bod['nazev']);
 				$template->stred['sirka'] = $bod['sirka'];
 				$template->stred['delka'] = $bod['delka'];
 			}
 			$template->nazev = $bod['nazev'];
 		}
-		if( $template->stred['sirka'] != 0 && $template->stred['delka'] != 0 ) $template->render();
-
+		if($template->stred['sirka'] != 0 && $template->stred['delka'] != 0) $template->render();
 	}
 
 	public function render($atributy)
@@ -56,16 +54,16 @@ class MapaControl extends BaseControl
 
 		$template->body = array();
 		$template->stred = array();
-		foreach($atributy as $bod)
+		foreach ($atributy as $bod)
 		{
-			if( $bod['sirka'] != 0 )
+			if($bod['sirka'] != 0)
 			{
-				$template->body[] = array('sirka' => (int)$bod['sirka'], 'delka' => (int)$bod['delka'], 'id' => 'marker'.(int)$bod['sirka'], 'nazev' => $bod['nazev']);
+				$template->body[] = array('sirka' => (int) $bod['sirka'], 'delka' => (int) $bod['delka'], 'id' => 'marker' . (int) $bod['sirka'], 'nazev' => $bod['nazev']);
 				$template->stred['sirka'] = $bod['sirka'];
 				$template->stred['delka'] = $bod['delka'];
 			}
 		}
-		if( $template->stred['sirka'] != 0 && $template->stred['delka'] != 0 ) $template->render();
+		if($template->stred['sirka'] != 0 && $template->stred['delka'] != 0) $template->render();
 	}
 
 	public function renderMalaMapa($atributy)
@@ -77,15 +75,16 @@ class MapaControl extends BaseControl
 
 		$template->body = array();
 		$template->stred = array('sirka' => 0, 'delka' => 0);
-		foreach($atributy as $bod)
+		foreach ($atributy as $bod)
 		{
-			if( isset($bod['sirka']) && $bod['sirka'] != 0 )
+			if(isset($bod['sirka']) && $bod['sirka'] != 0)
 			{
-				$template->body[] = array('sirka' => (int)$bod['sirka'], 'delka' => (int)$bod['delka'], 'id' => 'marker'.(int)$bod['sirka'], 'nazev' => $bod['nazev']);
+				$template->body[] = array('sirka' => (int) $bod['sirka'], 'delka' => (int) $bod['delka'], 'id' => 'marker' . (int) $bod['sirka'], 'nazev' => $bod['nazev']);
 				$template->stred['sirka'] = $bod['sirka'];
 				$template->stred['delka'] = $bod['delka'];
 			}
 		}
-		if( $template->stred['sirka'] != 0 && $template->stred['delka'] != 0 ) $template->render();
+		if($template->stred['sirka'] != 0 && $template->stred['delka'] != 0) $template->render();
 	}
+
 }

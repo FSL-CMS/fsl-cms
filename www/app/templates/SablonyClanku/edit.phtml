@@ -3,10 +3,10 @@
 
 <p>Zadejte údaje o této šabloně článku.</p>
 
-{widget editForm}
+{control editForm}
 
 {ifset $sablona->obrazek_id}
 	<h2>Náhledy obrázků</h2>
 	<!--p class="ok">Z více obrázků bude vybrán vždy jeden náhodně.</p-->
-	{widget fotka:sablonaclanku, $sablona->obrazek_id}
+	{control fotka:sablonaclanku, $sablona->obrazek_id}
 {/ifset}

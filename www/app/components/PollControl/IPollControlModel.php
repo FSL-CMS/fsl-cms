@@ -40,4 +40,3 @@ interface IPollControlModel {
     public function isVotable();
 
 }
-

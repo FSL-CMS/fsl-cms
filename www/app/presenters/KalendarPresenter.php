@@ -13,11 +13,11 @@
  */
 class KalendarPresenter extends BasePresenter
 {
-	/** Název kalendáře obsahující všechny závody ligy */
+	/** @var string Název kalendáře obsahující všechny závody ligy */
 	private static $nazevKalendare;
-	/** Popis kalendáře obsahující všechny závody ligy */
+	/** @var string Popis kalendáře obsahující všechny závody ligy */
 	private static $popisKalendare;
-	/** Zkratka názvu ligy */
+	/** @var string Zkratka názvu ligy */
 	private static $zkratkaLigy;
 
 	protected function startup()
@@ -34,11 +34,11 @@ class KalendarPresenter extends BasePresenter
 	 */
 	public function actionLiga()
 	{
-		$zavodyModel = new Zavody;
+		$zavodyModel = $this->context->zavody;
 		$zavody = $zavodyModel->findAll();
 
 		// set a (site) unique id
-		$config = array("unique_id" => $this->getHttpRequest()->getUri()->getHost());
+		$config = array("unique_id" => $this->getHttpRequest()->getUrl()->getHost());
 
 		// create a new calendar instance
 		$v = new vcalendar($config);
@@ -55,7 +55,7 @@ class KalendarPresenter extends BasePresenter
 		$v->setProperty("X-WR-TIMEZONE", $tz);
 		$xprops = array("X-LIC-LOCATION" => $tz);
 		// create timezone component(-s) opt. 1
-		iCalUtilityFunctions::createTimezone($v, $tz, $xprops);
+		//iCalUtilityFunctions::createTimezone($v, $tz, $xprops);
 
 		foreach ($zavody as $zavod)
 		{
@@ -74,19 +74,19 @@ class KalendarPresenter extends BasePresenter
 	 */
 	public function actionZavod($id)
 	{
-		$zavodyModel = new Zavody;
+		$zavodyModel = $this->context->zavody;
 		$zavod = $zavodyModel->find($id)->fetch();
 
 		if($zavod === false) throw new BadRequestException();
 
+		// define time zone
+		$tz = "Europe/Prague";
+
 		// set a (site) unique id
-		$config = array("unique_id" => $this->getHttpRequest()->getUri()->getHost());
+		$config = array("unique_id" => $this->getHttpRequest()->getUrl()->getHost(), "TZID" => $tz);
 
 		// create a new calendar instance
 		$v = new vcalendar($config);
-
-		// define time zone
-		$tz = "Europe/Prague";
 
 		// required of some calendar software
 		$v->setProperty("method", "PUBLISH");
@@ -95,7 +95,7 @@ class KalendarPresenter extends BasePresenter
 		$v->setProperty("X-WR-TIMEZONE", $tz);
 		$xprops = array("X-LIC-LOCATION" => $tz);
 		// create timezone component(-s) opt. 1
-		iCalUtilityFunctions::createTimezone($v, $tz, $xprops);
+		//iCalUtilityFunctions::createTimezone($v, $tz, $xprops);
 
 		$this->pripravZavod($v, $zavod);
 
@@ -122,8 +122,8 @@ class KalendarPresenter extends BasePresenter
 			$vevent->setProperty("LOCATION", $zavod->misto);
 
 			$vevent->setProperty("summary", self::$zkratkaLigy.' '.$zavod->nazev);
-			$vevent->setProperty("description", 'Oficiální stránka závodu s možností rezervace startovního pořadí a dalšími podrobnostmi na '.$this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost().$this->link('Zavody:zavod', $zavod->id));
-			$vevent->setProperty("URL", $this->getHttpRequest()->getUri()->getScheme().'://'.$this->getHttpRequest()->getUri()->getHost().$this->link('Zavody:zavod', $zavod->id));
+			$vevent->setProperty("description", 'Oficiální stránka závodu s možností rezervace startovního pořadí a dalšími podrobnostmi na '.$this->getHttpRequest()->getUrl()->getScheme().'://'.$this->getHttpRequest()->getUrl()->getHost().$this->link('Zavody:zavod', $zavod->id));
+			$vevent->setProperty("URL", $this->getHttpRequest()->getUrl()->getScheme().'://'.$this->getHttpRequest()->getUrl()->getHost().$this->link('Zavody:zavod', $zavod->id));
 	}
 
 }

@@ -17,27 +17,27 @@ class SledovaniPresenter extends SecuredPresenter
 {
 	/** @persistent */
 	public $backlink = '';
-	
+
 	protected $model = NULL;
-	
+
 	protected function startup()
 	{
-		$this->model = new Sledovani;
+		$this->model = $this->context->sledovani;
 		parent::startup();
 	}
 
 	public function renderDefault()
 	{
 		$this->template->sledovani = array();
-		
+
 		$this->template->sledovani['muze_pridat'] = $this->user->isAllowed('sledovani', 'add');
 		$this->template->sledovani['muze_editovat'] = $this->user->isAllowed('sledovani', 'edit');
 		$this->template->sledovani['muze_mazat'] = $this->user->isAllowed('sledovani', 'delete');
 		$this->template->sledovani['sledovani'] = $this->model->findAll();
-		
+
 		$this->setTitle('Správa sledování');
-	}	
-	
+	}
+
 	public function handleDelete($id)
 	{
 		try
@@ -48,7 +48,7 @@ class SledovaniPresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Místo se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

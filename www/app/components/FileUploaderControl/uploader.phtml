@@ -2,7 +2,7 @@
 <div id="fileUploader-dropbox">
 	<span class="message">Soubory k nahrání přetáhnout sem<br /><small><small>Jsou povoleny přípony {$allowedTypes|implode:", "}.<br /><small><span id="fileUploader-finnished">Úspěšně nahráno: <span class="nahrano">0</span> souborů, velikost: <span class="velikost">0</span> kB.</span></small></small></small></span>
 </div>
-{widget inputFileUploaderForm}
+{control inputFileUploaderForm}
 <script type="text/javascript">
 $(function(){
 
@@ -11,7 +11,7 @@ $(function(){
 
 	dropbox.show();
 
-	$('#{!inputFileUploaderFormId}').hide();
+	$('#{!$inputFileUploaderFormId}').hide();
 
 	dropbox.filedrop({
 		// The name of the $_FILES entry:

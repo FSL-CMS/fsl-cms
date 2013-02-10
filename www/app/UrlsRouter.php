@@ -6,78 +6,81 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\IRouter;
 
 /**
  * Router využívající tabulku urls.
  *
  * @author Milan Pála
  */
-class UrlsRouter extends Route implements IRouter
+class UrlsRouter extends Nette\Application\Routers\Route implements IRouter
 {
+
 	private $flags;
 
-	public function __construct($foo, $params, $flags = 0)
+	/*public function __construct($foo, $params, $flags = 0)
 	{
 		parent::__construct($foo, $params, $flags);
+		dump($foo);
 		$this->flags = $flags;
-	}
+	}*/
 
-	public function match(IHttpRequest $context)
+	public function match(Nette\Http\IRequest $httpRequest)
 	{
-		$context->getUri()->path;
+		$httpRequest->getUrl()->getPath();
 
-		$params = $context->getQuery();
+		$params = $httpRequest->getQuery();
 
-		$urlsModel = new Urls;
-
+		$urlsModel = Nette\Environment::getService('urls');
+		$context = Nette\Environment::getHttpRequest();
 		$page = array();
 
-		if( ($page = $urlsModel->findByUrl($context->getUri()->path)->fetch()) == false )
+		if(($page = $urlsModel->findByUrl(substr($context->getUrl()->path, strlen($context->getUrl()->scriptPath)-1))->fetch()) == false)
 		{
-			if( ($page = $urlsModel->findRedirectedByUrl($context->getUri()->path)->fetch()) == false ) return NULL;
+			if(($page = $urlsModel->findRedirectedByUrl($context->getUrl()->path)->fetch()) == false) return NULL;
 		}
 
-		$prequest = new PresenterRequest(
-			$page['presenter'],
-			$context->getMethod(),
-			$params + array('action' => $page['action'], 'id' => $page['param']),
-			$context->getPost(),
-			$context->getFiles(),
-			array('secured' => $context->isSecured())
+		$prequest = new Nette\Application\Request(
+						$page['presenter'],
+						$context->getMethod(),
+						$params + array('action' => $page['action'], 'id' => $page['param']),
+						$context->getPost(),
+						$context->getFiles(),
+						array('secured' => $context->isSecured())
 		);
 
 		return $prequest;
 	}
 
 	/**
- 	* Constructs URL path from NPresenterRequest object.
- 	* @param  Nette\Web\IHttpRequest
- 	* @param  PresenterRequest
- 	* @return string|NULL
- 	*/
-	public function constructUrl(PresenterRequest $request, IHttpRequest $context)
+	 * Constructs absolute URL from Request object.
+	 * @return string|NULL
+	 */
+	public function constructUrl(Nette\Application\Request $request, Nette\Http\URL $url)
 	{
-		if ($this->flags & self::ONE_WAY) {
+		if($this->flags & self::ONE_WAY)
+		{
 			return NULL;
 		}
 
 		$actualPresenter = $request->getPresenterName();
-		$actualParams = $request->getParams();
+		$actualParams = $request->getParameters();
 
-		$urlsModel = new Urls;
+		$urlsModel = Nette\Environment::getService('urls');
+		$context = Nette\Environment::getHttpRequest();
 
-		if( isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndActionAndParam($actualPresenter, $actualParams['action'], $actualParams['id'])->fetch()) == FALSE ) return NULL;
-		if( !isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndAction($actualPresenter, $actualParams['action'])->fetch()) == FALSE ) return NULL;
+		if(isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndActionAndParam($actualPresenter, $actualParams['action'], $actualParams['id'])->fetch()) == FALSE) return NULL;
+		if(!isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndAction($actualPresenter, $actualParams['action'])->fetch()) == FALSE) return NULL;
 
-		$uri = $context->getUri()->basePath.substr($url['url'], 1);
+		$url = $context->getUrl()->basePath . substr($url['url'], 1);
 
 		unset($actualParams['action']);
 		unset($actualParams['id']);
 
 		$query = http_build_query($actualParams, '', '&');
-		if ($query !== '') $uri .= '?' . $query;
+		if($query !== '') $url .= '?' . $query;
 
-		return $uri;
+		return $url;
 	}
+
 }

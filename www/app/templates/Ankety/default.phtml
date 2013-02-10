@@ -1,8 +1,8 @@
-@{block content}
+{block content}
 
 {if $ankety['muze_pridavat']}<p class="config"><a href="{link Ankety:add}" title="Přidat novou anketu" class="add">Přidat novou anketu</a></p>{/if}
 
-@{if $ankety['muze_editovat']}
+{if $ankety['muze_editovat']}
 	{if count($ankety['ankety'])}
 	<table class="prehled">
 		<thead>
@@ -21,8 +21,8 @@
 	{else}
 	<p class="warning">Nebyly vloženy žádné ankety.</p>
 	{/if}
-@{else}
-	@{foreach $ankety['ankety'] as $anketa}
-		@{widget anketa $anketa['id']}
-	@{/foreach}
-@{/if}
+{else}
+	{foreach $ankety['ankety'] as $anketa}
+		{control anketa $anketa['id']}
+	{/foreach}
+{/if}

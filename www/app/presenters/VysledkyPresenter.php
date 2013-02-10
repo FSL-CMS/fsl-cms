@@ -16,11 +16,20 @@
 class VysledkyPresenter extends BasePresenter
 {
 
+	/** @var Vysledky */
+	protected $model;
+
+	public function startup()
+	{
+		parent::startup();
+
+		$this->model = $this->context->vysledky;
+	}
+
 	public function renderVysledek($id)
 	{
-		$vysledky = new Vysledky;
-		$this->template->vysledky = $vysledky->findByZavod($id)->fetchAssoc('kategorie,id,=');
-		
+		$this->template->vysledky = $this->model->findByZavod($id)->fetchAssoc('kategorie,id,=');
+
 		foreach( $this->template->vysledky as $kategorie => $foo )
 		{
 			$i = 1;

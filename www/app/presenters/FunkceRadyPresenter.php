@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter funkcí rady
@@ -17,25 +17,26 @@ class FunkceRadyPresenter extends SecuredPresenter
 {
 	/** @persistent */
 	public $backlink = '';
-	
-	protected $model = NULL;
-	
+
+	/** @var FunkceRady */
+	protected $model;
+
 	protected function startup()
 	{
-		$this->model = new FunkceRady;
 		parent::startup();
+		$this->model = $this->context->funkceRady;
 	}
 
 	public function renderDefault()
 	{
 		$this->setTitle('Funkce rady');
-		
+
 		$this->template->funkceRady = array();
-		
+
 		$this->template->funkceRady['muze_editovat'] = $this->user->isAllowed('funkcerady', 'edit');
 		$this->template->funkceRady['muze_mazat'] = $this->user->isAllowed('funkcerady', 'delete');
-		$this->template->funkceRady['funkceRady'] = $this->model->findAll();		
-	}	
+		$this->template->funkceRady['funkceRady'] = $this->model->findAll();
+	}
 
 	public function actionAdd()
 	{
@@ -45,15 +46,15 @@ class FunkceRadyPresenter extends SecuredPresenter
 	public function renderEdit($id = 0)
 	{
 		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
-		
+
 		if($id == 0) $this->setTitle('Přidání funkce rady');
 		else $this->setTitle('Úprava funkce rady');
 	}
-	
+
 	public function createComponentEditForm()
 	{
 		$form = new RequestButtonReceiver;
-		
+
 		$form->addText('nazev', 'Funkce rady KL')
 			->addRule(Form::FILLED, 'Je nutné vyplnit název funkce.');
 
@@ -62,12 +63,12 @@ class FunkceRadyPresenter extends SecuredPresenter
 			->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-		
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
+
 		return $form;
 	}
-	
-	public function editFormSubmitted(AppForm $form)
+
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -101,32 +102,32 @@ class FunkceRadyPresenter extends SecuredPresenter
 
 	public function createComponentFunkceRadyForm()
 	{
-		$form = new AppForm;
+		$form = new Nette\Application\UI\Form;
 
 		$form->getElementPrototype()->class('ajax');
-		
+
 		foreach( $this->model->findAll()->fetchAll() as $kategorie )
 		{
 			$poradi = $form->addContainer($kategorie['id']);
-				
+
 			$poradi->addHidden('id')->setDefaultValue($kategorie['id']);
 			$poradi->addText('poradi', 'Pořadí', 4)->setDefaultValue($kategorie['poradi']);
 		}
 		$form->addSubmit('save', 'Uložit');
-		
-		$form->onSubmit[] = array($this, 'funkceRadyFormSubmitted');
-		
+
+		$form->onSuccess[] = array($this, 'funkceRadyFormSubmitted');
+
 		return $form;
 	}
-	
-	public function funkceRadyFormSubmitted(AppForm $form)
+
+	public function funkceRadyFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
 			$data = $form->getValues();
 			foreach( $data as $poradi )
 			{
-				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );	
+				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );
 			}
 			$this->flashMessage('Údaje o funkcích byly úspěšně uloženy.', 'ok');
 
@@ -134,9 +135,9 @@ class FunkceRadyPresenter extends SecuredPresenter
 		}
 		catch(DibiException $e)
 		{
-			$this->flashMessage('Údaje o funkcích se nepodařilo uložit.', 'error');	
-		}	
-	}	
+			$this->flashMessage('Údaje o funkcích se nepodařilo uložit.', 'error');
+		}
+	}
 
 	public function handleDelete($id, $force = false)
 	{
@@ -155,5 +156,5 @@ class FunkceRadyPresenter extends SecuredPresenter
 		}
 		if( !$this->isAjax() ) $this->redirect('this');
 	}
-	
+
 }

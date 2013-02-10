@@ -1,9 +1,9 @@
-@{block content}
+{block content}
 
 {if $stranky['muze_editovat'] == true}<p class="config"><a href="{plink add}" class="add">Přidat novou stránku</a></p>{/if}
 
 {if count($stranky['stranky'])}
-{widget strankyForm begin}
+{control strankyForm begin}
 <table class="prehled">
 <thead>
 	<tr>
@@ -26,7 +26,7 @@
 	</tr>
 </tfoot>
 </table>
-{widget strankyForm end}
+{control strankyForm end}
 {else}
 	<p class="warning">Žádné stránky nebyly nalezeny.</p>
 {/if}

@@ -23,7 +23,7 @@ class LinkPollControl extends PollControl {
 	   catch(DibiException $e)
 	   {
 		   $this->flashMessage('Nepodařilo se uložit hlas.', 'error');
-		   Debug::processException($e, true);
+		   Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 	   }
 
         if (!$this->getPresenter()->isAjax()) {

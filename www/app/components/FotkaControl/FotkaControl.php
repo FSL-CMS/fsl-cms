@@ -6,14 +6,15 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Image;
+use Nette\Diagnostics\Debugger;
 
 /**
  * Komponenta vykreslující jednotlivé fotografie
  *
  * @author	Milan Pála
   */
-class FotkaControl extends Control
+class FotkaControl extends BaseControl
 {
 	private $model;
 	public $fotka;
@@ -23,14 +24,16 @@ class FotkaControl extends Control
 
 	public function __construct()
 	{
-		$this->model = new Fotky;
-		$this->NAHLED_DIR = APP_DIR.'/../data/nahled';
-		$this->VELKE_DIR = APP_DIR.'/../data';
 		parent::__construct();
+
+		$this->NAHLED_DIR = DATA_DIR . '/nahled';
+		$this->VELKE_DIR = DATA_DIR;
 	}
 
 	public function render($fotka)
 	{
+		$this->model = $this->presenter->context->fotky;
+
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/fotka.phtml');
 
@@ -57,6 +60,8 @@ class FotkaControl extends Control
 
 	public function renderVelky($fotka)
 	{
+		$this->model = $this->presenter->context->fotky;
+
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/velky.phtml');
 
@@ -71,12 +76,12 @@ class FotkaControl extends Control
 		{
 			if( $this->fotka !== false )
 			{
-				$soubor = $this->NAHLED_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
+				$soubor = $this->VELKE_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
 
 				if( !file_exists($soubor) ) throw new Exception('Fotografie "'.$soubor.'" neexistuje.');
 
 				$rozmery = getimagesize($soubor);
-				$noveRozmery = Image::calculateSize($rozmery[0], $rozmery[1], 380, 380);
+				$noveRozmery = \Nette\Image::calculateSize($rozmery[0], $rozmery[1], 380, 380);
 				$this->fotka['sirka'] = $noveRozmery[0];
 				$this->fotka['vyska'] = $noveRozmery[1];
 				$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->getPresenter()->jeAutor($this->fotka['id_autora']));
@@ -85,11 +90,13 @@ class FotkaControl extends Control
 		}
 		catch(Exception $e)
 		{
+			throw $e;
 		}
 	}
 
 	public function renderNahled($fotka)
 	{
+		$this->model = $this->presenter->context->fotky;
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/nahled.phtml');
 
@@ -101,13 +108,14 @@ class FotkaControl extends Control
 		}
 		catch(Exception $e)
 		{
-			//Debug::processException($e, true);
+			Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 	}
 
 	public function renderSablonaclanku($fotka)
 	{
+		$this->model = $this->presenter->context->fotky;
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/sablonaclanku.phtml');
 
@@ -119,13 +127,14 @@ class FotkaControl extends Control
 		}
 		catch(Exception $e)
 		{
-			//Debug::processException($e, true);
+			//Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 	}
 
 	public function renderVyber($fotka)
 	{
+		$this->model = $this->presenter->context->fotky;
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/vyber.phtml');
 
@@ -137,7 +146,7 @@ class FotkaControl extends Control
 		}
 		catch(Exception $e)
 		{
-			//Debug::processException($e, true);
+			//Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 	}
@@ -160,6 +169,8 @@ class FotkaControl extends Control
 
 	private function pripravFotku()
 	{
+		$this->model = $this->presenter->context->fotky;
+
 		if( $this->fotka !== false && !($this->fotka instanceof DibiRow) && !is_array($this->fotka) && intval($this->fotka) == $this->fotka )
 		{
 			$this->fotka = $this->model->find($this->fotka)->fetch();
@@ -173,12 +184,13 @@ class FotkaControl extends Control
 				$this->vytvorNahled();
 			}
 			if( !file_exists($soubor) ) throw new Exception('Fotografie neexistuje.');
+
 			$rozmery = getimagesize($soubor);
 			$this->fotka['sirka'] = $rozmery[0];
 			$this->fotka['vyska'] = $rozmery[1];
 
-			$fotogalerie = new Galerie;
-			$jednaGalerie = $fotogalerie->find($this->fotka['id_autora'])->fetch();
+			/*$fotogalerie = $this->presenter->context->galerie;
+			$jednaGalerie = $fotogalerie->find($this->fotka['id_autora'])->fetch();*/
 			$this->fotka['muze_smazat'] = $this->getPresenter()->user->isAllowed('fotky', 'smazat') && ($this->getPresenter()->jeAutor($this->fotka['id_autora']));
 		}
 	}
@@ -189,6 +201,7 @@ class FotkaControl extends Control
 	 */
 	public function renderProfilova($id)
 	{
+		$this->model = $this->presenter->context->fotky;
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/profilova.phtml');
 
@@ -216,7 +229,7 @@ class FotkaControl extends Control
 		catch(DibiException $e)
 		{
 			$this->getPresenter()->flashMessage('Fotku se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 		$this->getPresenter()->invalidateControl('flashes');

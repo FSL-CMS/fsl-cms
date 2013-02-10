@@ -15,7 +15,7 @@
 		<td>{$zavod['terce']}</td>
 		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:edit, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Upravit informace o závodu" class="edit">Upravit</a></td>{/if}
 		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:delete, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Odstranit závod" class="delete ajax">Smazat</a></td>{/if}
-		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:vysledky, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Upravit výsledky" class="edit">Upravit</a></td>{/if}
+		{if $zavody['muze_editovat'] == true}<td><a href="{plink Zavody:pridatVysledky, 'id' => $zavod['id'], 'backlink' => $backlink}" title="Upravit výsledky" class="edit">Upravit</a></td>{/if}
 	</tr>
 	{/foreach}
 	</tbody>

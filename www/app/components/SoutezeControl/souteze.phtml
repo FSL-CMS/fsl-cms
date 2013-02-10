@@ -7,7 +7,7 @@
 	</h2>
 	<ul>
 		{foreach $zavody as $zavod}
-		<li class="zavod{if $zavod['zruseno'] == true} zruseny{/if}{if $zavod['vysledky'] == 1} byl{/if}{if $zavod['lze_prihlasit'] == 1} je{/if}"><span class="stav">{if $zavod['vysledky'] == 1}&check;{/if}{if $zavod['lze_prihlasit'] == 1}!{/if}</span><a href="{plink Zavody:zavod, $zavod->id}" title="Zobrazit informace o závodu"><span class="nazev">{$zavod->nazev}</span> <span class="datum">{$zavod->datum|date:'%d.%m.'}</span></a></li>
+		<li class="zavod{if $zavod['zruseno'] == true} zruseny{/if}{if $zavod['vysledky'] == 1} byl{/if}{if $zavod['lze_prihlasit'] == 1} je{/if}"><span class="stav">{if $zavod['vysledky'] == 1}&check;{/if}{if $zavod['lze_prihlasit'] == 1}!{/if}</span><a href="{plink Zavody:zavod, $zavod->id}" title="Zobrazit informace o závodu"><span class="nazev">{$zavod->nazev}</span> <span class="datum">{$zavod->datum|date:'%d. %m.'}</span></a></li>
 		{/foreach}
 	</ul>
 	{if $control->celkove_vysledky == true}

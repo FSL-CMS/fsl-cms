@@ -5,7 +5,7 @@
 	<div class="galerie-nahled-telo">
 	{if count($fotky['fotky'])}
 	{foreach $fotky['fotky'] as $fotka}
-		{widget fotka:nahled $fotka}
+		{control fotka:nahled $fotka}
 	{/foreach}
 {elseif $galerie['typ'] == Galerie::$TYP_RAJCE}
 	<p>Náhled fotek není, galerie je vložená ze serveru Rajče.cz.</p>

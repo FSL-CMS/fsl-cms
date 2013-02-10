@@ -13,17 +13,18 @@
  */
 class AktualizaceDB extends BaseModel
 {
-
-	/** @var DibiConnection */
-	protected $connection;
-
 	/** @var string $SQL_PATH Cesta k inicializačním skriptům. */
 	private static $SQL_PATH;
 
-	public function __construct()
+	public function __construct(\DibiConnection $connection)
 	{
-		$this->connection = dibi::getConnection();
-		self::$SQL_PATH = APP_DIR.'/models/sql';
+		parent::__construct($connection);
+		self::$SQL_PATH = __DIR__.'/sql';
+	}
+
+	public function getConnection()
+	{
+		return $this->connection;
 	}
 
 	/**
@@ -48,10 +49,10 @@ class AktualizaceDB extends BaseModel
 		// Nahraje data nutná pro provoz aplikace.
 		$this->connection->loadFile(self::$SQL_PATH.'/data2.sql');
 
-		$temataModel = new Temata;
+		$temataModel = Nette\Environment::getService('temata');
 		$temataModel->udrzba();
 
-		$strankyModel = new Stranky;
+		$strankyModel = Nette\Environment::getService('stranky');
 		$strankyModel->udrzba();
 	}
 
@@ -179,6 +180,11 @@ class AktualizaceDB extends BaseModel
 	private function from6to7()
 	{
 		$this->connection->loadFile(self::$SQL_PATH.'/updates/6to7.sql');
+	}
+
+	private function from7to8()
+	{
+		$this->connection->loadFile(self::$SQL_PATH.'/updates/7to8.sql');
 	}
 
 }

@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter míst
@@ -18,11 +18,12 @@ class MistaPresenter extends BasePresenter
 	/** @persistent */
 	public $backlink = '';
 
-	protected $model = NULL;
+	/** @var Mista */
+	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Mista;
+		$this->model = $this->context->mista;
 		parent::startup();
 	}
 
@@ -61,7 +62,7 @@ class MistaPresenter extends BasePresenter
 
 		//$form->getElementPrototype()->class('ajax');
 
-		$okresyModel = new Okresy;
+		$okresyModel = $this->context->okresy;
 
 		$form->addHidden('backlink');
 
@@ -77,12 +78,12 @@ class MistaPresenter extends BasePresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -127,7 +128,7 @@ class MistaPresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Místo se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 
@@ -143,7 +144,7 @@ class MistaPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Místo se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

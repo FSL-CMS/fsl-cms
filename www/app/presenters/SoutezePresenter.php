@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter soutěží
@@ -18,11 +18,12 @@ class SoutezePresenter extends SecuredPresenter
 	/** @persistent */
 	public $backlink = '';
 
-	protected $model = NULL;
+	/** @var Souteze */
+	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Souteze;
+		$this->model = $this->context->souteze;
 		parent::startup();
 	}
 
@@ -47,7 +48,7 @@ class SoutezePresenter extends SecuredPresenter
 
 	public function createComponentSoutezeForm($name)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Nette\Application\UI\Form($this, $name);
 
 		$form->getElementPrototype()->class('ajax');
 
@@ -60,10 +61,10 @@ class SoutezePresenter extends SecuredPresenter
 		}
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'soutezeFormSubmitted');
+		$form->onSuccess[] = array($this, 'soutezeFormSubmitted');
 	}
 
-	public function soutezeFormSubmitted(AppForm $form)
+	public function soutezeFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
@@ -84,7 +85,7 @@ class SoutezePresenter extends SecuredPresenter
 
 	public function renderEdit($id = 0)
 	{
-		$kategorieModel = new Kategorie;
+		$kategorieModel = $this->context->kategorie;
 		$this->template->body = array('body' => array());
 		$this->template->kategorie = array('kategorie' => array());
 		$this->template->kategorie['kategorie'] = $kategorieModel->findAll();
@@ -104,8 +105,8 @@ class SoutezePresenter extends SecuredPresenter
 	{
 		$id = $this->getParam('id');
 		$form = new RequestButtonReceiver($this, $name);
-		$bodoveTabulkyModel = new BodoveTabulky;
-		$kategorieModel = new Kategorie;
+		$bodoveTabulkyModel = $this->context->bodoveTabulky;
+		$kategorieModel = $this->context->kategorie;
 		$kategorie = $kategorieModel->findAllToSelect()->fetchPairs('id', 'nazev');
 
 		$bodoveTabulky = $bodoveTabulkyModel->findAllToSelect()->fetchPairs('id','nazev');
@@ -142,10 +143,10 @@ class SoutezePresenter extends SecuredPresenter
 		$form->addRequestButtonBack('back', 'Vrátit se zpět')
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -156,8 +157,8 @@ class SoutezePresenter extends SecuredPresenter
 		elseif($form['save']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			$data = $form->getValues();
-			$kategorieModel = new Kategorie;
-			$kategorieSoutezeModel = new KategorieSouteze;
+			$kategorieModel = $this->context->kategorie;
+			$kategorieSoutezeModel = $this->context->kategorieSouteze;
 			try
 			{
 				$dataDoDb = array('nazev' => $data['nazev'], 'popis' => $data['popis'], /*'platnost_od' => $data['platnost_od'], 'platnost_do' => $data['platnost_do']*/);
@@ -198,7 +199,7 @@ class SoutezePresenter extends SecuredPresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Soutěž se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			catch(AlreadyExistException $e)
 			{
@@ -217,7 +218,7 @@ class SoutezePresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Místo se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

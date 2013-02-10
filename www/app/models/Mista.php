@@ -17,14 +17,6 @@ class Mista extends BaseModel
 	/** @var string */
 	protected $table = 'mista';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('[mista].[id] = %i', $id);
@@ -33,19 +25,19 @@ class Mista extends BaseModel
 	public function findAll()
 	{
 		return $this->connection
-					 ->select('[mista].[id], [mista].[obec], [okresy].[nazev] AS [okres], [mista].[id_okresu]')
-					 ->from($this->table)
-					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
-					 ->orderBy('[obec]');
+						->select('[mista].[id], [mista].[obec], [okresy].[nazev] AS [okres], [mista].[id_okresu]')
+						->from($this->table)
+						->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
+						->orderBy('[obec]');
 	}
 
 	public function findAllToSelect()
 	{
 		return $this->connection
-					 ->select('[mista].[id], CONCAT([mista].[obec], " (", [okresy].[zkratka], ")") AS [nazev]')
-					 ->from($this->table)
-					 ->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
-					 ->orderBy('[obec]');
+						->select('[mista].[id], CONCAT([mista].[obec], " (", [okresy].[zkratka], ")") AS [nazev]')
+						->from($this->table)
+						->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
+						->orderBy('[obec]');
 	}
 
 	public function findByOkres($id)
@@ -55,15 +47,13 @@ class Mista extends BaseModel
 
 	public function delete($id, $force = 0)
 	{
-		if ($force == 0 || $force == 1)
+		if($force == 0 || $force == 1)
 		{
-			$sbory = new Sbory;
-			if ($sbory->findByMisto($id)->count() > 0)
-				throw new RestrictionException('Nelze odstranit místo, existuje v něm sbor.');
+			$sbory = Nette\Environment::getService('sbory');
+			if($sbory->findByMisto($id)->count() > 0) throw new RestrictionException('Nelze odstranit místo, existuje v něm sbor.');
 
-			$sportoviste = new Sportoviste;
-			if($sportoviste->findByMisto($id)->count() > 0)
-				throw new RestrictionException('Nelze odstranit místo, je v něm sportoviště.');
+			$sportoviste = Nette\Environment::getService('sportoviste');
+			if($sportoviste->findByMisto($id)->count() > 0) throw new RestrictionException('Nelze odstranit místo, je v něm sportoviště.');
 		}
 
 		return parent::delete($id)->execute();
@@ -81,10 +71,8 @@ class Mista extends BaseModel
 		}
 		catch (DibiException $e)
 		{
-			if ($e->getCode() == 1062)
-				throw new AlreadyExistException();
-			else
-				throw $e;
+			if($e->getCode() == 1062) throw new AlreadyExistException();
+			else throw $e;
 		}
 	}
 
@@ -96,10 +84,8 @@ class Mista extends BaseModel
 		}
 		catch (DibiException $e)
 		{
-			if ($e->getCode() == 1062)
-				throw new AlreadyExistException();
-			else
-				throw $e;
+			if($e->getCode() == 1062) throw new AlreadyExistException();
+			else throw $e;
 		}
 	}
 

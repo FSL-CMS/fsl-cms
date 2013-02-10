@@ -19,14 +19,6 @@ class Kategorie extends BaseModel
 	/** @var string */
 	protected $table = 'kategorie';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection
@@ -34,7 +26,7 @@ class Kategorie extends BaseModel
 			->from($this->table)
 			->orderBy('[poradi]');
 	}
-	
+
 	public function findBySoutez($id)
 	{
 		return $this
@@ -44,7 +36,7 @@ class Kategorie extends BaseModel
 			->leftJoin('[kategorie] ON [kategorie].[id] = [kategorie_souteze].[id_kategorie]')
 			->where('[kategorie_souteze].[id_souteze] = %i', $id);
 	}
-	
+
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
@@ -69,13 +61,13 @@ class Kategorie extends BaseModel
 			if($e->getCode() == 1062) throw new AlreadyExistException();
 			else throw $e;
 		}
-	
+
 	}
-	
+
 	public function update($id, array $data)
 	{
 		try
-		{	
+		{
 			return parent::update($id, $data)->execute();
 		}
 		catch(DibiException $e)
@@ -89,15 +81,15 @@ class Kategorie extends BaseModel
 	{
 		if( $force == 0 )
 		{
-			$druzstvaModel = new Druzstva;
+			$druzstvaModel = Nette\Environment::getService('druzstva');
 			$druzstva = $druzstvaModel->findByKategorieToSelect($id);
 			if( $druzstva->count() != 0 ) throw new RestrictionException('Kategorii nelze odstranit, existují k ní družstva.');
 
-			$startovniPoradiModel = new StartovniPoradi();
+			$startovniPoradiModel = Nette\Environment::getService('startovniPoradi');
 			$startovniPoradi = $startovniPoradiModel->findByKategorie($id);
 			if( $startovniPoradi->count() != 0 ) throw new RestrictionException('Kategorii nelze odstranit, jsou pro ni pořádány závody.');
 		}
 		return parent::delete($id)->execute();
 	}
-	
+
 }

@@ -1,6 +1,7 @@
 {* Šablona s náhledem fotky *}
 
 {if $control->fotka !== false}
+{dump $control->fotka}
 	<div class="fotka-nahled">
 		<div class="odkazy-ve-fotce">
 			{if $control->fotka['muze_smazat']}<a href="{link smazat! $control->fotka['id']}" class="ajax delete">Smazat</a>{/if}

@@ -6,6 +6,9 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\UI\Form;
+use Nette\Application\ForbiddenRequestException;
+
 define('FACEBOOK_APP_ID', '119774764702049');
 define('FACEBOOK_SECRET', 'e3a689dd77880081fb9b4380da243f0f');
 
@@ -19,12 +22,12 @@ class UzivatelePresenter extends BasePresenter
 
 	/** @persistent */
 	public $backlink = '';
-	
+
 	protected $model;
-	
+
 	protected function startup()
 	{
-		$this->model = new Uzivatele;
+		$this->model = $this->presenter->context->uzivatele;
 		parent::startup();
 	}
 
@@ -35,11 +38,11 @@ class UzivatelePresenter extends BasePresenter
 			throw new ForbiddenRequestException();
 		}
 	}
-	
+
 	public function renderDefault()
 	{
 		$this->template->uzivatele = array();
-		
+
 		$this->template->uzivatele['muze_editovat'] = $this->user->isAllowed('uzivatele', 'edit');
 		$this->template->uzivatele['muze_pridavat'] = $this->user->isAllowed('uzivatele', 'add');
 		$this->template->uzivatele['uzivatele'] = $this->model->findAll()->fetchAll();
@@ -47,14 +50,14 @@ class UzivatelePresenter extends BasePresenter
 		{
 			$uzivatel['muze_mazat'] = false;
 		}
-		
+
 		$this->setTitle('Správa uživatelů');
 	}
 
 	public function actionUzivatel($id = 0)
 	{
 		if( $id == 0 ) $this->redirect('default');
-		
+
 		if( !$this->model->find($id)->fetch() ) throw new BadRequestException('Hledaný uživatel neexistuje');
 	}
 
@@ -63,48 +66,48 @@ class UzivatelePresenter extends BasePresenter
 	{
 		$this->template->uzivatel = $this->model->find($id)->fetch();
 
-		$clankyModel = new Clanky;
+		$clankyModel = $this->presenter->context->clanky;
 		$this->template->uzivatel['clanky'] = $clankyModel->findByAutor($id);
 
           $this->template->uzivatel['muze_editovat'] = $this->user->isAllowed('uzivatele', 'edit') || ($this->user->getIdentity() !== NULL && $this->template->uzivatel['id'] == $this->user->getIdentity()->id);
-		
+
 		$this->setTitle('Uživatel '.$this->template->uzivatel['jmeno'].' '.$this->template->uzivatel['prijmeni']);
   	}
 
 	public function actionAdd()
 	{
 		if( $this->user === NULL || !$this->user->isAllowed('uzivatele', 'add') ) throw new ForbiddenRequestException();
-		
+
 		$this->setView('edit');
-	}  	
+	}
 
 	public function actionEdit($id = 0)
 	{
 		parent::actionEdit($id);
 
 		if( $id != 0 && !$this->model->find($id)->fetch() ) throw new BadRequestException();
-	}	
-	
+	}
+
 	public function renderEdit($id = 0, $backlink = NULL, $facebook = false)
 	{
 		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
-	
+
 		$this->template->facebook = $facebook;
 		if( $facebook == true )
 		{
 			$apiKey = '755802d99e8b08b04bea91d60a5f235e';
 			$apiSecret = 'e3a689dd77880081fb9b4380da243f0f';
-			
+
 			include_once LIBS_DIR."/facebook-platform/php/facebook.php";
-			
+
 			$fb = new Facebook($apiKey, $apiSecret);
 
 			$fbUserId = $fb->user;
-			
+
 			$this['editForm']['facebook']['facebookId']->setDefaultValue($fbUserId);
 			if( !empty($fbUserId) ) $this['editForm']['facebook']->addCheckbox('jeFacebook', 'Účet svázán s Facebook účtem')->setValue(true);
 		}
-		
+
 		if($id == 0) $this->setTitle('Přidání nového uživatele');
 		else $this->setTitle('Úprava informací o uživateli');
 	}
@@ -113,15 +116,13 @@ class UzivatelePresenter extends BasePresenter
 	{
 		$id = (int)$this->getParam('id', 0);
 		$facebook = (int)$this->getParam('facebook', false);
-		
+
 		$form = new RequestButtonReceiver($this, 'editForm');
-		$uzivatele = new Uzivatele;
-		$sbory = new Sbory;
-		$funkce_rady = new FunkceRady;
+		$uzivatele = $this->context->uzivatele;
+		$sbory = $this->context->sbory;
+		$funkce_rady = $this->context->funkceRady;
 		$backlink = $this->getApplication()->storeRequest();
-		
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
-		
+
 		$form->addGroup('Informace o uživateli');
 		$form->addText('jmeno', 'Jméno')
 			->addRule(Form::FILLED, 'Je nutné vyplnit jméno.')
@@ -134,9 +135,9 @@ class UzivatelePresenter extends BasePresenter
 			->addRule(Form::FILLED, 'Je nutné vyplnit e-mail.')
 			->addRule(Form::MAX_LENGTH, 'E-mail může mít maximálně %d znaků.', 50)
 			->addCondition(Form::FILLED)
-				->addRule(Form::EMAIL, 'Špatný tvar e-mailové adresy.');			
-		$form->addSelect('id_sboru', 'Sbor', array(0=>'Vyberte sbor')+$sbory->findAlltoSelect()->fetchPairs('id', 'nazev'))
-			->skipFirst()
+				->addRule(Form::EMAIL, 'Špatný tvar e-mailové adresy.');
+		$form->addSelect('id_sboru', 'Sbor', $sbory->findAlltoSelect()->fetchPairs('id', 'nazev'))
+			->setPrompt('Vyberte sbor')
 			->addRule(Form::FILLED, 'Je nutné vybrat příslušnost ke sboru.')
 			->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
 		if( $this->user->isAllowed('funkcerady', 'edit') )
@@ -144,13 +145,13 @@ class UzivatelePresenter extends BasePresenter
 			$form->addSelect('id_funkce', 'Funkce v radě', array(0=>'žádná')+$funkce_rady->findAllToSelect()->fetchPairs('id', 'nazev'))
 				->setOption('description', $form->addRequestButton('addFunkceRady', 'Přidat novou', 'FunkceRady:edit'));
 		}
-		$form->addTexylaTextArea('kontakt', 'Kontakt');			
+		$form->addTexylaTextArea('kontakt', 'Kontakt');
 
 		$form->addGroup('Přihlašovací informace');
 		if( $facebook == false )
 		{
 			$opravneni = array('user' => 'běžný uživatel', 'author' => 'autor', 'admin' => 'správce');
-		
+
 			$form->addPassword('heslo1', 'Nové heslo')
 				->addCondition(Form::FILLED)
 					->addRule(Form::MIN_LENGTH, 'Heslo by mělo mít aspoň %d znaků.', 5);
@@ -163,7 +164,7 @@ class UzivatelePresenter extends BasePresenter
 					->setDefaultValue('user')
 					->addRule(Form::FILLED, 'Uživatelské oprávnění musí být vyplněno.');
 			}
-			
+
 			if( $this->getAction() == 'add' ) $form['heslo1']->addRule(Form::FILLED, 'Je nutné vyplnit heslo.');
 			if( $this->getAction() == 'add' ) $form['heslo2']->addRule(Form::FILLED, 'Je nutné vyplnit heslo.');
 		}
@@ -175,20 +176,20 @@ class UzivatelePresenter extends BasePresenter
 				->setValue('Přihlašování probíhá prostřednictvím účtu na Facebooku. Přihlašovací jméno i heslo není potřeba.')
 				->setDisabled('true');
 		}
-		
+
 		$form->addGroup('Uložení');
-		
+
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(FALSE);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -238,12 +239,12 @@ class UzivatelePresenter extends BasePresenter
 			catch (DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit informace o uživateli.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
-		
+
 		$this->getApplication()->restoreRequest($this->backlink);
-		
+
 		if($id != 0) $this->redirect('Uzivatele:uzivatel', $id);
 		else $this->redirect('Uzivatele:default');
 	}
@@ -260,7 +261,7 @@ class UzivatelePresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Uživatele se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->redirect('default');
 		}
 		catch(RestrictionException $e)
@@ -275,20 +276,20 @@ class UzivatelePresenter extends BasePresenter
 		$this->setTitle('Chyba při přihlášení');
 		$this->template->email = $email;
 	}
-	
+
 	protected function createComponentZapomenuteUdajeForm($name)
 	{
-		$form = new AppForm($this, $name);
-		
-		$form->getElementPrototype()->class('ajax');		
-		
+		$form = new Nette\Application\UI\Form($this, $name);
+
+		$form->getElementPrototype()->class('ajax');
+
 		$form->addText('email', 'Email zadaný při registraci')
 			->addRule(Form::FILLED, 'Je nutné vyplnit email.');
 
 		$form->addSubmit('send', 'Vytvořit nové heslo');
 
-		$form->onSubmit[] = array($this, 'zapomenuteUdajeFormSubmitted');
-	}	
+		$form->onSuccess[] = array($this, 'zapomenuteUdajeFormSubmitted');
+	}
 
 	public function zapomenuteUdajeFormSubmitted($form)
 	{
@@ -298,13 +299,13 @@ class UzivatelePresenter extends BasePresenter
 			if( !$uzivatel ) throw new UserNotFoundException('Uživatel s tímto emailem nebyl nalezen. "Registrovat se!":'.$this->getPresenter()->link('Uzivatele:add'));
 
 			$heslo = $this->model->noveHeslo($form['email']->value);
-			
+
 			$mail = new Mail;
 			$mail->setFrom('zapomenuteheslo@'.$_SERVER['SERVER_NAME']);
 			$mail->addTo($form['email']->value);
 			$mail->setBody('Nové heslo pro účet '.$form['email']->value.' je '.$heslo.'.');
 			$mail->send();
-			
+
 			$this->boxFlashMessage('Nové heslo bylo úspěšně odesláno na email *'.$form['email']->value.'*.', 'ok');
 			$this->invalidateControl('obnoveniHesla');
 		}
@@ -324,12 +325,12 @@ class UzivatelePresenter extends BasePresenter
 			Debug::processException($e);
 			$this->invalidateControl('obnoveniHesla');
 		}
-	}	
-	
+	}
+
 	public function renderZapomenuteUdaje($email = '')
 	{
 		if( $email != '') $this['zapomenuteUdajeForm']['email']->setValue($email);
-		$this->getPresenter()->setLayout(null);		
+		$this->getPresenter()->setLayout(null);
 	}
 
 	public function actionRegistrovatFacebook()
@@ -354,9 +355,9 @@ class UzivatelePresenter extends BasePresenter
 			try {
 			// Proceed knowing you have a logged in user who's authenticated.
 				$userProfile = $facebook->api('/me');
-				
+
 				$uzivatel = $this->model->findByEmail($userProfile['email'])->fetch();
-				
+
 				if( $uzivatel !== false && !empty($uzivatel->facebookId) )
 				{
 					if( $uzivatel->facebookId == $userProfile['id'] ) $this->prihlas(array('facebookId' => $userProfile['id']));
@@ -383,7 +384,7 @@ class UzivatelePresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se provést úpravu údajů uživatelského účtu.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 			catch (FacebookApiException $e)
 			{
@@ -396,5 +397,5 @@ class UzivatelePresenter extends BasePresenter
 			$this->flashMessage('Nepodařilo se načíst údaje Facebook účtu.', 'warning');
 		}
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 {if $uzivatele['muze_pridavat'] == true}<p><a href="{plink add}" class="add">Přidat nového uživatele</a></p>{/if}
 
@@ -8,7 +8,7 @@
 	<tr>
 	     <th>Jméno a příjmení</th><th>Sbor</th><th>Email</th><th>Oprávnění</th>{if $uzivatele['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
 	</tr>
-</thead>	
+</thead>
 <tbody>
 	{foreach $uzivatele['uzivatele'] as $uzivatel}
 		<tr>

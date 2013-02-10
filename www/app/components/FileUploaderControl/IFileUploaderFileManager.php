@@ -15,5 +15,5 @@
  */
 interface IFileUploaderFileManager
 {
-	public function save(HttpUploadedFile $soubor);
+	public function save(Nette\Http\FileUpload $soubor);
 }

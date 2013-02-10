@@ -10,5 +10,6 @@
 // nebo pokud se přesměrování schválně vypne
 
 header('HTTP/1.1 500 Internal Server Error');
+header('Content-Type: text/html; charset=utf-8');
 
 echo "Došlo k technickým problémům, na jejich odstranění pracujeme.";

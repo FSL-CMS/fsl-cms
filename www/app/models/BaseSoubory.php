@@ -18,11 +18,8 @@ class BaseSoubory extends BaseModel
 	/** @var string */
 	protected $table = 'soubory';
 
-	/** @var DibiConnection */
-	protected $connection;
-
 	/** @var string Cesta ke složce se soubory */
-	protected $cestaKsouborum;
+	protected $cestaKsouborum = DATA_DIR;
 
 	protected $soubor = NULL;
 
@@ -35,10 +32,8 @@ class BaseSoubory extends BaseModel
 	/** @var int */
 	protected $id_autora = NULL;
 
-	public function __construct(HttpUploadedFile $soubor = NULL)
+	public function setSoubor(Nette\Http\FileUpload $soubor)
 	{
-		$this->connection = dibi::getConnection();
-		$this->cestaKsouborum = APP_DIR.'/../data/';
 		$this->soubor = $soubor;
 	}
 
@@ -100,7 +95,7 @@ class BaseSoubory extends BaseModel
 		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'nazev' => $casti['filename'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
 		$id_souboru = $this->lastInsertedId();
 
-		if( $this->soubor->move($this->cestaKsouborum.$id_souboru.'.'.$casti['extension']) == false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
+		if( $this->soubor->move($this->cestaKsouborum.'/'.$id_souboru.'.'.$casti['extension']) == false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');
 
 		return $id_souboru;
 	}

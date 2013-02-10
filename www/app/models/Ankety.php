@@ -16,35 +16,26 @@
 class Ankety extends BaseModel
 {
 	/** @var string */
-	protected $table = 'poll_control_questions';
+	protected $table = 'pollie_questions';
 
-	/** @var DibiConnection */
-	protected $connection;
-	
-
-	public function __construct(HttpUploadedFile $fotka = NULL)
-	{
-		$this->connection = dibi::getConnection();
-	}
-	
 	public function findAll()
 	{
 		return $this->connection->select('*')->from($this->table)->orderBy('[datum_zverejneni] ASC');
 	}
-	
+
 	public function find($id)
 	{
-		return $this->connection->select('*')->from($this->table)->leftJoin('poll_control_answers ON [poll_control_answers].[questionId] = [poll_control_questions].[id]')->where('[poll_control_questions].[id] = %i', $id);
+		return $this->connection->select('*')->from($this->table)->leftJoin('pollie_answers ON [pollie_answers].[questionId] = [pollie_questions].[id]')->where('[pollie_questions].[id] = %i', $id);
 	}
-	
+
 	public function findOdpovediByAnketa($id)
 	{
 		return $this->connection
 			->select('*')
-			->from('poll_control_answers')
+			->from('pollie_answers')
 			->where('[questionID] = %i', $id);
 	}
-	
+
 	/**
 	 * Přidá odpověď k anketě
 	 * @param int $id ID ankety
@@ -54,9 +45,9 @@ class Ankety extends BaseModel
 	public function pridejOdpoved($id, $data)
 	{
 		$data['questionId'] = $id;
-		return $this->connection->insert('poll_control_answers', $data)->execute(Dibi::IDENTIFIER);
+		return $this->connection->insert('pollie_answers', $data)->execute(Dibi::IDENTIFIER);
 	}
-	
+
 	/**
 	 * Upraví odpověď ankety
 	 * @param $id ID odpovědi
@@ -65,12 +56,12 @@ class Ankety extends BaseModel
 	 */
 	public function upravOdpoved($id, $data)
 	{
-		return $this->connection->update('poll_control_answers', $data)->where('[id] = %i', $id)->execute();
+		return $this->connection->update('pollie_answers', $data)->where('[id] = %i', $id)->execute();
 	}
-	
+
 	public function smazOdpoved($id)
 	{
-		return $this->connection->delete('poll_control_answers')->where('[id] = %i', $id)->execute();
+		return $this->connection->delete('pollie_answers')->where('[id] = %i', $id)->execute();
 	}
 
 	public function update($id, array $data)
@@ -96,5 +87,5 @@ class Ankety extends BaseModel
 		$nalezeno = $this->connection->fetch('SELECT [id] FROM %n', $this->table, 'WHERE [datum_zverejneni] IS NOT NULL AND [id] = %i', $id);
 		return (bool)$nalezeno;
 	}
-	
+
 }

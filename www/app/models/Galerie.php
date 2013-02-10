@@ -37,10 +37,10 @@ class Galerie extends Zverejnovane
 	public static $VIDEO_FACEBOOK = 'facebook';
 	public static $VIDEO_STREAM = 'stream';
 
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
+	public function __construct(\DibiConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
 	public function findAll()
 	{
@@ -85,8 +85,8 @@ class Galerie extends Zverejnovane
 
 	public function delete($id, $force = 0)
 	{
-		$fotky = new Fotky;
-		$videa = new Videa;
+		$fotky = Nette\Environment::getService('fotky');
+		$videa = Nette\Environment::getService('videa');
 
 		if($force == 0)
 		{
@@ -111,10 +111,10 @@ class Galerie extends Zverejnovane
 
 	public function truncate($id, $force = 0)
 	{
-		$fotky = new Fotky;
+		$fotky = Nette\Environment::getService('fotky');
 		$fotky->deleteByGalerie($id);
 
-		$videa = new Videa;
+		$videa = Nette\Environment::getService('videa');
 		$videa->deleteByGalerie($id);
 	}
 
@@ -126,7 +126,7 @@ class Galerie extends Zverejnovane
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Galerie', 'galerie', $id, $data['uri']);
 		}
 		return $ret;
@@ -138,7 +138,7 @@ class Galerie extends Zverejnovane
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Galerie', 'galerie', $id, $data['uri']);
 		}
 		return $r;

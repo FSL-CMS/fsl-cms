@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Model sledování
  *
@@ -19,31 +17,23 @@ class Sledovani extends BaseModel
 	/** @var string */
 	protected $table = 'sledovani';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function findAll()
 	{
 		return $this->connection
-			->select('[sledovani].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[nazev], " ", [mista].[obec]) AS [uzivatel], [sledovani].[id_uzivatele], [sledovani].[tabulka], [sledovani].[id_radku]')
-			->from($this->table)
-			->leftJoin('[uzivatele] ON [uzivatele].[id] = [sledovani].[id_uzivatele]')
-			->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
-			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
-			->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]');
+						->select('[sledovani].[id], CONCAT([uzivatele].[jmeno], " ", [uzivatele].[prijmeni], ", ", [typy_sboru].[nazev], " ", [mista].[obec]) AS [uzivatel], [sledovani].[id_uzivatele], [sledovani].[tabulka], [sledovani].[id_radku]')
+						->from($this->table)
+						->leftJoin('[uzivatele] ON [uzivatele].[id] = [sledovani].[id_uzivatele]')
+						->leftJoin('[sbory] ON [sbory].[id] = [uzivatele].[id_sboru]')
+						->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+						->leftJoin('[mista] ON [mista].[id] = [sbory].[id_mista]');
 	}
 
 	protected function findBy($tabulka, $id)
 	{
 		return $this->connection
-			->select('%n.*', $this->table)
-			->from($this->table)
-			->where('[tabulka] = %s AND [id_radku] = %i', $tabulka, $id);
+						->select('%n.*', $this->table)
+						->from($this->table)
+						->where('[tabulka] = %s AND [id_radku] = %i', $tabulka, $id);
 	}
 
 	public function findByDiskuze($id)
@@ -55,7 +45,7 @@ class Sledovani extends BaseModel
 	{
 		return $this->findBy("temata", $id);
 	}
-	
+
 	protected function deleteBy($tabulka, $id)
 	{
 		return $this->connection->delete($this->table)->where('[tabulka] = %s AND [id_radku] = %i', $tabulka, $id)->execute();
@@ -84,7 +74,7 @@ class Sledovani extends BaseModel
 
 	public function nesledovat($tabulka, $id, $id_uzivatele)
 	{
-		if( $this->jeSledovana($tabulka, $id, $id_uzivatele) )
+		if($this->jeSledovana($tabulka, $id, $id_uzivatele))
 		{
 			$data = array('tabulka%s' => $tabulka, 'id_radku%i' => $id, 'id_uzivatele%i' => $id_uzivatele);
 			return $this->connection->delete($this->table)->where('%and', $data)->execute();
@@ -109,47 +99,47 @@ class Sledovani extends BaseModel
 		{
 			$nazev = '';
 			$text = '';
-			if( $tabulka == 'diskuze' )
+			if($tabulka == 'diskuze')
 			{
-				$model = new Diskuze();
+				$model = Nette\Environment::getService('diskuze');
 				$polozka = $model->find($id)->fetch();
 				$nazev = $polozka['tema_diskuze'];
-				$text = 'Do diskuze '.$nazev.' byla přidána nová odpověď.';
+				$text = 'Do diskuze ' . $nazev . ' byla přidána nová odpověď.';
 			}
-			elseif( $tabulka == 'temata' )
+			elseif($tabulka == 'temata')
 			{
-				$model = new Diskuze();
+				$model = Nette\Environment::getService('diskuze');
 				$polozka = $model->find($id)->fetch();
 				$nazev = $polozka['tema'];
-				$text = 'Do diskuze '.$nazev.' byla přidána nová odpověď.';
+				$text = 'Do diskuze ' . $nazev . ' byla přidána nová odpověď.';
 			}
 			else return;
 
 			$results = $this->findBy($tabulka, $id)->fetchAll();
-			$uzivatele = new Uzivatele;
-			foreach( $results as $result )
+			$uzivatele = Nette\Environment::getService('uzivatele');
+			foreach ($results as $result)
 			{
 				$mailer = new MyMailer;
 				$uzivatel = $uzivatele->find($result->id_uzivatele)->fetch();
 				$mailer->addTo($uzivatel->email, $uzivatel->uzivatel);
-				$mailer->setFrom('sledovani@'.preg_replace('~www\.~', '', $_SERVER['HTTP_HOST']));
+				$mailer->setFrom('sledovani@' . preg_replace('~www\.~', '', $_SERVER['HTTP_HOST']));
 				$mailer->setSubject('Upozornění na nový příspěvek v diskuzi');
 				$mailer->setBody($text);
 				$mailer->send();
 			}
 		}
-		catch(Exception $e)
+		catch (Exception $e)
 		{
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 	}
 
 	public function jeSledovana($tabulka, $id, $id_uzivatele)
 	{
 		return $this->connection
-			->select('[id]')
-			->from($this->table)
-			->where('[tabulka] = %s AND [id_radku] = %i AND [id_uzivatele] = %i', $tabulka, $id, $id_uzivatele)->execute()->fetch() !== false ? true : false;
+						->select('[id]')
+						->from($this->table)
+						->where('[tabulka] = %s AND [id_radku] = %i AND [id_uzivatele] = %i', $tabulka, $id, $id_uzivatele)->execute()->fetch() !== false ? true : false;
 	}
 
 }

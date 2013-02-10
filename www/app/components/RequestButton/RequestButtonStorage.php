@@ -4,12 +4,14 @@
  * @copyright 2009 Petr Procházka
  * @version 0.1
  */
- 
+
 /**
  * Uložný prostor pro stav formuláře přesměrovaného RequestButtonem.
  */
-final class RequestButtonStorage extends Object
+final class RequestButtonStorage extends Nette\Object
 {
+
+	private static $session;
 
 	/**
 	 * Static class - cannot be instantiated.
@@ -18,7 +20,7 @@ final class RequestButtonStorage extends Object
 	{
 		throw new LogicException("Cannot instantiate static class " . get_class($this));
 	}
-	
+
 	/**
 	 * Uloží stav formuláře.
 	 * Vrací klíč pro získání dat.
@@ -115,9 +117,14 @@ final class RequestButtonStorage extends Object
 	 */
 	static private function getSession()
 	{
-	  return Environment::getSession('RequestButtonStorage');
+	  return self::$session;
 	}
-	
+
+	static public function setSession(Nette\Http\SessionSection $session)
+	{
+	  return self::$session = $session;
+	}
+
 	/**
 	 * @param string
 	 * @param string Která data?

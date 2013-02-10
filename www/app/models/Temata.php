@@ -17,14 +17,6 @@ class Temata extends BaseModel
 	/** @var string */
 	protected $table = 'temata';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
@@ -50,7 +42,7 @@ class Temata extends BaseModel
 
 	public function delete($id, $force = false)
 	{
-		$diskuze = new Diskuze;
+		$diskuze = Nette\Environment::getService('diskuze');
 
 		if($force == false)
 		{
@@ -83,7 +75,7 @@ class Temata extends BaseModel
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Forum', 'forum', $id, $data['uri']);
 		}
 	}
@@ -97,7 +89,7 @@ class Temata extends BaseModel
 		$data = $this->constructUri($id, $data);
 		if(isset($data['uri']))
 		{
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			$urlsModel->setUrl('Forum', 'forum', $id, $data['uri']);
 		}
 		return $ret;

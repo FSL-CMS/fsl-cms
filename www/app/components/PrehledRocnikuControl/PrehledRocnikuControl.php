@@ -15,13 +15,14 @@
   */
 class PrehledRocnikuControl extends BaseControl
 {
+	/** @var int */
 	private $rocnik;
+
+	/** @var Rocniky */
 	private $model;
 
 	public function __construct()
 	{
-		$this->model = new Rocniky;
-
 		parent::__construct();
 	}
 
@@ -32,6 +33,8 @@ class PrehledRocnikuControl extends BaseControl
 
 	public function render()
 	{
+		$this->model = $this->presenter->context->rocniky;
+
 		if($this->getPresenter()->user->isAllowed('rocniky', 'edit')) $this->model->zobrazitNezverejnene();
 
 		$template = $this->template;

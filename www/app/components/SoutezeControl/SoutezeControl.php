@@ -17,7 +17,7 @@ class SoutezeControl extends BaseControl
 {
 	private $zavody;
 	private $model;
-	public $rocnik;
+	public $rocnik = NULL;
 
 	private $nadpis;
 	public $celkove_vysledky = false;
@@ -25,16 +25,14 @@ class SoutezeControl extends BaseControl
 
 	public function __construct()
 	{
-		$this->model = new Zavody;
+		parent::__construct();
+
 		if($this->getParam('presenter') == 'Zavody' && $this->getParam('id') !== NULL)
 		{
 			$zavod = $this->model->find($this->getParam('id'))->fetch();
 			if($zavod) $this->setRocnik($zavod['rocnik']);
 			else $this->setRocnik();
 		}
-		else $this->setRocnik();
-
-		parent::__construct();
 	}
 
 	/*public static function getPersistentParams()
@@ -44,7 +42,8 @@ class SoutezeControl extends BaseControl
 
 	private function pripravZavody()
 	{
-		$zavody = new Zavody;
+		if($this->rocnik === NULL) $this->setRocnik();
+		$zavody = $this->model = $this->presenter->context->zavody;
 		$this->zavody = $zavody->findByRocnik( $this->rocnik )->fetchAll();
 		foreach($this->zavody as $id => $zavod)
 		{
@@ -53,8 +52,8 @@ class SoutezeControl extends BaseControl
 			$this->zavody[$id]['lze_prihlasit'] = $zavod['zruseno'] == false && date('Y-m-d H:i:s') >= $datum_prihlasovani_od && date('Y-m-d H:i:s') < $datum_prihlasovani_do;
 		}
 
-		$vysledky = new Vysledky;
-		if( count($vysledky->findByRocnik($this->rocnik)->fetchAll()) != 0 )
+		$vysledkyModel = $this->presenter->context->vysledky;
+		if( count($vysledkyModel->findByRocnik($this->rocnik)->fetchAll()) != 0 )
 		{
 			$this->celkove_vysledky = true;
 		}
@@ -62,11 +61,11 @@ class SoutezeControl extends BaseControl
 
 	public function setRocnik($id = NULL)
 	{
-		$rocniky = new Rocniky;
+		$rocnikyModel = $this->presenter->context->rocniky;
 		if( $id === NULL )
 		{
-			$this->rocnik = (int)$rocniky->findLast()->fetchSingle();
-			$rocnik = $rocniky->find($this->rocnik)->fetch();
+			$this->rocnik = (int)$rocnikyModel->findLast()->fetchSingle();
+			$rocnik = $rocnikyModel->find($this->rocnik)->fetch();
 			if( $rocnik['rok'] == date('Y') ) $this->nadpis = 'Aktuální ročník';
 			//if( $rocnik['rok'] > date('Y') ) $this->nadpis = 'Následující ročník';
 			else $this->nadpis = 'Ročník '.substr($rocnik['rok'], 0, 2).'**'.substr($rocnik['rok'], 2).'**';
@@ -74,17 +73,17 @@ class SoutezeControl extends BaseControl
 		else
 		{
 			$this->rocnik = $id;
-			$rocnik = $rocniky->find($this->rocnik)->fetch();
+			$rocnik = $rocnikyModel->find($this->rocnik)->fetch();
 			$this->nadpis = 'Ročník '.substr($rocnik['rok'], 0, 2).'**'.substr($rocnik['rok'], 2).'**';
 		}
-		$this->relativni['predchozi'] = count($rocniky->findPredchozi($this->rocnik)->fetchAll()) != 0;
-		$this->relativni['nasledujici'] = count($rocniky->findNasledujici($this->rocnik)->fetchAll()) != 0;
+		$this->relativni['predchozi'] = count($rocnikyModel->findPredchozi($this->rocnik)->fetchAll()) != 0;
+		$this->relativni['nasledujici'] = count($rocnikyModel->findNasledujici($this->rocnik)->fetchAll()) != 0;
 	}
 
 	public function handlePredchozi()
 	{
-		$rocniky = new Rocniky;
-		$rocnik = $rocniky->findPredchozi($this->rocnik)->fetch();
+		$rocnikyModel = $this->presenter->context->rocniky;
+		$rocnik = $rocnikyModel->findPredchozi($this->rocnik)->fetch();
 		$this->setRocnik($rocnik['id']);
 
 		$this->invalidateControl();
@@ -92,8 +91,8 @@ class SoutezeControl extends BaseControl
 
 	public function handleNasledujici()
 	{
-		$rocniky = new Rocniky;
-		$rocnik = $rocniky->findNasledujici($this->rocnik)->fetch();
+		$rocnikyModel = $this->presenter->context->rocniky;
+		$rocnik = $rocnikyModel->findNasledujici($this->rocnik)->fetch();
 		$this->setRocnik($rocnik['id']);
 
 		$this->invalidateControl();

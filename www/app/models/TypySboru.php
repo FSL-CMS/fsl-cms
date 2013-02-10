@@ -17,14 +17,6 @@ class TypySboru extends BaseModel
 	/** @var string */
 	protected $table = 'typy_sboru';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
@@ -42,7 +34,7 @@ class TypySboru extends BaseModel
 	{
 		if ($force == 0)
 		{
-			$sbory = new Sbory;
+			$sbory = Nette\Environment::getService('sbory');
 			if ($sbory->findByTyp($id)->count() > 0)
 				throw new RestrictionException('Nelze odstranit typ sboru, existují sbory toho typu.');
 		}

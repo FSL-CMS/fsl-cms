@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Model závodů
  *
@@ -22,10 +20,10 @@ class Zavody extends Zverejnovane
 	/** @var DibiConnection */
 	protected $connection;
 
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
+	public function __construct(\DibiConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
 	public function findIdByUri($uri, $column = 'uri')
 	{
@@ -57,8 +55,9 @@ class Zavody extends Zverejnovane
 			->leftJoin('[okresy] ON [okresy].[id] = [mista].[id_okresu]')
 			->leftJoin('[uzivatele] ON [uzivatele].[id] = [sbory].[id_kontaktni_osoby]')
 			->leftJoin('[ucasti] ON [ucasti].[id_zavodu] = [zavody].[id]')
-			->orderBy('[zavody].[datum]')
-			->groupBy('[zavody].[id]');
+				->groupBy('[zavody].[datum]');
+			//->orderBy('[zavody].[datum]')
+			//->groupBy('[zavody].[id]');
 		if( $this->zverejnene == true ) $dotaz->where('[rocniky].[zverejneny] = 1');
 		return $dotaz;
 	}
@@ -186,8 +185,8 @@ class Zavody extends Zverejnovane
 
 	public function delete($id, $force = 0)
 	{
-		$startovniPoradi = new StartovniPoradi;
-		$vysledky = new Vysledky;
+		$startovniPoradi = Nette\Environment::getService('startovniPoradi');
+		$vysledky = Nette\Environment::getService('vysledky');
 		if($force == 0)
 		{
 			if( $startovniPoradi->findByZavod($id)->count() != 0 ) throw new RestrictionException('Závod nelze odstranit. Jsou k němu přihlášené týmy.');
@@ -228,7 +227,7 @@ class Zavody extends Zverejnovane
 			$id = $this->connection->insertId();
 			$this->lastInsertedId($id);
 			$data = $this->constructUri($id, $data);
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			if(isset($data['uri'])) $urlsModel->setUrl('Zavody', 'zavod', $id, $data['uri']);
 			return $ret;
 		}
@@ -245,7 +244,7 @@ class Zavody extends Zverejnovane
 		{
 			parent::update($id, $data)->execute();
 			$data = $this->constructUri($id, $data);
-			$urlsModel = new Urls;
+			$urlsModel = Nette\Environment::getService('urls');
 			if(isset($data['uri']))
 			{
 				$urlsModel->setUrl('Zavody', 'zavod', $id, '/zavody/'.$data['uri']);
@@ -261,7 +260,7 @@ class Zavody extends Zverejnovane
 
 	public function udrzba()
 	{
-		$vysledky = new Vysledky;
+		$vysledky = Nette\Environment::getService('vysledky');
 		$vsechnyZavody = $this->findAll();
 		foreach( $vsechnyZavody as $zavod )
 		{
@@ -288,13 +287,13 @@ class Zavody extends Zverejnovane
 
 	public function findPoradatele($id)
 	{
-		$sboryModel = new Sbory;
+		$sboryModel = Nette\Environment::getService('sbory');
 		return $sboryModel->findByZavod($id);
 	}
 
 	public function findPoradateleToSelect($id)
 	{
-		$sboryModel = new Sbory;
+		$sboryModel = Nette\Environment::getService('sbory');
 		return $sboryModel->findByZavod($id);
 	}
 

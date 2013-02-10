@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter stránek
@@ -20,7 +20,7 @@ class StrankyPresenter extends BasePresenter
 
 	protected function startup()
 	{
-		$this->model = new Stranky;
+		$this->model = $this->presenter->context->stranky;
 		parent::startup();
 	}
 
@@ -43,7 +43,7 @@ class StrankyPresenter extends BasePresenter
 
 	public function createComponentStrankyForm()
 	{
-		$form = new AppForm;
+		$form = new Nette\Application\UI\Form;
 
 		$form->getElementPrototype()->class('ajax');
 
@@ -56,12 +56,12 @@ class StrankyPresenter extends BasePresenter
 		}
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'strankyFormSubmitted');
+		$form->onSuccess[] = array($this, 'strankyFormSubmitted');
 
 		return $form;
 	}
 
-	public function strankyFormSubmitted(AppForm $form)
+	public function strankyFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
@@ -122,12 +122,12 @@ class StrankyPresenter extends BasePresenter
 		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 

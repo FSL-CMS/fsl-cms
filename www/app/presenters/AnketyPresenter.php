@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter správy anket
@@ -16,12 +16,13 @@
 class AnketyPresenter extends BasePresenter
 {
 
+	/** @var Ankety */
 	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new Ankety;
 		parent::startup();
+		$this->model = $this->context->ankety;
 	}
 
 	/**
@@ -86,14 +87,14 @@ class AnketyPresenter extends BasePresenter
 	{
 		$id = (int) $this->getParam('id');
 
-		$form = new AppForm($this, 'editForm');
+		$form = new Nette\Application\UI\Form($this, 'editForm');
 		$form->addGroup('Informace o anketě');
 		$form->addText('question', 'Otázka', 50, 255)
 			->addRule(Form::FILLED, 'Je nutné vyplnit anketní otázku.')
 			->addRule(Form::MAX_LENGTH, 'Maximální délka otázky je %d znaků.', 255);
 
 		$odpovedi = $this->model->findOdpovediByAnketa($id)->fetchAll();
-		$odpovedi+= array('id' => 'nove');
+		$odpovedi+= array(array('id' => 'nove'));
 		$form->addGroup('Odpovědi');
 		$odpovediCont = $form->addContainer('answers');
 		foreach($odpovedi as $odpoved)
@@ -101,7 +102,7 @@ class AnketyPresenter extends BasePresenter
 			$odpovedCont = $odpovediCont->addContainer($odpoved['id']);
 			$t = $odpovedCont->addText('answer', 'Odpověď', 50, 255);
 			if( intval($odpoved['id']) != 0 )
-				$t->setOption('description', Html::el('a', 'Odebrat!')->href($this->link('smazOdpoved!', array($id, $odpoved['id'])))->class('delete'));
+				$t->setOption('description', Nette\Utils\Html::el('a', 'Odebrat!')->href($this->link('smazOdpoved!', array($id, $odpoved['id'])))->class('delete'));
 		}
 		$form->addSubmit('addNext', 'Přidat další odpoveď');
 
@@ -124,12 +125,12 @@ class AnketyPresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(FALSE);;
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -173,7 +174,7 @@ class AnketyPresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit anketu.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
 			if( !empty($data['souvisejici']) && !empty($data['souvisejici']['souvisejici']) )
@@ -181,7 +182,7 @@ class AnketyPresenter extends BasePresenter
 					$dataDoDB = array('rodic' => 'ankety', 'id_rodice' => $id);
 					$dataDoDB['souvisejici'] = strtolower($data['souvisejici']['souvisejici']);
 					$dataDoDB['id_souvisejiciho'] = $data['souvisejici']['id_souvisejiciho'.$data['souvisejici']['souvisejici']];
-					$souvisejici = new Souvisejici;
+					$souvisejici = $this->context->souvisejici;
 					try
 					{
 						$souvisejici->insert($dataDoDB);
@@ -189,7 +190,7 @@ class AnketyPresenter extends BasePresenter
 					catch(DibiException $e)
 					{
 						$this->flashMessage('Nepodařilo se uložit související položku.', 'error');
-						Debug::processException($e, true);
+						Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 					}
 				}
 

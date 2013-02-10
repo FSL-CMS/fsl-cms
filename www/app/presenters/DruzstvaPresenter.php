@@ -5,8 +5,9 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
-
-
+use Nette\Application\UI\Form;
+use Nette\Application\ForbiddenRequestException,
+	Nette\Application\BadRequestException;
 
 /**
  * Presenter družstev
@@ -15,11 +16,12 @@
  */
 class DruzstvaPresenter extends BasePresenter
 {
+
 	private $model = NULL;
 
 	public function startup()
 	{
-		$this->model = new Druzstva;
+		$this->model = $this->context->druzstva;
 
 		parent::startup();
 	}
@@ -38,21 +40,21 @@ class DruzstvaPresenter extends BasePresenter
 
 	public function actionDruzstvo($id)
 	{
-		if( !$this->model->find($id)->fetch() ) throw new BadRequestException("Družstvo nebylo nalezeno.");
+		if(!$this->model->find($id)->fetch()) throw new BadRequestException("Družstvo nebylo nalezeno.");
 	}
 
 	public function actionAdd()
 	{
-		if( $this->user === NULL || !$this->user->isAllowed('druzstva', 'add') ) throw new ForbiddenRequestException();
+		if($this->user === NULL || !$this->user->isAllowed('druzstva', 'add')) throw new ForbiddenRequestException();
 
 		$this->setView('edit');
 	}
 
 	public function actionEdit($id = 0)
 	{
-		if( $id != 0 && !$this->model->find($id)->fetch() ) throw new BadRequestException("Družstvo nebylo nalezeno.");
+		if($id != 0 && !$this->model->find($id)->fetch()) throw new BadRequestException("Družstvo nebylo nalezeno.");
 
-		if( $this->user === NULL || !$this->user->isAllowed('druzstva', 'edit') ) throw new ForbiddenRequestException();
+		if($this->user === NULL || !$this->user->isAllowed('druzstva', 'edit')) throw new ForbiddenRequestException();
 	}
 
 	public function actionDelete($id)
@@ -62,11 +64,11 @@ class DruzstvaPresenter extends BasePresenter
 			$this->model->delete($id);
 			$this->flashMessage('Družstvo bylo úspěšně smazáno.');
 		}
-		catch(RestrictionException $e)
+		catch (RestrictionException $e)
 		{
 			$this->flashMessage($e->getMessage(), 'warning');
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
 			$this->flashMessage('Nepodařilo se smazat družstvo.', 'error');
 			Debug::processException($e);
@@ -79,81 +81,79 @@ class DruzstvaPresenter extends BasePresenter
 		$this->template->druzstvo = $this->model->find($id)->fetch();
 		$this->template->druzstvo['muze_editovat'] = $this->user->isAllowed('druzstva', 'edit');
 
-		$this->setTitle("Družstvo ".$this->template->druzstvo['nazev']);
+		$this->setTitle("Družstvo " . $this->template->druzstvo['nazev']);
 
 		// Průměrné časy sezón
-		$vysledky = new Vysledky;
-		$this->template->vyznacneCasySezon = $vysledky->vyznacneCasySezonDruzstva($id)->fetchAssoc('kategorie,typ,rok,=');
+		$vysledkyModel = $this->context->vysledky;
+		$this->template->vyznacneCasySezon = $vysledkyModel->vyznacneCasySezonDruzstva($id)->fetchAssoc('kategorie,typ,rok,=');
 
 		// vytvoření pole pro záhlaví tabulky s průměrnými časy sezón
 		$this->template->vyznacneCasySezon_zahlavi = array();
-		foreach($this->template->vyznacneCasySezon as $kategorie => $foo )
+		foreach ($this->template->vyznacneCasySezon as $kategorie => $foo)
 		{
-			$this->template->vyznacneCasySezon_zahlavi[0][0] = array('nazev' => 'Sezóna', 'sirka' => 1, 'vyska'=> 2);
-			$this->template->vyznacneCasySezon_zahlavi[0]['prumer'] = array( 'nazev' => 'Průměrné časy', 'sirka' => count($foo), 'vyska' => 1 );
-			foreach( $foo as $terce => $bar )
+			$this->template->vyznacneCasySezon_zahlavi[0][0] = array('nazev' => 'Sezóna', 'sirka' => 1, 'vyska' => 2);
+			$this->template->vyznacneCasySezon_zahlavi[0]['prumer'] = array('nazev' => 'Průměrné časy', 'sirka' => count($foo), 'vyska' => 1);
+			foreach ($foo as $terce => $bar)
 			{
-				$this->template->vyznacneCasySezon_zahlavi[1]['prumer'.$terce] = array( 'nazev' => $terce, 'sirka' => 1, 'vyska' => 1);
+				$this->template->vyznacneCasySezon_zahlavi[1]['prumer' . $terce] = array('nazev' => $terce, 'sirka' => 1, 'vyska' => 1);
 			}
 		}
 
-		foreach($this->template->vyznacneCasySezon as $kategorie => $foo )
+		foreach ($this->template->vyznacneCasySezon as $kategorie => $foo)
 		{
-			$this->template->vyznacneCasySezon_zahlavi[0]['minimum'] = array( 'nazev' => 'Rekordní časy', 'sirka' => count($foo), 'vyska' => 1 );
-			foreach( $foo as $terce => $bar )
+			$this->template->vyznacneCasySezon_zahlavi[0]['minimum'] = array('nazev' => 'Rekordní časy', 'sirka' => count($foo), 'vyska' => 1);
+			foreach ($foo as $terce => $bar)
 			{
-				$this->template->vyznacneCasySezon_zahlavi[1]['minimum'.$terce] = array( 'nazev' => $terce, 'sirka' => 1, 'vyska' => 1);
+				$this->template->vyznacneCasySezon_zahlavi[1]['minimum' . $terce] = array('nazev' => $terce, 'sirka' => 1, 'vyska' => 1);
 			}
 		}
 
 		$tmp = $this->template->vyznacneCasySezon;
 
 		$this->template->vyznacneCasySezon = array();
-		$j=0;
+		$j = 0;
 		$kategorie = array();
-		foreach( $tmp as $kat => $foo )
+		foreach ($tmp as $kat => $foo)
 		{
-			foreach( $foo as $terce => $bar )
+			foreach ($foo as $terce => $bar)
 			{
-				if( !isset($kategorie[$terce]) ) $kategorie[$terce] = $j++;
-				foreach( $bar as $cas )
+				if(!isset($kategorie[$terce])) $kategorie[$terce] = $j++;
+				foreach ($bar as $cas)
 				{
-					$casy = explode( ',', $cas['casy'] );
-					if( count($casy) > 2 )
+					$casy = explode(',', $cas['casy']);
+					if(count($casy) > 2)
 					{
 						sort($casy);
-						$median = $casy[(int)((count($casy)+1)/2.0)-1];
+						$median = $casy[(int) ((count($casy) + 1) / 2.0) - 1];
 						$cas['prumer'] = $median;
 					}
-					$this->template->vyznacneCasySezon[$cas['rok']]['prumer'][$kategorie[$terce]] = array( 'prumer' => sprintf( "%.2f", $cas['prumer'] ) );
-					$this->template->vyznacneCasySezon[$cas['rok']]['rekord'][$kategorie[$terce]] = array( 'rekord' => sprintf( "%.2f", $cas['rekord'] ) );
-
+					$this->template->vyznacneCasySezon[$cas['rok']]['prumer'][$kategorie[$terce]] = array('prumer' => sprintf("%.2f", $cas['prumer']));
+					$this->template->vyznacneCasySezon[$cas['rok']]['rekord'][$kategorie[$terce]] = array('rekord' => sprintf("%.2f", $cas['rekord']));
 				}
 			}
-
 		}
 		ksort($this->template->vyznacneCasySezon);
 		$this->template->vyznacneCasySezon_oddilu = count($kategorie);
 
-		$zavodyModel = new Zavody;
+		$zavodyModel = $this->context->zavody;
 		$this->template->zavody = $zavodyModel->findAll()->fetchAssoc('sezona,id,=');
-		$this->template->casyDruzstva = $vysledky->findByDruzstvo($id)->fetchAssoc('soutez,sezona,id_zavodu,=');
+		$this->template->casyDruzstva = $vysledkyModel->findByDruzstvo($id)->fetchAssoc('soutez,sezona,id_zavodu,=');
 		$return = array();
 		$pocet_zavodu = 0;
 		$pocet_zavodu_tmp = 0;
-		foreach($this->template->casyDruzstva as $soutez => $foo)
+		foreach ($this->template->casyDruzstva as $soutez => $foo)
 		{
 			$return[$soutez] = array();
-			foreach($this->template->zavody as $sezona => $zavodyVsezone)
+			foreach ($this->template->zavody as $sezona => $zavodyVsezone)
 			{
 				$nulujRocnik = true;
 				$return[$soutez][$sezona] = array();
-				foreach($zavodyVsezone as $id_zavodu => $zavod)
+				foreach ($zavodyVsezone as $id_zavodu => $zavod)
 				{
 					$pocet_zavodu_tmp++;
 					if($zavod['zruseno'] == true) continue;
 					$return[$soutez][$sezona][$id_zavodu] = array();
-					if( isset($this->template->casyDruzstva[$soutez][$sezona][$id_zavodu]) )
+					if(isset($this->template->casyDruzstva[$soutez][$sezona][$id_zavodu]))
 					{
 						$return[$soutez][$sezona][$id_zavodu] = $this->template->casyDruzstva[$soutez][$sezona][$id_zavodu];
 						$nulujRocnik = false;
@@ -169,44 +169,43 @@ class DruzstvaPresenter extends BasePresenter
 
 	public function actionGrafPrumerneCasySezon($id)
 	{
-		if( !$this->model->find($id)->fetch() ) throw new BadRequestException('Požadované družstvo neexistuje.');
+		if(!$this->model->find($id)->fetch()) throw new BadRequestException('Požadované družstvo neexistuje.');
 
 		// Průměrné časy sezón
-		$vysledky = new Vysledky;
+		$vysledky = $this->context->vysledky;
 		$pcsd = $vysledky->casySezonDruzstva($id)->fetchAssoc('kategorie,typ,id,=');
 
-		$j=0;
+		$j = 0;
 		$kategorie = array();
 		$data['rady'] = array();
-		foreach( $pcsd as $kat => $foo )
+		foreach ($pcsd as $kat => $foo)
 		{
-			foreach( $foo as $terce => $bar )
+			foreach ($foo as $terce => $bar)
 			{
 				$tmp = array();
 				$tmp2 = array();
-				if( !isset($kategorie[$kat.$terce]) ) $kategorie[$kat.$terce] = $j++;
-				foreach( $bar as $cas )
+				if(!isset($kategorie[$kat . $terce])) $kategorie[$kat . $terce] = $j++;
+				foreach ($bar as $cas)
 				{
-					$casy = explode( ',', $cas['casy'] );
-					if( count($casy) > 2 )
+					$casy = explode(',', $cas['casy']);
+					if(count($casy) > 2)
 					{
 						sort($casy);
-						$median = $casy[(int)((count($casy)+1)/2.0)-1];
+						$median = $casy[(int) ((count($casy) + 1) / 2.0) - 1];
 						$cas['prumer'] = $median;
 					}
-					$tmp[] = array('nazev' => $cas['rok'], 'hodnota' => (float)sprintf( "%.2f", $cas['prumer'] ));
+					$tmp[] = array('nazev' => $cas['rok'], 'hodnota' => (float) sprintf("%.2f", $cas['prumer']));
 					//$tmp2[] = array('nazev' => $cas['rok'], 'hodnota' => (float)sprintf( "%.2f", $median ));
-
 				}
 				//$data['rady'][] = array('nazev'=>'Časy na '.$terce.' terče - med', 'hodnoty' => $tmp2, 'typ' => 'Line' );
-				$data['rady'][] = array('nazev'=>'Časy na '.$terce.' terče', 'hodnoty' => $tmp, 'typ' => 'Line' );
+				$data['rady'][] = array('nazev' => 'Časy na ' . $terce . ' terče', 'hodnoty' => $tmp, 'typ' => 'Line');
 			}
 		}
-		usort( $data['rady'], array($this, 'sort4chart') );
+		usort($data['rady'], array($this, 'sort4chart'));
 		$data['nazev'] = 'Průměrné časy družstva';
 		$data['sirka'] = 600;
 		$data['vyska'] = 400;
-		$grafy = array( $data );
+		$grafy = array($data);
 
 		echo json_encode($grafy);
 		$this->terminate();
@@ -216,14 +215,14 @@ class DruzstvaPresenter extends BasePresenter
 	{
 		$ca = count($a['hodnoty']);
 		$cb = count($b['hodnoty']);
-		if( $ca > $cb ) return 1;
-		elseif( $ca < $cb ) return -1;
+		if($ca > $cb) return 1;
+		elseif($ca < $cb) return -1;
 		else 0;
 	}
 
 	public function renderEdit($id = 0)
 	{
-		if( $id != 0 && ($zDB = $this->model->find($id)->fetch()) !== false )
+		if($id != 0 && ($zDB = $this->model->find($id)->fetch()) !== false)
 		{
 			$this['editForm']->setDefaults($zDB);
 		}
@@ -235,79 +234,77 @@ class DruzstvaPresenter extends BasePresenter
 		else $this->setTitle('Úprava družstva');
 	}
 
-	public function createComponentEditForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new RequestButtonReceiver;
-		$kategorie = new Kategorie;
-		$sbory = new Sbory;
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form = new RequestButtonReceiver($this, $name);
+		$kategorie = $this->context->kategorie;
+		$sbory = $this->context->sbory;
 
 		$form->addGroup('Informace o družstvu');
 		$form->addSelect('id_kategorie', 'Kategorie', $kategorie->findAllToSelect()->fetchPairs('id', 'nazev'))
-			->addRule(Form::FILLED, 'Je nutné vybrat kategorii.')
-			->setOption('description', $form->addRequestButton('addKategorie', 'Přidat novou', 'Kategorie:edit'));
+				->addRule(Form::FILLED, 'Je nutné vybrat kategorii.')
+				->setOption('description', $form->addRequestButton('addKategorie', 'Přidat novou', 'Kategorie:edit'));
 		$form->addSelect('id_sboru', 'Sbor', $sbory->findAlltoSelect()->fetchPairs('id', 'nazev'))
-			->addRule(Form::FILLED, 'Je nutné vybrat majitele terčů.')
-			->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
+				->addRule(Form::FILLED, 'Je nutné vybrat majitele terčů.')
+				->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
 		$form->addText('poddruzstvo', 'Poddružstvo', 4)
-			->setOption('description', 'A, B, ...');
+				->setOption('description', 'A, B, ...');
 
 		$form->addGroup('Uložení');
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndAdd', 'Uložit a přidat nový');
 		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(false);
+				->setValidationScope(false);
 		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		return $form;
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
-		if( $form['cancel']->isSubmittedBy() )
+		if($form['cancel']->isSubmittedBy())
 		{
-			if( $id == 0 ) $this->redirect('default');
+			if($id == 0) $this->redirect('default');
 			else $this->redirect('druzstvo', $id);
 		}
 		else
 		{
 			$data = $form->getValues();
-			$dataDoDB = array( 'id_kategorie' => (int)$data['id_kategorie'], 'id_sboru' => (int)$data['id_sboru'], 'poddruzstvo' => $data['poddruzstvo']);
+			$dataDoDB = array('id_kategorie' => (int) $data['id_kategorie'], 'id_sboru' => (int) $data['id_sboru'], 'poddruzstvo' => $data['poddruzstvo']);
 
 			try
 			{
-				if( $id == 0 )
+				if($id == 0)
 				{
-					$this->model->insert( $dataDoDB );
+					$this->model->insert($dataDoDB);
 					$id = $this->model->lastInsertedId();
 				}
 				else
 				{
-					$this->model->update( $id, $dataDoDB );
+					$this->model->update($id, $dataDoDB);
 				}
 
 				$this->flashMessage('Družstvo bylo úspěšně uloženo.', 'ok');
 
-				if( $form['save']->isSubmittedBy() ) $this->redirect('edit', $id);
-				elseif( $form['saveAndAdd']->isSubmittedBy() ) $this->redirect('edit');
-				else { $this->redirect('Druzstva:druzstvo', $id); }
+				if($form['save']->isSubmittedBy()) $this->redirect('edit', $id);
+				elseif($form['saveAndAdd']->isSubmittedBy()) $this->redirect('edit');
+				else
+				{
+					$this->redirect('Druzstva:druzstvo', $id);
+				}
 			}
-			catch( DibiException $e )
+			catch (DibiException $e)
 			{
 				$this->flashMessage('Družstvo se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
-			catch(AlreadyExistException $e)
+			catch (AlreadyExistException $e)
 			{
 				$this->flashMessage('Družstvo již existuje.', 'warning');
 			}
 		}
 	}
-
 
 }

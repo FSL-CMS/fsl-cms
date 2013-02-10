@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter sportovišť
@@ -18,11 +18,12 @@ class SportovistePresenter extends SecuredPresenter
 	/** @persistent */
 	//public $backlink = '';
 
+	/** @var Sportoviste */
 	protected $model = NULL;
 
 	protected function startup()
 	{
-		$this->model = new Sportoviste;
+		$this->model = $this->context->sportoviste;
 		parent::startup();
 	}
 
@@ -74,7 +75,7 @@ class SportovistePresenter extends SecuredPresenter
 
 		//$form->getElementPrototype()->class('ajax');
 
-		$mistaModel = new Mista;
+		$mistaModel = $this->context->mista;
 
 		$form->addHidden('backlink');
 
@@ -96,10 +97,10 @@ class SportovistePresenter extends SecuredPresenter
 		$form->addRequestButtonBack('back', 'Vrátit se zpět')
 			->setValidationScope(false);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
@@ -136,7 +137,7 @@ class SportovistePresenter extends SecuredPresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Místo se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 	}
@@ -151,7 +152,7 @@ class SportovistePresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Místo se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		catch(RestrictionException $e)
 		{

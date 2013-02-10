@@ -5,8 +5,7 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
-
-
+use Nette\Diagnostics\Debugger;
 
 /**
  * Presenter chyb
@@ -22,27 +21,26 @@ class ErrorPresenter extends BasePresenter
 	 */
 	public function actionDefault($exception)
 	{
-		if ($this->isAjax())
+		if($this->isAjax())
 		{ // AJAX request? Just note this error in payload.
 			$this->payload->error = TRUE;
 			$this->terminate();
-
 		}
-		elseif ($exception instanceof ForbiddenRequestException)
+		elseif($exception instanceof Nette\Application\BadRequestException)
 		{
-			$this->setView('403'); // load template 403.phtml
-		}
-		elseif ($exception instanceof BadRequestException)
-		{
-			$this->setView('404'); // load template 404.phtml
-			//Debug::processException($exception, true);
+			$code = $exception->getCode();
+			// load template 403.latte or 404.latte or ... 4xx.latte
+			$this->setView(in_array($code, array(403, 404, 500)) ? $code : '4xx');
+			// log to access.log
+			Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 		}
 		else
- 		{
-			$this->setView('500'); // load template 500.phtml
- 			Debug::processException($exception); // and handle error by Nette\Debug
+		{
+			$this->setView('500'); // load template 500.latte
+			Debugger::log($exception, Debugger::ERROR); // and log exception
 		}
 	}
+
 	public function render403()
 	{
 		$this->setTitle('Nepovolený přístup');

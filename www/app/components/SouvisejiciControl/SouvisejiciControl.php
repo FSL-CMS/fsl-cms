@@ -17,11 +17,6 @@ class SouvisejiciControl extends BaseControl
 {
 	private $model;
 
-	public function __construct(IComponentContainer $parent = NULL, $name = NULL)
-	{
-		parent::__construct($parent, $name);
-	}
-
 	public function createComponentGalerie($name)
 	{
 		return new GalerieControl();
@@ -29,14 +24,14 @@ class SouvisejiciControl extends BaseControl
 
 	public function render($souvisejiciTabulka, $id, $pouzeSpecialni = false)
 	{
-		$this->model = new Souvisejici();
+		$this->model = $this->presenter->context->souvisejici;
 		$return = array();
 		$return = $this->model->findByRodic($souvisejiciTabulka, $id)->fetchAll();
 		foreach( $return as $id_ => &$souv )
 		{
 			if( $souv['souvisejiciTabulka'] == 'diskuze' ) { unset($return[$id_]); continue; }
-			$model = ucfirst( $souv['souvisejiciTabulka'] );
-			$souvisejiciModel = new $model;
+			$model = $souv['souvisejiciTabulka'];
+			$souvisejiciModel = $this->presenter->context->$model;
 			$souv['souvisejici'] = $souvisejiciModel->find($souv['id_souvisejiciho'])->fetch();
 		}
 
@@ -56,7 +51,7 @@ class SouvisejiciControl extends BaseControl
 
 	public function renderAktualni($souvisejiciTabulka, $id)
 	{
-		$this->model = new Souvisejici();
+		$this->model = $this->presenter->context->souvisejici;
 		$return = array();
 		$return = $this->model->findByRodic($souvisejiciTabulka, $id)->fetchAll();
 		foreach( $return as $id_ => &$souv )
@@ -81,7 +76,7 @@ class SouvisejiciControl extends BaseControl
 
 	public function createComponentPridatSouvisejiciForm()
 	{
-		$form = new AppForm($this, 'pridatSouvisejiciForm');
+		$form = new Nette\Application\UI\Form($this, 'pridatSouvisejiciForm');
 
 		$form->getElementPrototype()->class('ajax');
 
@@ -91,12 +86,12 @@ class SouvisejiciControl extends BaseControl
 		$form->addSelect('souvisejici', 'Související skupina', array('' => 'Vyberte kategorii')+$souvisejiciTabulky);
 		$form->addJsonDependentSelectBox('id_souvisejiciho', 'Položka', $form['souvisejici'], array($this, "getSouvisejici"));
 
-		$form->addSubmit('save', 'Přidat');
+		$form->addSubmit('add', 'Přidat');
 
-		$form->onSubmit[] = array($this, 'pridatSouvisejiciFormSubmitted');
+		$form->onSuccess[] = array($this, 'pridatSouvisejiciFormSubmitted');
 	}
 
-	public function pridatSouvisejiciFormSubmitted(AppForm $form)
+	public function pridatSouvisejiciFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$data = $form->getValues();
 		$this->model = new Souvisejici();
@@ -121,7 +116,7 @@ class SouvisejiciControl extends BaseControl
 			catch(DibiException $e)
 			{
 				$this->getPresenter()->flashMessage('Nepodařilo se uložit související položku.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
 			/*if( $this->getPresenter()->isAjax() )
@@ -141,7 +136,7 @@ class SouvisejiciControl extends BaseControl
 		$vystup = array('' => 'žádná');
 		if( $tabulka == 'Zavody' )
 		{
-			$model = new Zavody;
+			$model = $this->presenter->context->zavody;
 			$polozky = $model->findAllToSelect()->fetchAssoc('rok,id,=');
 			foreach( $polozky as &$skupina )
 				foreach( $skupina as &$polozka )
@@ -151,7 +146,7 @@ class SouvisejiciControl extends BaseControl
 		}
 		elseif( $tabulka == 'Druzstva' )
 		{
-			$model = new Druzstva;
+			$model = $this->presenter->context->druzstva;
 			$polozky = $model->findAllToSelect()->fetchAssoc('kategorie,id,=');
 			foreach( $polozky as &$skupina )
 				foreach( $skupina as &$polozka )
@@ -161,7 +156,7 @@ class SouvisejiciControl extends BaseControl
 		}
 		elseif( $tabulka == 'Galerie' )
 		{
-			$model = new Galerie;
+			$model = $this->presenter->context->galerie;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -170,7 +165,7 @@ class SouvisejiciControl extends BaseControl
 		}
 		elseif( $tabulka == 'Clanky' )
 		{
-			$model = new Clanky;
+			$model = $this->presenter->context->clanky;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -179,7 +174,7 @@ class SouvisejiciControl extends BaseControl
 		}
 		elseif( $tabulka == 'Sbory' )
 		{
-			$model = new Sbory;
+			$model = $this->presenter->context->sbory;
 			$polozky = $model->findAllToSelect()->fetchAssoc('id,=');
 			foreach( $polozky as &$polozka )
 			{
@@ -192,7 +187,7 @@ class SouvisejiciControl extends BaseControl
 
 	public function handleDelete($id)
 	{
-		$this->model = new Souvisejici();
+		$this->model = $model = $this->presenter->context->souvisejici;
 		try
 		{
 			$this->model->delete($id);
@@ -201,7 +196,7 @@ class SouvisejiciControl extends BaseControl
 		catch(DibiException $e)
 		{
 			$this->getPresenter()->flashMessage('Nepodařilo se odstranit související položku.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
 		/*if( $this->getPresenter()->isAjax() ) $this->invalidateControl('souvisejici');

@@ -1,27 +1,29 @@
 {* Šablona pro výpis diskuzí *}
 
-@{block #content}
+{block #content}
 
-@{if count($diskuze['diskuze'])}
-	{if $diskuze['muze_pridavat'] == true}<p><a href="{plink Diskuze:zeptatse, $diskuze['id_tematu'], $diskuze['id_souvisejiciho']}" class="add">Založit nové téma!</a></p>{/if}
-	@{foreach $diskuze['diskuze'] as $disk}
+{if count($diskuze['diskuze'])}
+	{if $diskuze['muze_pridavat'] == true}<p class="config"><a href="{plink Diskuze:zeptatse, $diskuze['id_tematu'], $diskuze['id_souvisejiciho']}" class="add">Založit nové téma!</a></p>{/if}
+	{foreach $diskuze['diskuze'] as $disk}
 		{if !empty($diskuze['souvisejiciTabulka'])}
 			<h3>Diskuze na téma: <a href="{plink Diskuze:diskuze, $disk['id_diskuze']}" title="Přejít na diskuzi">{$disk['tema_diskuze']}</a></h3>
 		{/if}
 
 		{if empty($diskuze['souvisejiciTabulka'])}
 			{* Související odkaz *}
-			{widget souvisejici "diskuze", $disk['id_diskuze']}
+			{control souvisejici "diskuze", $disk['id_diskuze']}
 		{/if}
 
 		{* Výpis vlastních komentářů *}
-		{snippet 'komentare'.$disk['id_diskuze']}
+		{* snippet *}
+		{* snippet 'komentare'.$disk['id_diskuze'] *}
 			{include '@komentare.phtml', 'komentare' => $disk['komentare']}
-		{/snippet}
+		{* /snippet *}
+		{* /snippet *}
 
-		@{include 'nastaveni.phtml', 'diskuze' => $disk}
-	@{/foreach}
+		{include 'nastaveni.phtml', 'diskuze' => $disk}
+	{/foreach}
 	{if $diskuze['muze_pridavat'] == true}<p><a href="{plink Diskuze:zeptatse, $diskuze['id_tematu'], $diskuze['id_souvisejiciho']}" class="add">Založit nové téma!</a></p>{/if}
-@{else}
+{else}
 	<p class="warning">V diskuzi není zatím žádné téma.{if $diskuze['muze_pridavat'] == true} <a href="{plink Diskuze:zeptatse, $diskuze['id_tematu'], $diskuze['id_souvisejiciho']}" class="add">Přidat nové!</a>{/if}</p>
-@{/if}
+{/if}

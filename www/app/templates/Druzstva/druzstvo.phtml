@@ -1,4 +1,4 @@
-@{block #content}
+{block #content}
 
 <h2>Informace o družstvu{if $druzstvo['muze_editovat']} <a href="{plink Druzstva:edit, $druzstvo['id']}" title="Smazat družstvo" class="edit">Upravit družstvo</a>{/if}</h2>
 
@@ -9,7 +9,7 @@
      <dt>Počet získaných bodů</dt><dd>{$druzstvo['pocet_bodu']}</dd-->
 </dl>
 
-{widget souvisejici, 'druzstva', $druzstvo['id']}
+{control souvisejici, 'druzstva', $druzstvo['id']}
 
 <h2 id="toc-vyznacne-casy-sezon">Význačné časy sezón</h2>
 <table class="prehled">
@@ -59,7 +59,7 @@
 	</table>
 {/foreach}
 
-{* widget grafy array(600, 400, 'Druzstva:grafPrumerneCasySezon', $druzstvo['id']) *}
+{* control grafy array(600, 400, 'Druzstva:grafPrumerneCasySezon', $druzstvo['id']) *}
 
 <h2>Komentáře k družstvu</h2>
-@{widget diskuze $druzstvo['id'], "druzstva"}
+{control diskuze $druzstvo['id'], "druzstva"}

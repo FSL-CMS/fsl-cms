@@ -6,7 +6,7 @@
 {if count($fotky['fotky'])}
 <div>
 	{foreach $fotky['fotky'] as $fotka}
-		{widget fotka:vyber $fotka}
+		{control fotka:vyber $fotka}
 	{/foreach}
 </div>
 <input type="submit" value="Použít vybrané fotografie" />

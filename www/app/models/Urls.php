@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Model URL
  *
@@ -19,14 +17,6 @@ class Urls extends BaseModel
 	/** @var string */
 	protected $table = 'urls';
 
-	/** @var DibiConnection */
-	protected $connection;
-
-	public function __construct()
-	{
-		$this->connection = dibi::getConnection();
-	}
-
 	public function find($id)
 	{
 		return $this->findAll()->where('[id] = %i', $id);
@@ -35,8 +25,8 @@ class Urls extends BaseModel
 	public function findAll()
 	{
 		return $this->connection
-			->select('*')
-		     ->from($this->table);
+						->select('*')
+						->from($this->table);
 	}
 
 	public function findUrlByPresenterAndAction($presenter, $action)
@@ -71,13 +61,13 @@ class Urls extends BaseModel
 
 	public function setUrl($presenter, $action, $param, $url)
 	{
-		dibi::begin();
+		$this->connection->begin();
 		try
 		{
 			// provede doplnění pouze pokud nové URL zatím není v DB
 			$byUrl = false;
 			$byRequest = false;
-			if( ($byUrl = $this->findByUrl($url)->fetch()) == false || ($byRequest = $this->findUrlByPresenterAndActionAndParam($presenter, $action, $param)->fetch()) == false || $byUrl['id'] != $byRequest['id'] )
+			if(($byUrl = $this->findByUrl($url)->fetch()) == false || ($byRequest = $this->findUrlByPresenterAndActionAndParam($presenter, $action, $param)->fetch()) == false || $byUrl['id'] != $byRequest['id'])
 			{
 				$redByUrl = $this->findRedirectedByUrl($url)->fetch();
 				if($byUrl == false && $redByUrl == false) // nové URL, které ještě nebylo v DB
@@ -93,13 +83,14 @@ class Urls extends BaseModel
 					$this->connection->query('UPDATE %n SET [redirect] = %i WHERE [presenter] = %s AND [action] = %s AND [param] = %i AND [id] != %i', $this->table, $redByUrl['id'], $presenter, $action, $param, $redByUrl['id']);
 				}
 			}
-			dibi::commit();
+			$this->connection->commit();
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
-			dibi::rollback();
+			$this->connection->rollback();
 			$this->flashMessage('Nepodařilo se nastavit URL adresu položky.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 	}
+
 }

@@ -5,18 +5,17 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
-
-
+use Nette\Security\IResource;
 
 /**
  * Resource pro startovní pořadí.
  *
  * @author Milan Pála
  */
-class StartovniPoradiResource implements IResource
+class StartovniPoradiResource extends Nette\Object implements IResource
 {
 
-	public $data;
+	private $data;
 
 	/**
 	 * Konsktruktor příjmá data o startovním pořadí.
@@ -27,7 +26,7 @@ class StartovniPoradiResource implements IResource
 		$this->data = $data;
 	}
 
-	public function __get($name)
+	public function &__get($name)
 	{
 		return $this->data[$name];
 	}

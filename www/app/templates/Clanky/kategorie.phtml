@@ -2,7 +2,7 @@
 
 {if $clanky['muze_pridavat']}<p><a href="{link Clanky:edit}" title="Přidat nový článek" class="add">Přidat nový článek</a></p>{/if}
 
-{widget vp}
+{control vp}
 
 {if count($clanky['clanky'])}
 	{foreach $clanky['clanky'] as $clanek}
@@ -12,4 +12,4 @@
 	<p>V této kategorii nejsou žádné články.</p>
 {/if}
 
-{widget vp}
+{control vp}

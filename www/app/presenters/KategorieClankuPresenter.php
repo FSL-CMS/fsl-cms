@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter kategorií článků
@@ -15,14 +15,16 @@
  */
 class KategorieClankuPresenter extends SecuredPresenter
 {
+	/** @var ClankyKategorie */
 	protected $model = NULL;
+
 	/** @persistent */
-	public $backlink = ''; 
+	public $backlink = '';
 
 	public function startup()
 	{
-		$this->model = new ClankyKategorie;
-		
+		$this->model = $this->context->clankyKategorie;
+
 		parent::startup();
 	}
 
@@ -34,42 +36,42 @@ class KategorieClankuPresenter extends SecuredPresenter
 	public function renderDefault()
 	{
 		$this->setTitle('Kategorie článků');
-		
+
 		$this->template->kategorie = array();
-		
+
 		$this->template->kategorie['muze_editovat'] = $this->user->isAllowed('kategorieclanku', 'edit');
-		$this->template->kategorie['kategorie'] = $this->model->findAll();		
+		$this->template->kategorie['kategorie'] = $this->model->findAll();
 	}
 
 	public function createComponentKategorieForm()
 	{
-		$form = new AppForm;
+		$form = new Nette\Application\UI\Form;
 
 		$form->getElementPrototype()->class('ajax');
-		
+
 		foreach( $this->model->findAll()->fetchAll() as $kategorie )
 		{
 			$poradi = $form->addContainer($kategorie['id']);
-				
+
 			$poradi->addHidden('id')->setDefaultValue($kategorie['id']);
 			$poradi->addText('cssstyl', 'Název stylu')->setDefaultValue($kategorie['cssstyl']);
 			$poradi->addText('poradi', 'Pořadí', 4)->setDefaultValue($kategorie['poradi']);
 		}
 		$form->addSubmit('save', 'Uložit');
-		
-		$form->onSubmit[] = array($this, 'kategorieFormSubmitted');
-		
+
+		$form->onSuccess[] = array($this, 'kategorieFormSubmitted');
+
 		return $form;
 	}
-	
-	public function kategorieFormSubmitted(AppForm $form)
+
+	public function kategorieFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
 			$data = $form->getValues();
 			foreach( $data as $poradi )
 			{
-				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );	
+				$this->model->update( $poradi['id'], array('poradi' => $poradi['poradi']) );
 			}
 			$this->flashMessage('Údaje o kategoriích byly úspěšně uloženy.', 'ok');
 
@@ -77,44 +79,44 @@ class KategorieClankuPresenter extends SecuredPresenter
 		}
 		catch(DibiException $e)
 		{
-			$this->flashMessage('Údaje o kategoriích se nepodařilo uložit.', 'error');	
-		}	
+			$this->flashMessage('Údaje o kategoriích se nepodařilo uložit.', 'error');
+		}
 	}
-	
+
 	public function renderEdit($id = 0)
 	{
 		if( $id != 0 && ($zDB = $this->model->find($id)->fetch()) !== false )
 		{
 			$this['editForm']->setDefaults($zDB);
 		}
-		
+
 		if($id == 0) $this->setTitle('Přidání kategorie');
 		else $this->setTitle('Úprava kategorie');
 	}
-	
+
 	public function createComponentEditForm()
 	{
 		$form = new RequestButtonReceiver;
-		
+
 		$form->addGroup('Informace o kategorii');
 		$form->addText('nazev', 'Název')
 			->addRule(Form::FILLED, 'Je nutné vyplnit název kategorie.');
 		$form->addText('cssstyl', 'Název stylu');
 
-		$form->setCurrentGroup(NULL);			
-			
+		$form->setCurrentGroup(NULL);
+
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('saveAndAdd', 'Uložit a přidat nový');
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(false);
-		$form->addRequestButtonBack('back', 'Vrátit se zpět');			
+		$form->addRequestButtonBack('back', 'Vrátit se zpět');
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-		
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
+
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -141,9 +143,9 @@ class KategorieClankuPresenter extends SecuredPresenter
 				}
 
 				$this->flashMessage('Informace o kategorii byly úspěšně uloženy.', 'ok');
-				
+
 				$this->getApplication()->restoreRequest($this->backlink);
-				
+
 				if( $form['save']->isSubmittedBy() ) $this->redirect('default');
 				elseif( $form['saveAndAdd']->isSubmittedBy() ) $this->redirect('edit');
 				else $this->redirect('default');
@@ -154,6 +156,6 @@ class KategorieClankuPresenter extends SecuredPresenter
 			}
 		}
 	}
-	
+
 
 }

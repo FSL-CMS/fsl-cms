@@ -20,22 +20,22 @@ class VideoControl extends BaseControl
 		parent::__construct();
 	}
 
-	public function renderYoutube($width = 450, $height = 300, $key)
+	public function renderYoutube($width = 560, $height = 315, $key)
 	{
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/youtube.phtml');
-		$template->sirka = $width ?: 450;
-		$template->vyska = $height ?: 300;
+		$template->sirka = $width ?: 560;
+		$template->vyska = $height ?: 315;
 		$template->key = $key;
 		return $template->render();
 	}
 
-	public function renderYoutubePlaylist($width = 450, $height = 300, $key)
+	public function renderYoutubePlaylist($width = 560, $height = 315, $key)
 	{
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/youtubePlaylist.phtml');
-		$template->sirka = $width ?: 450;
-		$template->vyska = $height ?: 300;
+		$template->sirka = $width ?: 560;
+		$template->vyska = $height ?: 315;
 		$template->key = $key;
 		return $template->render();
 	}
@@ -50,11 +50,11 @@ class VideoControl extends BaseControl
 		return $template->render();
 	}
 
-	public function renderStream($width = 450, $height = 300, $key)
+	public function renderStream($width = 560, $height = 343, $key)
 	{
 		$template = clone $this->parent->template;
-		$template->width = $width;
-		$template->height = $height;
+		$template->sirka = $width ?: 560;
+		$template->vyska = $height ?: 343;
 		$template->key = $key;
 		$template->setFile(dirname(__FILE__) . '/stream.phtml');
 		return $template->render();

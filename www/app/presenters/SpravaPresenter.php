@@ -43,8 +43,8 @@ class SpravaPresenter extends BasePresenter
 
 	public function renderKontrola()
 	{
-		$zavody = new Zavody;
-		$rocniky = new Rocniky;
+		$zavody = $this->context->zavody;
+		$rocniky = $this->context->rocniky;
 
 		$this->setTitle('Kontrola správně zadaných údajů pro chod webu');
 
@@ -102,31 +102,31 @@ class SpravaPresenter extends BasePresenter
 
 		try
 		{
-			$zavody = new Zavody;
+			$zavody = $this->context->zavody;
 			$zavody->udrzba();
 
-			$clanky = new Clanky;
+			$clanky = $this->context->clanky;
 			$clanky->udrzba();
 
-			$sbory = new Sbory;
+			$sbory = $this->context->sbory;
 			$sbory->udrzba();
 
-			$druzstva = new Druzstva;
+			$druzstva = $this->context->druzstva;
 			$druzstva->udrzba();
 
-			$uzivatele = new Uzivatele;
+			$uzivatele = $this->context->uzivatele;
 			$uzivatele->udrzba();
 
-			$temata = new Temata;
+			$temata = $this->context->temata;
 			$temata->udrzba();
 
-			$diskuze = new Diskuze;
+			$diskuze = $this->context->diskuze;
 			$diskuze->udrzba();
 
-			$terceModel = new Terce;
+			$terceModel = $this->context->terce;
 			$terceModel->udrzba();
 
-			$fotkyModel = new Fotky;
+			$fotkyModel = $this->context->fotky;
 			$fotkyModel->udrzba();
 
 			/*$fotogalerie = new Fotogalerie;
@@ -151,7 +151,7 @@ class SpravaPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Při údržbě došlo k chybě.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('default');
 	}
@@ -161,8 +161,8 @@ class SpravaPresenter extends BasePresenter
 		try
 		{
 			$this->flashMessage('Začíná převod.', 'ok');
-			$mistaModel = new Mista;
-			$sportovisteModel = new Sportoviste;
+			$mistaModel = $this->context->mista;
+			$sportovisteModel = $this->context->sportoviste;
 
 			$mista = $mistaModel->findAll()->orderBy(NULL)->orderBy('[mista].[id]');
 
@@ -173,7 +173,7 @@ class SpravaPresenter extends BasePresenter
 				$sportovisteModel->insert(array('id_mista' => $misto->id));
 			}
 
-			$zavodyModel = new Zavody;
+			$zavodyModel = $this->context->zavody;
 			$zavody = $zavodyModel->findAll();
 			foreach($zavody as $zavod)
 			{
@@ -184,7 +184,7 @@ class SpravaPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Převod se nezdařil', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('Clanky:default');
 	}
@@ -194,8 +194,8 @@ class SpravaPresenter extends BasePresenter
 		try
 		{
 			$this->flashMessage('Začíná převod.', 'ok');
-			$vysledkyModel = new Vysledky;
-			$ucastiModel = new Ucasti;
+			$vysledkyModel = $this->context->vysledky;
+			$ucastiModel = $this->context->ucasti;
 			dibi::query('truncate table ucasti');
 			$vysledky = $vysledkyModel->findAll();
 			//print_r($vysledky->fetchAll());
@@ -227,16 +227,16 @@ class SpravaPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Převod se nezdařil', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('Zavody:default');
 	}
 
 	public function actionPrevodUrl()
 	{
-		$urlsModel = new Urls;
+		$urlsModel = $this->context->urls;
 
-		$rocnikyModel = new Rocniky;
+		$rocnikyModel = $this->context->rocniky;
 		$rocniky = $rocnikyModel->findAll();
 		foreach($rocniky as $rocnik)
 		{
@@ -246,7 +246,7 @@ class SpravaPresenter extends BasePresenter
 		$rocnikyModel = null;
 		$rocniky = null;
 
-		$zavodyModel = new Zavody;
+		$zavodyModel = $this->context->zavody;
 		$zavody = $zavodyModel->findAll();
 		foreach($zavody as $zavod)
 		{
@@ -256,7 +256,7 @@ class SpravaPresenter extends BasePresenter
 		$zavodyModel = null;
 		$zavody = null;
 
-		$clankyModel = new Clanky;
+		$clankyModel = $this->context->clanky;
 		$clanky = $clankyModel->findAll();
 		foreach($clanky as $clanek)
 		{
@@ -266,44 +266,44 @@ class SpravaPresenter extends BasePresenter
 		$clankyModel = null;
 		$clanky = null;
 
-		$terceModel = new Terce;
+		$terceModel = $this->context->terce;
 		$terce = $terceModel->findAll();
 		foreach($terce as $terc)
 		{
 			$urlsModel->setUrl('Terce', 'terce', $terc['id'], '/terce/'.$terc['uri']);
 		}
-		$terceModel = null;
-		$terce = null;
+		unset($terceModel);
+		unset($terce);
 
-		$diskuzeModel = new Diskuze;
+		$diskuzeModel = $this->context->diskuze;
 		$diskuze = $diskuzeModel->findAll();
 		foreach($diskuze as $disk)
 		{
 			$urlsModel->setUrl('Diskuze', 'diskuze', $disk['id'], '/forum/'.$disk['uri'].'.html');
 		}
 
-		$sboryModel = new Sbory;
+		$sboryModel = $this->context->sbory;
 		$sbory = $sboryModel->findAll();
 		foreach($sbory as $sbor)
 		{
 			$urlsModel->setUrl('Sbory', 'sbor', $sbor['id'], '/sbory/'.$sbor['uri'].'.html');
 		}
 
-		$druzstvaModel = new Druzstva;
+		$druzstvaModel = $this->context->druzstva;
 		$druzstva = $druzstvaModel->findAll();
 		foreach($druzstva as $druzstvo)
 		{
 			$urlsModel->setUrl('Druzstva', 'druzstvo', $druzstvo['id'], '/druzstva/'.$druzstvo['uri'].'.html');
 		}
 
-		$strankyModel = new Stranky;
+		$strankyModel = $this->context->stranky;
 		$stranky = $strankyModel->findAll();
 		foreach($stranky as $stranka)
 		{
 			$urlsModel->setUrl('Stranky', 'stranka', $stranka['id'], '/'.$stranka['uri'].'.html');
 		}
 
-		$fotogalerieModel = new Fotogalerie;
+		$fotogalerieModel = $this->context->fotogalerie;
 		$fotogalerie = $fotogalerieModel->findAll();
 		foreach($fotogalerie as $fotog)
 		{
@@ -317,14 +317,14 @@ class SpravaPresenter extends BasePresenter
 			$urlsModel->setUrl('Soubory', 'soubor', $soubor['id'], $soubor['uri']);
 		}*/
 
-		$temataModel = new Temata;
+		$temataModel = $this->context->temata;
 		$temata = $temataModel->findAll();
 		foreach($temata as $tema)
 		{
 			$urlsModel->setUrl('Forum', 'forum', $tema['id'], '/forum/'.$tema['uri'].'/');
 		}
 
-		$uzivateleModel = new Uzivatele;
+		$uzivateleModel = $this->context->uzivatele;
 		$uzivatele = $uzivateleModel->findAll();
 		foreach($uzivatele as $uzivatel)
 		{
@@ -340,7 +340,7 @@ class SpravaPresenter extends BasePresenter
 	{
 		try
 		{
-			$souboryModel = new Fotky;
+			$souboryModel = $this->context->fotky;
 			$soubory = $souboryModel->findAll();
 			foreach($soubory as $soubor)
 			{
@@ -352,7 +352,7 @@ class SpravaPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Převod URL neproběhl v pořádku', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('default');
 	}
@@ -367,7 +367,7 @@ class SpravaPresenter extends BasePresenter
 			$this->redirect('default');
 		}
 
-		$aktualizaceDBModel = new AktualizaceDB;
+		$aktualizaceDBModel = $this->context->aktualizaceDB;
 		try
 		{
 			dibi::begin();
@@ -380,7 +380,7 @@ class SpravaPresenter extends BasePresenter
 		{
 			dibi::rollback();
 			$this->flashMessage('Databázi se nepodařilo aktualizovat.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->redirect('default');
 		}
 	}

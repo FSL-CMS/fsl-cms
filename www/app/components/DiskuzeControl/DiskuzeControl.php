@@ -5,43 +5,44 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
-
-
+use Nette\Application\UI\Form;
 
 /**
  * Komponenta vykreslující diskuze
  *
  * @author	Milan Pála
-  */
+ */
 class DiskuzeControl extends BaseControl
 {
+
+	/** @var Diskuze */
 	protected $model;
 	protected $render;
 	protected $odpovedet;
 
-	public function __construct(IComponentContainer $parent, $name)
+	public function __construct()
 	{
-		parent::__construct($parent, $name);
-		$this->model = new Diskuze;
 		$this->render = 'diskuze';
 		$this->odpovedet = false;
 	}
 
 	public function handleZamknout($id)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		$this->model->zamknout($id);
-		$this->invalidateControl('nastaveni'.$id);
+		$this->invalidateControl('nastaveni' . $id);
 
-		if( !$this->parent->isAjax() ) $this->redirect('this');
+		if(!$this->parent->isAjax()) $this->redirect('this');
 		else $this->render = 'nastaveni';
 	}
 
 	public function handleOdemknout($id)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		$this->model->odemknout($id);
-		$this->invalidateControl('nastaveni'.$id);
+		$this->invalidateControl('nastaveni' . $id);
 
-		if( !$this->parent->isAjax() ) $this->redirect('this');
+		if(!$this->parent->isAjax()) $this->redirect('this');
 		else $this->render = 'nastaveni';
 	}
 
@@ -49,7 +50,7 @@ class DiskuzeControl extends BaseControl
 	{
 		$this->odpovedet = true;
 
-		$this->invalidateControl('nastaveni'.$id);
+		$this->invalidateControl('nastaveni' . $id);
 
 		//if( !$this->parent->isAjax() ) $this->redirect('this');
 		$this->render = 'nastaveni';
@@ -57,137 +58,139 @@ class DiskuzeControl extends BaseControl
 
 	public function handleSledovat($id)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		try
 		{
-			$this->model->sledovat($id, $this->parent->user->getIdentity()->id);
+			$this->model->sledovat($id, $this->presenter->user->getIdentity()->id);
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
 			$this->parent->flashMessage('Nepodařilo se uložit sledování.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
-		$this->invalidateControl('nastaveni'.$id);
+		$this->invalidateControl('nastaveni' . $id);
 
-		if( !$this->parent->isAjax() ) $this->redirect('this');
+		if(!$this->parent->isAjax()) $this->redirect('this');
 		else $this->render = 'nastaveni';
 	}
 
 	public function handleNesledovat($id)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		try
 		{
 			$this->model->nesledovat($id, $this->parent->user->getIdentity()->id);
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
 			$this->parent->flashMessage('Nepodařilo se odstranit sledování.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 
-		$this->invalidateControl('nastaveni'.$id);
+		$this->invalidateControl('nastaveni' . $id);
 
-		if( !$this->parent->isAjax() ) $this->redirect('this');
+		if(!$this->parent->isAjax()) $this->redirect('this');
 		else $this->render = 'nastaveni';
 	}
 
 	public function handleSmazatKomentar($id)
 	{
-		$komentare = new Komentare;
-		$komentar = $komentare->find($id)->fetch();
+		$komentareModel = $this->presenter->context->komentare;
+		$komentar = $komentareModel->find($id)->fetch();
 
 		try
 		{
-			$komentare->delete($id);
+			$komentareModel->delete($id);
 			$this->parent->flashMessage('Komentář byl úspěšně odstraněn.', 'ok');
 		}
-		catch(DibiException $e)
+		catch (DibiException $e)
 		{
 			$this->parent->flashMessage('Nepodařilo se odstranit komentář.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
-		catch(RestrictionException $e)
+		catch (RestrictionException $e)
 		{
-			$this->parent->flashMessage($e->getMessage().' "Smazat diskuzi?":'.$this->presenter->link('Diskuze:smazat', array('id' => $komentar['id_diskuze'], 'force' => 1)), 'error');
+			$this->parent->flashMessage($e->getMessage() . ' "Smazat diskuzi?":' . $this->presenter->link('Diskuze:smazat', array('id' => $komentar['id_diskuze'], 'force' => 1)), 'error');
 		}
 
-		if( $this->parent->isAjax() ) $this->invalidateControl('komentare'.$komentar['id_diskuze']);
+		if($this->parent->isAjax()) $this->invalidateControl('komentare' . $komentar['id_diskuze']);
 		else $this->redirect('this');
 	}
 
 	public function handleUpravitKomentar($id)
 	{
 		$this->render = 'upravitKomentar';
-		if( $this->parent->isAjax() ) $this->getPresenter()->setLayout(false);
+		if($this->parent->isAjax()) $this->getPresenter()->setLayout(false);
 	}
 
 	public function renderUpravitKomentar($id)
 	{
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/upravitKomentar.phtml');
-		$komentareModel = new Komentare;
+		$komentareModel = $this->presenter->context->komentare;
 
-		if( $id != 0 && ($hodnoty=$komentareModel->find($id)->fetch()) !== false ) $this['upravitKomentarForm']->setValues($hodnoty);
+		if($id != 0 && ($hodnoty = $komentareModel->find($id)->fetch()) !== false) $this['upravitKomentarForm']->setValues($hodnoty);
 
 		$template->render();
 	}
 
-	public function komentarFormSubmitted(AppForm $form)
+	public function komentarFormSubmitted(Nette\Application\UI\Form $form)
 	{
-		if( $form['cancel']->isSubmittedBy() )
+		if($form['cancel']->isSubmittedBy())
 		{
-			if($this->parent->isAjax()) $this->invalidateControl('nastaveni'.$form['id_diskuze']->getValue());
+			if($this->parent->isAjax()) $this->invalidateControl('nastaveni' . $form['id_diskuze']->getValue());
 			else $this->redirect('this');
 		}
-		elseif( $form['save']->isSubmittedBy() )
+		elseif($form['save']->isSubmittedBy())
 		{
-			$komentare = new Komentare;
+			$komentareModel = $this->presenter->context->komentare;
 			try
 			{
-				$komentare->insert( array( 'id_diskuze' => $form['id_diskuze']->value, 'text' => $form['text']->value, 'id_autora' => (int)$this->getPresenter()->user->getIdentity()->id, 'datum_pridani%sql' => 'NOW()' ) ); //Debug::dump(dibi::$sql);
+				$komentareModel->insert(array('id_diskuze' => $form['id_diskuze']->value, 'text' => $form['text']->value, 'id_autora' => (int) $this->getPresenter()->user->getIdentity()->id, 'datum_pridani%sql' => 'NOW()')); //Debug::dump(dibi::$sql);
 				$this->getPresenter()->flashMessage('Odpověď byla vložena do diskuze.');
 
-				$sledovani = new Sledovani;
+				$sledovani = $this->presenter->context->sledovani;
 				$sledovani->upozornit("diskuze", $form['id_diskuze']->value);
 			}
-			catch(DibiException $e)
+			catch (DibiException $e)
 			{
 				$this->getPresenter()->flashMessage('Nepodařilo se vložit komentář.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
-			if( $this->getPresenter()->isAjax() )
+			if($this->getPresenter()->isAjax())
 			{
-				$this->invalidateControl('komentare'.$form['id_diskuze']->getValue());
+				$this->invalidateControl('komentare' . $form['id_diskuze']->getValue());
 				$this->odpovedet = false;
 			}
 			else $this->redirect('this');
 		}
 	}
 
-	public function upravitKomentarFormSubmitted(AppForm $form)
+	public function upravitKomentarFormSubmitted(Nette\Application\UI\Form $form)
 	{
-		if( $form['cancel']->isSubmittedBy() )
+		if($form['cancel']->isSubmittedBy())
 		{
-			if( !$this->isAjax() ) $this->redirect('Diskuze:diskuze', $form['id_diskuze']->getValue());
+			if(!$this->isAjax()) $this->redirect('Diskuze:diskuze', $form['id_diskuze']->getValue());
 		}
-		elseif( $form['save']->isSubmittedBy() )
+		elseif($form['save']->isSubmittedBy())
 		{
-			$komentare = new Komentare;
+			$komentare = $this->presenter->context->komentare;
 			try
 			{
-				$komentare->update( $form['id']->value, array( 'text' => $form['text']->value ) ); //Debug::dump(dibi::$sql);
+				$komentare->update($form['id']->value, array('text' => $form['text']->value)); //Debug::dump(dibi::$sql);
 				$this->parent->flashMessage('Komentář byl uložen.');
 			}
-			catch(DibiException $e)
+			catch (DibiException $e)
 			{
 				$this->parent->flashMessage('Nepodařilo se uložit komentář.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
-			if( $this->getPresenter()->isAjax() )
+			if($this->getPresenter()->isAjax())
 			{
-				$this->invalidateControl('komentare'.$form['id_diskuze']->getValue());
+				$this->invalidateControl('komentare' . $form['id_diskuze']->getValue());
 				$this->odpovedet = false;
 				$this->render = 'diskuze';
 			}
@@ -197,8 +200,8 @@ class DiskuzeControl extends BaseControl
 
 	public function render($id, $souvisejiciTabulka = NULL)
 	{
-		if( $id === NULL || $this->render == 'nastaveni' ) $id = $this->getParam('id');
-		if( $souvisejiciTabulka === NULL ) $souvisejiciTabulka = $this->getPresenter()->getParam('souvisejiciTabulka');
+		if($id === NULL || $this->render == 'nastaveni') $id = $this->getParam('id');
+		if($souvisejiciTabulka === NULL) $souvisejiciTabulka = $this->getPresenter()->getParam('souvisejiciTabulka');
 
 		if($this->render == 'nastaveni') $this->renderNastaveni($id);
 		elseif($this->render == 'upravitKomentar') $this->renderUpravitKomentar($id);
@@ -207,6 +210,7 @@ class DiskuzeControl extends BaseControl
 
 	public function renderNastaveni($id)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		$template = $this->template;
 		$template->setFile(dirname(__FILE__) . '/nastaveni.phtml');
 
@@ -237,14 +241,15 @@ class DiskuzeControl extends BaseControl
 	 */
 	public function renderDiskuze($id, $souvisejiciTabulka = NULL)
 	{
+		$this->model = $this->presenter->context->diskuze;
 		$return = array();
 
 		// vybere témata diskuzí s komentáři
-		if( $souvisejiciTabulka == 'zavody' ) $tmp_diskuze = $this->model->findByZavod($id);
-		elseif( $souvisejiciTabulka == 'clanky' ) $tmp_diskuze = $this->model->findByClanek($id);
-		elseif( $souvisejiciTabulka == 'terce' ) $tmp_diskuze = $this->model->findByTerce($id);
-		elseif( $souvisejiciTabulka == 'sbory' ) $tmp_diskuze = $this->model->findBySbor($id);
-		elseif( $souvisejiciTabulka == 'druzstva' ) $tmp_diskuze = $this->model->findByDruzstvo($id);
+		if($souvisejiciTabulka == 'zavody') $tmp_diskuze = $this->model->findByZavod($id);
+		elseif($souvisejiciTabulka == 'clanky') $tmp_diskuze = $this->model->findByClanek($id);
+		elseif($souvisejiciTabulka == 'terce') $tmp_diskuze = $this->model->findByTerce($id);
+		elseif($souvisejiciTabulka == 'sbory') $tmp_diskuze = $this->model->findBySbor($id);
+		elseif($souvisejiciTabulka == 'druzstva') $tmp_diskuze = $this->model->findByDruzstvo($id);
 		else $tmp_diskuze = $this->model->find($id);
 
 		// asociativní pole témat diskuzí a komentářů
@@ -252,7 +257,7 @@ class DiskuzeControl extends BaseControl
 
 		// nastavení oprávnění diskuzím a komentářům
 		$return['diskuze'] = array();
-		foreach( $tmp_diskuze as $id_ => $disk )
+		foreach ($tmp_diskuze as $id_ => $disk)
 		{
 			//$this['komentarForm']['id_diskuze']->value = $id_;
 			$prvni = current($disk);
@@ -264,10 +269,10 @@ class DiskuzeControl extends BaseControl
 			$return['diskuze'][$id_]['muze_pridat'] = $this->parent->user->isAllowed('komentare', 'add');
 			$return['diskuze'][$id_]['muze_zamknout'] = ($this->parent->user->isAllowed('diskuze', 'edit') && $this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($prvni['id_autora'])) || ($this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($prvni['id_autora']));
 			$i = 0;
-			foreach( $return['diskuze'][$id_]['komentare'] as &$komentar )
+			foreach ($return['diskuze'][$id_]['komentare'] as &$komentar)
 			{
-				$komentar['muze_smazat'] = $this->parent->user->isAllowed('komentare','delete') || ($this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($komentar['id_autora']) && $i>=count($return['diskuze'][$id_]['komentare']));
-				$komentar['muze_upravit'] = $this->parent->user->isAllowed('komentare','edit') || ($this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($komentar['id_autora']) && $i>=count($return['diskuze'][$id_]['komentare']));
+				$komentar['muze_smazat'] = $this->parent->user->isAllowed('komentare', 'delete') || ($this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($komentar['id_autora']) && $i >= count($return['diskuze'][$id_]['komentare']));
+				$komentar['muze_upravit'] = $this->parent->user->isAllowed('komentare', 'edit') || ($this->parent->user->isLoggedIn() == true && $this->parent->jeAutor($komentar['id_autora']) && $i >= count($return['diskuze'][$id_]['komentare']));
 				$i++;
 			}
 
@@ -275,8 +280,8 @@ class DiskuzeControl extends BaseControl
 			$return['diskuze'][$id_]['sledovano'] = $this->parent->user->isLoggedIn() && $this->model->jeSledovana($id_, $this->parent->user->getIdentity()->id);
 		}
 
-		$temata = new Temata;
-		if( $souvisejiciTabulka !== NULL )
+		$temata = $this->presenter->context->temata;
+		if($souvisejiciTabulka !== NULL)
 		{
 			$tema = $temata->findBySouvisejici($souvisejiciTabulka)->fetch();
 			$return['id_tematu'] = $tema['id'];
@@ -301,16 +306,16 @@ class DiskuzeControl extends BaseControl
 
 	public function createComponent($name)
 	{
-		if( preg_match( '~komentarForm_([0-9]+)~', $name, $matches ) )
+		if(preg_match('~komentarForm_([0-9]+)~', $name, $matches))
 		{
 			$idDiskuze = $matches[1];
 			$this->createInstanceKomentarForm($name, $idDiskuze);
 		}
-		elseif( $name == 'komentarForm' )
+		elseif($name == 'komentarForm')
 		{
 			$this->createInstanceKomentarForm($name);
 		}
-		elseif( $name == 'upravitKomentarForm' )
+		elseif($name == 'upravitKomentarForm')
 		{
 			$this->createInstanceUpravitKomentarForm($name);
 		}
@@ -318,34 +323,35 @@ class DiskuzeControl extends BaseControl
 
 	public function createInstanceKomentarForm($name, $idDiskuze = 0)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Form($this, $name);
 
-		$form->getElementPrototype()->class('ajax-komentar');
+		//$form->getElementPrototype()->class('ajax-komentar');
 
 		$form->addHidden('id_diskuze', $idDiskuze);
 		$form->addTexylaTextArea('text', 'Text zprávy')
-			->addRule(Form::FILLED, 'Vyplňte, prosím, text zprávy.');
+				->addRule(Form::FILLED, 'Vyplňte, prosím, text zprávy.');
 		$form->addSubmit('save', 'Odeslat odpověď');
 		$form->addSubmit('cancel', 'Vrátit se zpět')
-			->setValidationScope(FALSE);
+				->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'komentarFormSubmitted');
+		$form->onSuccess[] = array($this, 'komentarFormSubmitted');
 	}
 
 	public function createInstanceUpravitKomentarForm($name)
 	{
-		$form = new AppForm($this, $name);
+		$form = new Form($this, $name);
 
-		$form->getElementPrototype()->class('ajax-komentar');
+		//$form->getElementPrototype()->class('ajax-komentar');
 
 		$form->addHidden('id');
 		$form->addHidden('id_diskuze');
 		$form->addTexylaTextArea('text', 'Text zprávy')
-			->addRule(Form::FILLED, 'Vyplňte, prosím, text zprávy.');
+				->addRule(Form::FILLED, 'Vyplňte, prosím, text zprávy.');
 		$form->addSubmit('save', 'Uložit komentář');
 		$form->addSubmit('cancel', 'Zrušit')
-			->setValidationScope(FALSE);
+				->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'upravitKomentarFormSubmitted');
+		$form->onSuccess[] = array($this, 'upravitKomentarFormSubmitted');
 	}
+
 }

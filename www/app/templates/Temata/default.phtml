@@ -1,9 +1,9 @@
-@{block content}
+{block content}
 
 <p class="nastaveni"><a href="{plink Temata:add}" class="add">Přidat nové téma</a></p>
 
 {if count($temata['temata'])}
-{widget temataForm begin}
+{control temataForm begin}
 <table class="prehled">
 <thead>
 	<tr>
@@ -25,7 +25,7 @@
 		</tr>
 </tbody>
 </table>
-{widget temataForm end}
+{control temataForm end}
 {else}
 	<p class="warning">Žádná témata nebyla nalezena.</p>
 {/if}

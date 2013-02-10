@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter bodových tabulek
@@ -18,11 +18,12 @@ class BodoveTabulkyPresenter extends BasePresenter
 	/** @persistent */
 	public $backlink = '';
 
+	/** @var BodoveTabulky */
 	protected $model;
 
 	protected function startup()
 	{
-		$this->model = new BodoveTabulky;
+		$this->model = $this->context->bodoveTabulky;
 		parent::startup();
 	}
 
@@ -32,7 +33,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->bodoveTabulky = array();
-		$bodyModel = new Body;
+		$bodyModel = $this->context->body;
 
 		$this->template->bodoveTabulky['bodoveTabulky'] = $this->model->findAll()->fetchAssoc('id');
 		foreach( $this->template->bodoveTabulky['bodoveTabulky'] as $tabulka )
@@ -68,7 +69,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 	public function renderEdit($id = 0)
 	{
 		$body = array();
-		$bodyModel = new Body;
+		$bodyModel = $this->context->body;
 		if( $id != 0 )
 		{
 			$body = $this->model->find($id)->fetch();
@@ -83,7 +84,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 	public function createComponentEditForm($name)
 	{
 		$id = (int) $this->getParam('id');
-		$kategorieSoutezeModel = new KategorieSouteze;
+		$kategorieSoutezeModel = $this->context->kategorieSouteze;
 
 		$form = new RequestButtonReceiver($this, $name);
 		$form->addGroup('Informace o bodové tabulce');
@@ -111,12 +112,12 @@ class BodoveTabulkyPresenter extends BasePresenter
 		$form->addSubmit('cancel', 'Zpět')
 			->setValidationScope(FALSE);;
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 
 		return $form;
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -146,7 +147,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 
 				if(isset($data['body'])) foreach($data['body'] as $odpoved)
 				{
-					$bodyModel = new Body;
+					$bodyModel = $this->context->body;
 					$bodyModel->update($odpoved['id'], array('body' => $odpoved['body']));
 				}
 				$this->flashMessage('Tabulka byla úspěšně uložena.', 'ok');
@@ -154,7 +155,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Nepodařilo se uložit bodovou tabulku.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 
 			if( $form['saveAndReturn']->isSubmittedBy() )
@@ -184,7 +185,7 @@ class BodoveTabulkyPresenter extends BasePresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Bodovou tabulku se nepodařilo odstranit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('BodoveTabulky:default');
 	}

@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\UI\Form;
 
 /**
  * Presenter témat diskuze
@@ -18,11 +18,12 @@ class TemataPresenter extends SecuredPresenter
 	/** @persistent */
 	public $backlink = '';
 
+	/** @var Temata */
 	protected $model = NULL;
 
 	protected function startup()
 	{
-		$this->model = new Temata;
+		$this->model = $this->context->temata;
 
 		parent::startup();
 	}
@@ -70,11 +71,11 @@ class TemataPresenter extends SecuredPresenter
 		else $this->setTitle('Úprava tématu diskuze');
 	}
 
-	public function createComponentEditForm()
+	public function createComponentEditForm($name)
 	{
-		$form = new AppForm($this, 'editForm');
+		$form = new Nette\Application\UI\Form($this, $name);
 
-		$uzivatele = new Uzivatele;
+		$uzivatele = $this->context->uzivatele;
 
 		$form->addGroup('Úprava tématu diskuze', true);
 
@@ -89,12 +90,10 @@ class TemataPresenter extends SecuredPresenter
 		$form->addSubmit('cancel', 'Zrušit')
 			->setValidationScope(FALSE);
 
-		$form->onSubmit[] = array($this, 'editFormSubmitted');
-
-		$form->getRenderer()->setClientScript(new LiveClientScript($form));
+		$form->onSuccess[] = array($this, 'editFormSubmitted');
 	}
 
-	public function editFormSubmitted(AppForm $form)
+	public function editFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$id = (int) $this->getParam('id');
 
@@ -125,15 +124,15 @@ class TemataPresenter extends SecuredPresenter
 			catch(DibiException $e)
 			{
 				$this->flashMessage('Téma se nepodařilo uložit.', 'error');
-				Debug::processException($e, true);
+				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			}
 		}
 		$this->redirect('Temata:default');
 	}
 
-	public function createComponentTemataForm()
+	public function createComponentTemataForm($name)
 	{
-		$form = new AppForm;
+		$form = new Nette\Application\UI\Form($this, $name);
 
 		foreach( $this->model->findAll()->fetchAll() as $temata )
 		{
@@ -144,12 +143,10 @@ class TemataPresenter extends SecuredPresenter
 		}
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = array($this, 'temataFormSubmitted');
-
-		return $form;
+		$form->onSuccess[] = array($this, 'temataFormSubmitted');
 	}
 
-	public function temataFormSubmitted(AppForm $form)
+	public function temataFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		try
 		{
@@ -163,7 +160,7 @@ class TemataPresenter extends SecuredPresenter
 		catch(DibiException $e)
 		{
 			$this->flashMessage('Údaje o tématech se nepodařilo uložit.', 'error');
-			Debug::processException($e, true);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 		}
 		$this->redirect('default');
 	}
