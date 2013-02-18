@@ -28,7 +28,7 @@ class SouboryPresenter extends BasePresenter
 		$this->template->galerie = array();
 		$this->template->galerie['galerie'] = $this->model->findAll()->fetchAll();
 
-		$this->template->galerie['muze_pridavat'] = $this->user->isAllowed('fotogalerie', 'edit');
+		$this->template->galerie['muze_pridavat'] = $this->user->isAllowed('galerie', 'edit');
 
 		$this->setTitle('Fotogalerie');
 

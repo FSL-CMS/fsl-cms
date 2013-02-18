@@ -7,6 +7,7 @@
  */
 use Nette\Diagnostics\Debugger;
 use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 
 /**
  * Bázový presenter
@@ -1075,7 +1076,7 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 	{
 		$backlink = $this->getApplication()->storeRequest();
 
-		if(!$this->user->isAllowed($this->getParam('presenter'), $this->getAction())) throw new ForbiddenRequestException();
+		if(!$this->user->isAllowed(preg_replace('/presenter/', '', strtolower($this->getPresenter()->name)), $this->getAction())) throw new ForbiddenRequestException();
 	}
 
 	public function actionEdit($id = 0)

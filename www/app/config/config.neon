@@ -46,6 +46,8 @@ common:
 			class: Druzstva(@dibi.connection)
 		fotky:
 			class: Fotky(@dibi.connection)
+		funkceRady:
+			class: FunkceRady(@dibi.connection)
 		galerie:
 			class: Galerie(@dibi.connection)
 		kategorie:
