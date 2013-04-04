@@ -19,7 +19,7 @@ class BaseControl extends Nette\Application\UI\Control
 		$template = parent::createTemplate($class = NULL);
 
 		$texy = $this->presenter->context->Texy;
-		$texy2 = $this->presenter->context->Texy;
+		$texy2 = $this->presenter->context->Texy2;
 
 		/*$texy->addHandler('script', array($this, 'scriptHandler'));
 		$texy->addHandler('image', array($this, 'videoHandler'));*/

@@ -7,6 +7,7 @@
  */
 
 use Nette\Application\UI\Form;
+use Nette\Application\BadRequestException;
 
 /**
  * Presenter článků

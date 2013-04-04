@@ -27,7 +27,7 @@ class UrlsRouter extends Nette\Application\Routers\Route implements IRouter
 
 	public function match(Nette\Http\IRequest $httpRequest)
 	{
-		$httpRequest->getUrl()->getPath();
+		//$httpRequest->getUrl()->getPath();
 
 		$params = $httpRequest->getQuery();
 
@@ -35,9 +35,17 @@ class UrlsRouter extends Nette\Application\Routers\Route implements IRouter
 		$context = Nette\Environment::getHttpRequest();
 		$page = array();
 
-		if(($page = $urlsModel->findByUrl(substr($context->getUrl()->path, strlen($context->getUrl()->scriptPath)-1))->fetch()) == false)
+		$url = $context->getUrl()->path.'?'.$context->getUrl()->query;
+
+		if(($page = $urlsModel->findByUrl($url)->fetch()) == false)
 		{
-			if(($page = $urlsModel->findRedirectedByUrl($context->getUrl()->path)->fetch()) == false) return NULL;
+			if(
+					($page = $urlsModel->findRedirectedByUrl($url)->fetch()) == false
+					&&
+					($page = $urlsModel->findByUrl($context->getUrl()->path)->fetch()) == false
+					&&
+					($page = $urlsModel->findByUrl(substr($context->getUrl()->path, strlen($context->getUrl()->scriptPath)-1))->fetch()) == false
+			) return NULL;
 		}
 
 		$prequest = new Nette\Application\Request(

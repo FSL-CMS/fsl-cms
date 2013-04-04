@@ -52,7 +52,7 @@ class PoradiControl extends BaseControl
 		{
 			foreach ($bar as $kategorie => $foo)
 			{
-				usort($vysledkyPoslednihoRocniku[$soutez][$kategorie], array($this->getPresenter(), "orderVysledky"));
+				@usort($vysledkyPoslednihoRocniku[$soutez][$kategorie], array($this->getPresenter(), "orderVysledky"));
 			}
 		}
 

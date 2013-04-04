@@ -1,7 +1,7 @@
 <div id="prehled-poradi">
 {if count($vysledky)}
 {foreach $vysledky as $soutez => $vysledkySouteze}
-	<h2>{block|texy:true}Výsledky soutěže **{$soutez}**{/block}</h2>
+	<h2>{block|texy2:true}Výsledky soutěže **{$soutez}**{/block}</h2>
 	{foreach $vysledkySouteze as $kategorie => $vysledkyKategorie}
 	<table>
 		<caption>Kategorie <span class="{$kategorie|webalize}">{$kategorie}</span></caption>

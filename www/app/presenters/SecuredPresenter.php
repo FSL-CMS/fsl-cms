@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Application\ForbiddenRequestException;
 
 /**
  * Zabezpečený presenter, všechny od něj odvozené presentery vyžadují přihlášení

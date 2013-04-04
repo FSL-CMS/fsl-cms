@@ -26,11 +26,11 @@ class ErrorPresenter extends BasePresenter
 			$this->payload->error = TRUE;
 			$this->terminate();
 		}
-		elseif($exception instanceof Nette\Application\BadRequestException)
+		elseif($exception instanceof Nette\Application\BadRequestException && !($exception instanceof Nette\Application\ForbiddenRequestException))
 		{
 			$code = $exception->getCode();
 			// load template 403.latte or 404.latte or ... 4xx.latte
-			$this->setView(in_array($code, array(403, 404, 500)) ? $code : '4xx');
+			$this->setView(in_array($code, array(403, 404, 500)) ? $code : '400');
 			// log to access.log
 			Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 		}
