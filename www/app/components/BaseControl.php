@@ -35,4 +35,14 @@ class BaseControl extends Nette\Application\UI\Control
 		return $template;
 	}
 
+	public function createComponentMapa()
+	{
+		return new MapaControl;
+	}
+
+	public function createComponentSouvisejici()
+	{
+		return new SouvisejiciControl;
+	}
+
 }

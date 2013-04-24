@@ -1,8 +1,8 @@
-@{block content}
+{block content}
 
 {include @Clanky.clanek.phtml, 'clanek' => $clanek}
 
-@{widget prilohy}
+{widget prilohy}
 
 <h2>Komentáře k článku</h2>
-@{widget diskuze $clanek['id'], "clanky"}
+{widget diskuze $clanek['id'], "clanky"}

@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 <h2>Informace o sboru {if $sbor['muze_editovat'] == true}<a href="{plink Sbory:edit, $sbor['id']}" class="edit">upravit</a>{/if}</h2>
 
@@ -71,4 +71,4 @@
 {/if}
 
 <h2>Komentáře ke sboru</h2>
-@{widget diskuze $sbor['id'], "sbory"}
+{widget diskuze $sbor['id'], "sbory"}

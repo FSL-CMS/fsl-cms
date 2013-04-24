@@ -1,4 +1,4 @@
-@{block content}
+{block content}
 
 <h2>Informace o terčích{if $terc['muze_editovat'] == true} <a href="{plink Terce:edit, $terc['id']}" title="Upravit informace o terčích" class="edit">Upravit</a>{/if}</h2>
 
@@ -31,4 +31,4 @@
 {/foreach}
 
 <h2>Komentáře k terčům</h2>
-@{widget diskuze $terc->id, 'terce'}
+{widget diskuze $terc->id, 'terce'}
