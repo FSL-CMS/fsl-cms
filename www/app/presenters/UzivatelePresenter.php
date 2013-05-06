@@ -299,10 +299,13 @@ class UzivatelePresenter extends BasePresenter
 			if( !$uzivatel ) throw new UserNotFoundException('Uživatel s tímto emailem nebyl nalezen. "Registrovat se!":'.$this->getPresenter()->link('Uzivatele:add'));
 
 			$heslo = $this->model->noveHeslo($form['email']->value);
-
-			$mail = new Mail;
-			$mail->setFrom('zapomenuteheslo@'.$_SERVER['SERVER_NAME']);
+			$server = str_replace('www.', '', $_SERVER['SERVER_NAME']);
+			$mail = new Nette\Mail\Message;
+			$mail->setFrom('zapomenuteheslo@'.$server);
 			$mail->addTo($form['email']->value);
+			$mail->mailer->commandArgs = '-fspravce@'.$server;
+			$mail->addReplyTo('spravce@'.$server);
+			$mail->setSubject('Zaslání nového hesla');
 			$mail->setBody('Nové heslo pro účet '.$form['email']->value.' je '.$heslo.'.');
 			$mail->send();
 
@@ -322,7 +325,7 @@ class UzivatelePresenter extends BasePresenter
 		catch (Exception $e)
 		{
 			$this->boxFlashMessage('Heslo se nepodařilo obnovit.', 'error');
-			Debug::processException($e);
+			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->invalidateControl('obnoveniHesla');
 		}
 	}
