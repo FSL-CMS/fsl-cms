@@ -111,7 +111,7 @@ class DiskuzeControl extends BaseControl
 		}
 		catch (RestrictionException $e)
 		{
-			$this->parent->flashMessage($e->getMessage() . ' "Smazat diskuzi?":' . $this->presenter->link('Diskuze:smazat', array('id' => $komentar['id_diskuze'], 'force' => 1)), 'error');
+			$this->parent->flashMessage($e->getMessage() . ' "Smazat diskuzi?":' . $this->presenter->link('Diskuze:smazat', array('id' => $komentar['id_diskuze'], 'force' => 1)), 'warning');
 		}
 
 		if($this->parent->isAjax()) $this->invalidateControl('komentare' . $komentar['id_diskuze']);

@@ -92,6 +92,8 @@ common:
 			class: Terce(@dibi.connection)
 		typySboru:
 			class: TypySboru(@dibi.connection)
+		typyTercu:
+			class: TypyTercu(@dibi.connection)
 		ucasti:
 			class: Ucasti(@dibi.connection)
 		urls:
