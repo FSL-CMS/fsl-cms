@@ -250,11 +250,11 @@ class DiskuzePresenter extends BasePresenter
 				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 				$this->redirect('this');
 			}
-			catch(Exception $e)
+			/*catch(Exception $e)
 			{
 				Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 				$this->flashMessage('Téma se nepodařilo založit.', 'error');
-			}
+			}*/
 		}
 	}
 

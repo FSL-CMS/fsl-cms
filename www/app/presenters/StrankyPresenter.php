@@ -114,7 +114,7 @@ class StrankyPresenter extends BasePresenter
 			->addRule(Form::FILLED, 'Je nutné vyplnit název stránky');
 
 		$form->addGroup('Obsah stránky');
-		$form->addAdminTexylaTextArea('text', 'Obsah');
+		$form->addAdminTexylaTextArea('text', 'Obsah', null, null, $this->getPresenter()->getName(), $this->getParam('id', 0));
 		$form->setCurrentGroup(NULL);
 
 		$form->addGroup('Uložení');

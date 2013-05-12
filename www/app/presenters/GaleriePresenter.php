@@ -524,7 +524,7 @@ class GaleriePresenter extends BasePresenter
 		$form->addText('nazev', 'Název galerie', 30)
 			   ->addRule(Form::FILLED, 'Je nutné vyplnit název galerie.')
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka názvu je %d znaků.', 255);
-		$form->addAdminTexylaTextArea('text', 'Popis galerie')
+		$form->addAdminTexylaTextArea('text', 'Popis galerie', null, null, $this->getPresenter()->getName(), $id)
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka textu je %d znaků.', 65535);
 
 		$form->addGroup('Typ fotogalerie');

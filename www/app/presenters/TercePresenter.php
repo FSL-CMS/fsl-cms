@@ -103,7 +103,7 @@ class TercePresenter extends BasePresenter
 		$form->addSelect('id_majitele', 'Majitel', $sbory->findAlltoSelect()->fetchPairs('id', 'nazev'))
 			->addRule(Form::FILLED, 'Je nutné vybrat majitele terčů.')
 			->setOption('description', $form->addRequestButton('addSbory', 'Přidat nový', 'Sbory:add'));
-		$form->addAdminTexylaTextArea('text', 'Popis terčů');
+		$form->addAdminTexylaTextArea('text', 'Popis terčů', null, null, $this->getPresenter()->getName(), $this->getParam('id', 0));
 
 		$form->addGroup(null);
 

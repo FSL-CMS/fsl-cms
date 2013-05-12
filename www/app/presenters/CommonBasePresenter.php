@@ -1053,7 +1053,7 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 					"filesRenamePath" => $this->link("Texyla:rename"),
 					"filesDeletePath" => $this->link("Texyla:delete"),
 					"galerieVyberPath" => $this->link("Galerie:vyber"),
-					"souboryVyberPath" => $this->link('Soubory:vyber', array('souvisejici' => $this->presenter->getName(), 'id_souvisejiciho' => $this->presenter->getParam('id', 0)))
+					"souboryVyberPath" => $this->link('Soubory:vyber')
 				));
 
 		$texyla = new TexylaLoader($filter, $baseUri . "webtemp");

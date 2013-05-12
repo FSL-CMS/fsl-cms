@@ -154,7 +154,7 @@ class ClankyPresenter extends BasePresenter
 		{
 			$defaults = $this->template->clanek;
 			$defaults['sablony_clanku'] = $this->model->findSablony($id)->fetchPairs('id', 'id');
-			$this['clanekForm']->setDefaults($defaults);
+			$this['clanekForm']->setValues($defaults);
 		}
 
 		if($id != 0) $this->setTitle('Úprava článku');
@@ -172,10 +172,10 @@ class ClankyPresenter extends BasePresenter
 		$form->addText('nazev', 'Název článku', 50)
 			   ->addRule(Form::FILLED, 'Je nutné vyplnit název článku.')
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka názvu článku je %d znaků.', 255);
-		$form->addAdminTexylaTextArea('perex', 'Úvod článku')
+		$form->addAdminTexylaTextArea('perex', 'Úvod článku', null, null, $this->getPresenter()->getName(), $id)
 			   ->addRule(Form::FILLED, 'Je nutné vyplnit text článku.')
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka úvodu článku je %d znaků.', 65535);
-		$form->addAdminTexylaTextArea('text', 'Text článku', NULL, 40)
+		$form->addAdminTexylaTextArea('text', 'Text článku', NULL, 40, $this->getPresenter()->getName(), $id)
 			   ->addRule(Form::MAX_LENGTH, 'Maximální délka článku je %d znaků.', 65535);
 
 		$kategorie_clanku = $this->model->findKategorie()->fetchPairs('id', 'nazev');

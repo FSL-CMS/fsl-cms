@@ -51,9 +51,9 @@ Nette\Forms\Container::extensionMethod('Nette\Forms\Container::addTexylaTextArea
 	return $_this[$name] = new TexylaTextArea($label, $cols, $rows);
 });
 
-Nette\Forms\Container::extensionMethod('Nette\Forms\Container::addAdminTexylaTextArea', function(Nette\Application\UI\Form $_this, $name, $label = NULL, $cols = NULL, $rows = NULL)
+Nette\Forms\Container::extensionMethod('Nette\Forms\Container::addAdminTexylaTextArea', function(Nette\Application\UI\Form $_this, $name, $label = NULL, $cols = NULL, $rows = NULL, $souvisejici, $id_souvisejiciho)
 {
-	return $_this[$name] = new AdminTexylaTextArea($label, $cols, $rows);
+	return $_this[$name] = new AdminTexylaTextArea($label, $cols, $rows, $souvisejici, $id_souvisejiciho);
 });
 
 Nette\Forms\Container::extensionMethod('Nette\Forms\Container::addDatePicker', function(Nette\Application\UI\Form $_this, $name, $label, $cols = NULL, $maxLength = NULL)
