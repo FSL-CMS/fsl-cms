@@ -398,7 +398,7 @@ class ZavodyPresenter extends BasePresenter
 		  ->addConditionOn($form['ustream_stav'], Form::EQUAL, 'live')
 		  ->addRule(Form::FILLED, 'Je nutné vyplnit Ustream ID videa.'); */
 
-		$form->addAdminTexylaTextArea('text', 'Poznámka k závodu')
+		$form->addAdminTexylaTextArea('text', 'Poznámka k závodu', null, null, $this->getPresenter()->getName(), $id)
 				->addRule(Form::MAX_LENGTH, 'Maximální délka poznámky je %d znaků.', 65535);
 
 		$soutezeRocnikuModel = $this->context->soutezeRocniku;
@@ -764,7 +764,7 @@ class ZavodyPresenter extends BasePresenter
 		$spm = $this->context->startovniPoradi;
 		$sp = $spm->find($id)->fetch();
 
-		if(!$this->user->isAllowed(new StartovniPoradiResource($sp), 'delete'))
+		if(!$this->user->isAllowed(new StartovniPoradiResource((array)$sp), 'delete'))
 		{
 			$this->flashMessage('Nemáte oprávnění odhlásit toto družstvo.', 'warning');
 			$this->redirect('Zavody:zavod', $id_zavodu);
