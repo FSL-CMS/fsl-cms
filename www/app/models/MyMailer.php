@@ -13,7 +13,7 @@
  *
  * @author	Milan Pála
  */
-class MyMailer extends Mail
+class MyMailer extends Nette\Mail
 {
 
 }
