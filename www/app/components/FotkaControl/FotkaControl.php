@@ -219,10 +219,12 @@ class FotkaControl extends BaseControl
 
 	public function handleSmazat($id)
 	{
-		$fotka = $this->model->find($id)->fetch();
-
+          $this->model = $this->presenter->context->fotky;
 		try
 		{
+               /*$fotka = $this->model->find($id);
+			if( $fotka === false) throw new DibiException('NotFound');
+			else $fotka = $fotka->fetch();*/
 			$this->model->delete($id);
 			$this->getPresenter()->flashMessage('Fotka byla odstraněna.');
 		}

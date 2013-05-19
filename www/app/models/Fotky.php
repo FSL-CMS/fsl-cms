@@ -38,9 +38,9 @@ class Fotky extends BaseSoubory implements IUdrzba
 
 	public function uloz($id_souvisejiciho, $souvisejici = 'galerie')
 	{
-		$fotka = $this->soubor->getImage()->resize(800, 600);
+		$fotka = $this->soubor->toImage()->resize(800, 600);
 
-		$nahled = $this->soubor->getImage()->resize(180, 135);
+		$nahled = $this->soubor->toImage()->resize(180, 135);
 
 		$casti = pathinfo( $this->soubor->getName() );
 		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));

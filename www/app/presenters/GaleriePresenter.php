@@ -8,6 +8,7 @@
 
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;
+use Nette\Utils\Html;
 
 /**
  * Presenter galerií
@@ -539,7 +540,7 @@ class GaleriePresenter extends BasePresenter
 
 		$form->addGroup('Integrovaná galerie')->setOption("container", Html::el("fieldset")->id(Galerie::$TYP_INTERNI));
 		$nativniCont = $form->addContainer(Galerie::$TYP_INTERNI);
-		$nativniCont->addTextArea('typ_key', 'Integrovaná galerie pro nahrávání fotek');
+		$nativniCont->addTextArea('typ_key', 'Integrovaná galerie', 40, 1)->setValue('Fotky půjdou nahrát v dalším kroku')->getControlPrototype()->readonly = 'readonly';
 
 		$form->addContainer('jizSouvisejici');
 
