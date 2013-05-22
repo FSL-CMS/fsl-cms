@@ -15,7 +15,10 @@
 	{? $i = 0; }
 	{foreach $forum['diskuze'] as $disk}
 			<tr{if $i%2} class="suda"{/if}>
-				<td><h3><a href="{link Diskuze:diskuze, $disk['id_diskuze']}"{if $disk['zamknuto'] == true} class="zamknout"{/if}>{$disk['tema_diskuze']}</a>{if $disk['muze_smazat'] == true} <a href="{plink Diskuze:smazat, $disk['id_diskuze']}" title="Smazat diskuzi" class="delete">Smazat</a>{/if}</h3><div>&rarr; <small><a href="{plink Forum:forum, $disk['id_tematu']}">{$disk['tema']}</a></small><br />{control souvisejici 'diskuze', $disk['id_diskuze']}</div></td>
+				<td>
+					<h3><a href="{link Diskuze:diskuze, $disk['id_diskuze']}"{if $disk['zamknuto'] == true} class="zamknout"{/if}>{$disk['tema_diskuze']}</a>{if $disk['muze_smazat'] == true} <a href="{plink Diskuze:smazat, $disk['id_diskuze']}" title="Smazat diskuzi" class="delete">Smazat</a>{/if}</h3>
+					<div>&rarr; <small><a href="{plink Forum:forum, $disk['id_tematu']}">{$disk['tema']}</a></small><br />{control souvisejici 'diskuze', $disk['id_diskuze']}</div>
+				</td>
 
 				{* Související odkaz *}
 				{* control souvisejici 'diskuze', $disk['id_diskuze'] *}

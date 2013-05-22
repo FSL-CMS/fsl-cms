@@ -319,6 +319,10 @@ class DiskuzeControl extends BaseControl
 		{
 			$this->createInstanceUpravitKomentarForm($name);
 		}
+		else
+		{
+			return parent::createComponent($name);
+		}
 	}
 
 	public function createInstanceKomentarForm($name, $idDiskuze = 0)

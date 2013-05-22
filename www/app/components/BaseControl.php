@@ -42,7 +42,7 @@ class BaseControl extends Nette\Application\UI\Control
 
 	public function createComponentSouvisejici()
 	{
-		return new SouvisejiciControl;
+		return new SouvisejiciControl();
 	}
 
 }

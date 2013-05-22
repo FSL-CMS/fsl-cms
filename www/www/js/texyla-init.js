@@ -67,7 +67,7 @@ $.texyla.addWindow("img", {
 	createContent: function () {
 		return $(
 			'<div><p><a href="{{$galerieVyberPath}}" class="vyber-z-galerie">Vybrat fotku uloženou v galerii</a><br />' +
-				'<a href="{{$souboryVyberPath}}" class="vyber-z-galerie">Vybrat přiložený obrázek</a></p>' +
+				'<a href="{{$souboryVyberPath}}?souvisejici=' + $('input[name="souvisejici"]').first().val() + '&id_souvisejiciho=' + $('input[name="id_souvisejiciho"]').first().val() + '" class="vyber-z-galerie">Vybrat přiložený obrázek</a></p>' +
 			"<table><tbody><tr>" +
 				// Adresa
 				"<th><label>" + this.lng.imgSrc + "</label></th>" +
