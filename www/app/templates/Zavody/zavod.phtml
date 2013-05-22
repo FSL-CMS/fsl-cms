@@ -78,7 +78,7 @@
 {/if}
 
 {if count($rekordyLigy['dosavadni'])}
-	<dt>Dosovadní rekordy ligy platné do začátku závodu</dt>
+	<dt>Dosavadní rekordy ligy platné do začátku závodu</dt>
 	{foreach $rekordyLigy['dosavadni'] as $soutez => $foo}
 		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
 		{foreach $foo as $rekord}
