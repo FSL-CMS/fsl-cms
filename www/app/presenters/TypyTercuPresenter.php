@@ -61,8 +61,9 @@ class TypyTercuPresenter extends SecuredPresenter
 		$form->addText('nazev', 'Typ terčů')
 			->addRule(Form::FILLED, 'Je nutné vyplnit typ terčů.');
 
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('cancel', 'Zrušit')
+		$form->addSubmit('save', Texty::$FORM_SAVE);
+		$form->addSubmit('saveAndReturn', Texty::$FORM_SAVEANDRETURN);
+		$form->addSubmit('cancel', Texty::$FORM_CANCEL)
 			->setValidationScope(false);
 
 		$form->onSuccess[] = array($this, 'editFormSubmitted');
@@ -75,8 +76,10 @@ class TypyTercuPresenter extends SecuredPresenter
 		$id = (int)$this->getParam('id');
 		if($form['cancel']->isSubmittedBy())
 		{
+			$this->getApplication()->restoreRequest($this->backlink);
+			$this->redirect('default');
 		}
-		elseif($form['save']->isSubmittedBy())
+		elseif($form['save']->isSubmittedBy() || $form['saveAndReturn']->isSubmittedBy())
 		{
 			try
 			{
@@ -90,14 +93,20 @@ class TypyTercuPresenter extends SecuredPresenter
 				{
 					$this->model->update($id, $dataDoDb);
 				}
-				$this->getApplication()->restoreRequest($this->backlink);
-				$this->redirect('default');
+
+				$this->flashMessage('Údaje o typu terčů byly uloženy.', 'ok');
+
+				if($form['saveAndReturn']->isSubmittedBy())
+				{
+					$this->getApplication()->restoreRequest($this->backlink);
+					$this->redirect('default');
+				}
 			}
 			catch(AlreadyExistException $e)
 			{
 				$this->flashMessage('Typ terčů již existuje.', 'warning');
-				$this->getApplication()->restoreRequest($this->backlink);
-				$this->redirect('default');
+				//$this->getApplication()->restoreRequest($this->backlink);
+				//$this->redirect('default');
 			}
 			catch(DibiException $e)
 			{

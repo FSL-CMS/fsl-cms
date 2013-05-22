@@ -1,6 +1,6 @@
 {block content}
 
-{if $typyTercu['muze_pridat']}<p><a href="{plink add}" class="add">Přidat nový typ</a></p>{/if}
+{if $typyTercu['muze_pridat']}<p class="config"><a href="{plink add}" class="add">Přidat nový typ</a></p>{/if}
 
 {snippet typyTercu}
 {if count($typyTercu['typyTercu'])}
@@ -11,7 +11,7 @@
 	<tr>
 	     <th colspan="2">Pořadí</th><th>Název</th>{if $typyTercu['muze_editovat'] == true}<th colspan="2">Správa</th>{/if}
 	</tr>
-</thead>	
+</thead>
 <tbody class="sortable">
 	{foreach $typyTercu['typyTercu'] as $typTercu}
 		<tr>
