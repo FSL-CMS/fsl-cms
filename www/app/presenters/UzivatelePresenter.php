@@ -231,7 +231,7 @@ class UzivatelePresenter extends BasePresenter
 
 				if( $this->getAction() == 'edit' && $this->jeAutor($id) )
 				{
-					$this->user->getIdentity()->setName($form['jmeno']->value.' '.$form['prijmeni']->value);
+					$this->user->getIdentity()->name = $form['jmeno']->value.' '.$form['prijmeni']->value;
 					$this->user->getIdentity()->id_sboru = $dataDoDB['id_sboru%i'];
 				}
 				$this->flashMessage('Informace o uživateli byly úspěšně uloženy.', 'ok');
