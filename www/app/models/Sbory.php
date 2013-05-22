@@ -88,15 +88,15 @@ class Sbory extends BaseModel
 
 	private function constructUri($id, $data)
 	{
-		if(isset($data['id_mista']) && isset($data['id_typu']))
+		if(isset($data['id_mista%in']) && isset($data['id_typu%in']))
 		{
 			$mista = Nette\Environment::getService('mista');
-			$misto = $mista->find($data['id_mista'])->fetch();
+			$misto = $mista->find($data['id_mista%in'])->fetch();
 
-			if(!empty($data['id_typu']))
+			if(!empty($data['id_typu%in']))
 			{
 				$typySboru = Nette\Environment::getService('typySboru');
-				$typSboru = $typySboru->find($data['id_typu'])->fetch();
+				$typSboru = $typySboru->find($data['id_typu%in'])->fetch();
 			}
 			else $typSboru = array('zkratka' => '');
 
@@ -153,10 +153,10 @@ class Sbory extends BaseModel
 	{
 		try
 		{
-			$data = $this->constructUri($id, $data);
 			$this->pripravData($data);
 			parent::update($id, $data)->execute();
 
+			$data = $this->constructUri($id, $data);
 			if(isset($data['uri']))
 			{
 				$urlsModel = Nette\Environment::getService('urls');
