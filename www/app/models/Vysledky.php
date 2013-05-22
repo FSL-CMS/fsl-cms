@@ -36,7 +36,7 @@ class Vysledky extends BaseModel
 	public function findAll()
 	{
 		return $this->connection
-			->select('[vysledky].[umisteni] AS [poradi], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [okresy].[nazev] AS [okres], [okresy].[zkratka] AS [okres_zkratka], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[id], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [ucasti].[id_zavodu]')
+			->select('[vysledky].[umisteni] AS [poradi], '.Druzstva::$_NAZEV.' AS [druzstvo], [okresy].[nazev] AS [okres], [okresy].[zkratka] AS [okres_zkratka], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[id], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [ucasti].[id_zavodu]')
 			->from($this->table)
 			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
 			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
@@ -82,7 +82,7 @@ class Vysledky extends BaseModel
 	public function findByDruzstvo($id)
 	{
 		return $this->connection
-			->select('[vysledky].[id], IF( [sbor_poradatele].[id_mista] <> [sportoviste].[id_mista], CONCAT([poradatel_mista].[obec], " - ", [mista].[obec]), [poradatel_mista].[obec] ) as [zavod], [vysledky].[umisteni] AS [poradi], CONCAT( [typy_sboru].[zkratka], " ", [sbory].[privlastek], " ", [mista].[obec], " ", [druzstva].[poddruzstvo] ) AS [druzstvo], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [souteze].[nazev] AS [soutez], [ucasti].[id] AS [id_ucasti], [ucasti].[id_souteze], [ucasti].[id_zavodu], [zavody].[datum], SUBSTR([zavody].[datum], 1, 4) AS [sezona]')
+			->select('[vysledky].[id], IF( [sbor_poradatele].[id_mista] <> [sportoviste].[id_mista], CONCAT([poradatel_mista].[obec], " - ", [mista].[obec]), [poradatel_mista].[obec] ) as [zavod], [vysledky].[umisteni] AS [poradi], '.Druzstva::$_NAZEV.' AS [druzstvo], [druzstva].[id] AS [id_druzstva], [kategorie].[nazev] AS [kategorie], [kategorie].[id] AS [id_kategorie], [vysledky].[vysledny_cas], [vysledky].[body], [vysledky].[lepsi_cas], [vysledky].[lepsi_terc], [vysledky].[platne_body], [vysledky].[platne_casy], [souteze].[nazev] AS [soutez], [ucasti].[id] AS [id_ucasti], [ucasti].[id_souteze], [ucasti].[id_zavodu], [zavody].[datum], SUBSTR([zavody].[datum], 1, 4) AS [sezona]')
 			->from($this->table)
 			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
 			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
@@ -465,7 +465,7 @@ class Vysledky extends BaseModel
 			->leftJoin('[mista] [mista_druzstva] ON [mista_druzstva].[id] = [sbory].[id_mista]')
 			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
 			->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
-			->where('[zavody].[id_mista] = (SELECT [id_mista] FROM [zavody] WHERE [zavody].[id] = %i)', $id, ' AND [zavody].[datum] < (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i)', $id, 'AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, 'AND [souteze].[id] IN (SELECT [ucasti].[id_souteze] FROM [ucasti] WHERE [id_zavodu] = %i)', $id, 'AND [kategorie].[id] IN (SELECT [ucasti].[id_kategorie] FROM [ucasti] WHERE [id_zavodu] = %i)', $id)
+			->where('[zavody].[id_mista] = (SELECT [id_mista] FROM [zavody] WHERE [zavody].[id] = %i)', $id, ' AND [zavody].[datum] < (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i)', $id, 'AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, 'AND [souteze].[id] IN (SELECT [ucasti].[id_souteze] FROM [ucasti] WHERE [id_zavodu] = %i)', $id, 'AND [kategorie].[id] IN (SELECT [ucasti].[id_kategorie] FROM [ucasti] WHERE [id_zavodu] = %i)', $id, ' AND [vysledky].[platne_casy] = %i', self::POUZE_PLATNE_CASY)
 			->groupBy('[ucasti].[id_souteze], [druzstva].[id_kategorie]')
 			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
 		if( $id_druzstva != NULL ) $maxima->where('[druzstva].[id] = %i', $id_druzstva);
@@ -479,7 +479,7 @@ class Vysledky extends BaseModel
 		{
 			$i++;
 			$maximum_ = $this->connection
-				->select('[druzstva].[id], [ucasti].[id_souteze], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista_druzstva].[obec], [kategorie].[nazev], [druzstva].[poddruzstvo]) AS [druzstvo], [vysledky].[vysledny_cas], [zavody].[id] AS [id_zavodu], [mista_poradatele].[obec] AS [zavod], [zavody].[datum], [vysledky].[id], [souteze].[nazev] AS [soutez], [kategorie].[nazev] AS [kategorie]')
+				->select('[druzstva].[id], [ucasti].[id_souteze], '.Druzstva::$_NAZEV2.' AS [druzstvo], [vysledky].[vysledny_cas], [zavody].[id] AS [id_zavodu], [mista_poradatele].[obec] AS [zavod], [zavody].[datum], [vysledky].[id], [souteze].[nazev] AS [soutez], [kategorie].[nazev] AS [kategorie]')
 				->from('[vysledky]')
 				->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
 				->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
@@ -540,7 +540,7 @@ class Vysledky extends BaseModel
 		{
 			$i++;
 			$maximum_ = $this->connection
-				->select('[druzstva].[id], [ucasti].[id_souteze], CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista_druzstva].[obec], [kategorie].[nazev], [druzstva].[poddruzstvo]) AS [druzstvo], [vysledky].[vysledny_cas], [zavody].[id] AS [id_zavodu], [mista_poradatele].[obec] AS [zavod], [zavody].[datum], [vysledky].[id], [souteze].[nazev] AS [soutez], [kategorie].[nazev] AS [kategorie]')
+				->select('[druzstva].[id], [ucasti].[id_souteze], '.Druzstva::$_NAZEV2.' AS [druzstvo], [vysledky].[vysledny_cas], [zavody].[id] AS [id_zavodu], [mista_poradatele].[obec] AS [zavod], [zavody].[datum], [vysledky].[id], [souteze].[nazev] AS [soutez], [kategorie].[nazev] AS [kategorie]')
 				->from('[vysledky]')
 				->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
 				->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')

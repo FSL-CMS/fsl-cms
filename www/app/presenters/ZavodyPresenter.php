@@ -1169,7 +1169,7 @@ class ZavodyPresenter extends BasePresenter
 				$rekord['druzstvo'] = trim($rekord['druzstvo']);
 			}
 
-		if($this->template->zavod['datum'] < Datum::$dnes['dnes'])
+		if(strtotime($this->template->zavod['datum']) < time())
 		{
 			$this->template->zavod['rekordy'] = $vysledkyModel->rekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
 			foreach ($this->template->zavod['rekordy'] as $soutez)

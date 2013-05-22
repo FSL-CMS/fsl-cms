@@ -17,7 +17,8 @@ class Druzstva extends BaseModel
 	protected $table = 'druzstva';
 
 	/** @var string Zkratka za vzor pro název družstva */
-	public static $_NAZEV = 'CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [druzstva].[poddruzstvo])';
+	public static $_NAZEV = 'TRIM(CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista].[obec], [druzstva].[poddruzstvo]))';
+	public static $_NAZEV2 = 'TRIM(CONCAT_WS(" ", [typy_sboru].[zkratka], [sbory].[privlastek], [mista_druzstva].[obec], [druzstva].[poddruzstvo]))';
 
 	public function findBySbor($id)
 	{
