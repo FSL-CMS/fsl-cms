@@ -880,11 +880,10 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 	 *
 	 * @param type $ceho
 	 * @return type
-	 * @deprecated Používat ucfirst()
 	 */
 	public function zvetsPrvni($ceho)
 	{
-		return ucfirst($ceho);
+		return mb_strtoupper(mb_substr($ceho, 0, 1)) . mb_substr($ceho, 1);
 	}
 
 	public static function float($cislo)
