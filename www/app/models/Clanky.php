@@ -144,7 +144,7 @@ class Clanky extends Zverejnovane implements IUdrzba
 		$vsechnyClanky = $this->findAll();
 		foreach ($vsechnyClanky as $data)
 		{
-			$dataDoDB = array('nazev' => $data['nazev'], 'text' => $data['text'], 'id_kategorie' => (int) $data['id_kategorie'], 'stare_uri%s' => 'view.php?cisloclanku=' . $data['stary_link']);
+			$dataDoDB = array('nazev' => $data['nazev'], 'text' => $data['text'], 'id_kategorie' => (int) $data['id_kategorie']);
 			$this->update($data['id'], $dataDoDB);
 		}
 	}

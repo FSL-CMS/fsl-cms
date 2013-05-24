@@ -142,8 +142,11 @@ class Diskuze extends BaseModel implements IUdrzba
 		if($id == 0) throw new DibiException('Nebyl vložený záznam.');
 		$this->lastInsertedId($id);
 		$data = $this->constructUri($id, $data);
-		$urlsModel = Nette\Environment::getService('urls');
-		$urlsModel->setUrl('Diskuze', 'diskuze', $id, $data['uri']);
+		if(isset($data['uri']))
+		{
+			$urlsModel = Nette\Environment::getService('urls');
+			$urlsModel->setUrl('Diskuze', 'diskuze', $id, $data['uri']);
+		}
 		return $ret;
 	}
 
