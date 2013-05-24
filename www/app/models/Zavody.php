@@ -249,6 +249,9 @@ class Zavody extends Zverejnovane
 			{
 				$urlsModel->setUrl('Zavody', 'zavod', $id, '/zavody/'.$data['uri']);
 				$urlsModel->setUrl('Zavody', 'vysledky', $id, '/zavody/'.$data['uri'].'/vysledky');
+				$urlsModel->setUrl('Zavody', 'vysledkyExcel', $id, '/zavody/'.$data['uri'].'/vysledky-excel');
+				$urlsModel->setUrl('Zavody', 'startovniPoradi', $id, '/zavody/'.$data['uri'].'/startovni-poradi');
+				$urlsModel->setUrl('Zavody', 'pripravaProKomentatora', $id, '/zavody/'.$data['uri'].'/priprava-pro-komentatora');
 			}
 		}
 		catch(DibiException $e)
