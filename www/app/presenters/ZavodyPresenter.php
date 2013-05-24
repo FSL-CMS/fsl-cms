@@ -1276,7 +1276,7 @@ class ZavodyPresenter extends BasePresenter
 		$datum = new Datum;
 		$this->setTitle('Závod ' . $this->template->zavod['nazev'] . ', ' . $datum->date(substr($this->template->zavod['datum'], 0, 10), 1, 0, 0));
 
-		$this->pripravVysledky($id, false);
+		$this->pripravVysledky($id, true);
 
 		$this->template->nasledujici = $this->model->findNext($id)->fetch();
 		$this->template->predchozi = $this->model->findPrevious($id)->fetch();
