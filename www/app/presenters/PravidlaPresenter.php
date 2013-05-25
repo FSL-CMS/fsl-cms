@@ -91,7 +91,7 @@ class PravidlaPresenter extends BasePresenter
 		$form = new RequestButtonReceiver($this, 'editForm');
 
 		$form->addGroup('Informace o pravidlech');
-		$form->addAdminTexylaTextArea('pravidla', 'Pravidla', null, 30);
+		$form->addAdminTexylaTextArea('pravidla', 'Pravidla', null, 30, $this->getPresenter()->getName(), $this->getParam('id', 0));
 
 		$form->addGroup();
 		$form->addSubmit('save', Texty::$FORM_SAVE);
