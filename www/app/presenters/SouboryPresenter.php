@@ -95,7 +95,7 @@ class SouboryPresenter extends BasePresenter
 		$res->setHeader('Cache-Control', 'max-age=86400');
 		$res->setHeader('Pragma', 'public'); // Fix for IE - Content-Disposition
 		$res->setHeader("Last-Modified", gmdate("D, d M Y H:i:s", $last_modified_time) . " GMT");
-		$res->setHeader('Content-Disposition', '; filename="' . $soubor['soubor'] . '.' . $soubor['pripona'] . '"');
+		$res->setHeader('Content-Disposition', '; filename="' . Nette\Utils\Strings::webalize($soubor['soubor']) . '.' . $soubor['pripona'] . '"');
 		//$res->setHeader('Content-Description', 'File Transfer');
 		$res->setHeader('Content-Transfer-Encoding', 'binary');
 		$res->setHeader('Connection', 'close');
