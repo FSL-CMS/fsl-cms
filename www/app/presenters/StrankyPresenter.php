@@ -141,7 +141,7 @@ class StrankyPresenter extends BasePresenter
 				$this->model->insert($form->getValues());
 				$id = $this->model->lastInsertedId();
 			}
-			else $this->model->update($id, $form->getValues());
+			else $this->model->update($id, (array)$form->getValues());
 
 			$this->flashMessage('Údaje o stránce byly úspěšně uloženy.');
 		}
