@@ -57,8 +57,8 @@ class SouvisejiciControl extends BaseControl
 		foreach( $return as $id_ => &$souv )
 		{
 			if( $souv['souvisejiciTabulka'] == 'diskuze' ) { unset($return[$id_]); continue; }
-			$model = ucfirst( $souv['souvisejiciTabulka'] );
-			$souvisejiciModel = new $model;
+			$model = $souv['souvisejiciTabulka'];
+			$souvisejiciModel = $this->getPresenter()->getContext()->$model;
 			$souv['souvisejici'] = $souvisejiciModel->find($souv['id_souvisejiciho'])->fetch();
 		}
 
@@ -94,7 +94,7 @@ class SouvisejiciControl extends BaseControl
 	public function pridatSouvisejiciFormSubmitted(Nette\Application\UI\Form $form)
 	{
 		$data = $form->getValues();
-		$this->model = new Souvisejici();
+		$this->model = $this->getPresenter()->getContext()->souvisejici;
 
 		$rodic = strtolower($this->getPresenter()->getName());
 		$id = intval($this->getPresenter()->getParam('id'));
