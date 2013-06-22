@@ -61,7 +61,7 @@
 	{foreach $zavod['dosavadniRekordy'] as $soutez => $foo}
 		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
 		{foreach $foo as $rekord}
-			<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id_druzstva']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
 		{/foreach}</ul></dd>
 	{/foreach}
 {else}
@@ -72,7 +72,7 @@
 	{foreach $zavod['rekordy'] as $soutez => $foo}
 		<dd>na {block|texy:true}**{$zavod['terce']} terče** v soutěži **{$soutez}**{/block}<ul>
 		{foreach $foo as $rekord}
-			<li><a href="{plink Druzstva:druzstvo, $rekord['id']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
+			<li><a href="{plink Druzstva:druzstvo, $rekord['id_druzstva']}" title="Informace o družstvu">{$rekord['druzstvo']}</a>, čas {$rekord['vysledny_cas']|vyslednyCas} s, <a href="{plink Zavody:zavod, $rekord['id_zavodu']}" title="Informace o závodu">{$rekord['zavod']}, {$rekord['datum']|substr:0:10|datum:0:0:0}</a></li>
 		{/foreach}</ul></dd>
 	{/foreach}
 {/if}

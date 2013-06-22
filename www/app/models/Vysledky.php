@@ -441,6 +441,68 @@ class Vysledky extends BaseModel
 		else return $minima;
 	}
 
+	public function dosavadniRekordyZavodu($id, $id_druzstva = NULL)
+	{
+		return $this->_rekordyZavodu($id, $id_druzstva, true);
+	}
+
+	public function rekordyZavodu($id, $id_druzstva = NULL)
+	{
+		return $this->_rekordyZavodu($id, $id_druzstva, false);
+	}
+
+	private function _rekordyZavodu($id, $id_druzstva, $dosavadni)
+	{
+		$maxima = $this->connection
+			->select('[ucasti].[id_souteze], [druzstva].[id_kategorie], MIN([vysledky].[vysledny_cas]) AS [vysledny_cas]')
+			->from('[vysledky]')
+			->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
+			->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
+			->leftJoin('[poradatele] ON [zavody].[id] = [poradatele].[id_zavodu]')
+			->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
+			->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
+			->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
+			->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+			->leftJoin('[mista] [mista_druzstva] ON [mista_druzstva].[id] = [sbory].[id_mista]')
+			->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
+			->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
+			->where('[zavody].[id_mista] = (SELECT [id_mista] FROM [zavody] WHERE [zavody].[id] = %i)', $id, '%if', $dosavadni === true, ' AND [zavody].[datum] < (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i) %end', $id, ' AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, ' AND [vysledky].[platne_casy] = %i', self::POUZE_PLATNE_CASY, 'AND [souteze].[id] IN (SELECT [ucasti].[id_souteze] FROM [ucasti] WHERE [id_zavodu] = %i)', $id, 'AND [kategorie].[id] IN (SELECT [ucasti].[id_kategorie] FROM [ucasti] WHERE [id_zavodu] = %i)', $id)
+			->groupBy('[ucasti].[id_souteze], [druzstva].[id_kategorie]')
+			->orderBy('[souteze].[poradi], [kategorie].[poradi]');
+		if( $id_druzstva != NULL ) $maxima->where('[druzstva].[id] = %i', $id_druzstva);
+		$maxima_ = $maxima->fetchAll();
+
+		if(!count($maxima_)) return $maxima;
+
+		$prikaz = '(';
+		$i = 0;
+		foreach($maxima_ as $maximum)
+		{
+			$i++;
+			$maximum_ = $this->connection
+				->select('[druzstva].[id], [ucasti].[id_souteze], '.Druzstva::$_NAZEV2.' AS [druzstvo], [druzstva].[id] AS [id_druzstva], [vysledky].[vysledny_cas], [zavody].[id] AS [id_zavodu], [mista_poradatele].[obec] AS [zavod], [zavody].[datum], [vysledky].[id], [souteze].[nazev] AS [soutez], [kategorie].[nazev] AS [kategorie]')
+				->from('[vysledky]')
+				->rightJoin('[ucasti] ON [ucasti].[id] = [vysledky].[id_ucasti]')
+				->leftJoin('[zavody] ON [zavody].[id] = [ucasti].[id_zavodu]')
+				->leftJoin('[poradatele] ON [zavody].[id] = [poradatele].[id_zavodu]')
+				->leftJoin('[souteze] ON [souteze].[id] = [ucasti].[id_souteze]')
+				->leftJoin('[druzstva] ON [druzstva].[id] = [vysledky].[id_druzstva]')
+				->leftJoin('[sbory] ON [sbory].[id] = [druzstva].[id_sboru]')
+				->leftJoin('[typy_sboru] ON [typy_sboru].[id] = [sbory].[id_typu]')
+				->leftJoin('[mista] [mista_druzstva] ON [mista_druzstva].[id] = [sbory].[id_mista]')
+				->leftJoin('[kategorie] ON [kategorie].[id] = [druzstva].[id_kategorie]')
+				->leftJoin('[terce] ON [terce].[id] = [zavody].[id_tercu]')
+				->leftJoin('[sbory] [poradatel] ON [poradatel].[id] = [poradatele].[id_sboru]')
+				->leftJoin('[mista] [mista_poradatele] ON [mista_poradatele].[id] = [poradatel].[id_mista]')
+				->where('[poradatele].[id_sboru] IN (SELECT [id_sboru] FROM [poradatele] WHERE [poradatele].[id_zavodu] = %i)', $id, '%if', $dosavadni === true, ' AND [zavody].[datum] < (SELECT [datum] FROM [zavody] WHERE [zavody].[id] = %i) %end', $id, ' AND [terce].[id_typu] = (SELECT [terce].[id_typu] FROM [zavody] LEFT JOIN [terce] ON [terce].[id] = [zavody].[id_tercu] WHERE [zavody].[id] = %i)', $id, ' AND [vysledky].[vysledny_cas] = '.$maximum['vysledny_cas'].' AND [druzstva].[id_kategorie] = %i', $maximum['id_kategorie'], ' AND [ucasti].[id_souteze] = %i', $maximum['id_souteze']);
+			if( $id_druzstva != NULL ) $maximum_->where('[druzstva].[id] = %i', $id_druzstva);
+			$prikaz .= (string)$maximum_;
+			if( $i<count($maxima_) ) $prikaz .= ') UNION (';
+		}
+		$prikaz .= ')';
+		return $this->connection->query($prikaz);
+	}
+
 	/**
 	 * Vrátí dosavadní platné rekordy dráhy do začátku závodu. Musí se shodovat:
 	 * - místo pořádání závodu,
@@ -450,7 +512,7 @@ class Vysledky extends BaseModel
 	 * @param type $id_druzstva ID družstva, pro které se mají rekordy závodu nelézt, nebo NULL.
 	 * @return DibiResult
 	 */
-	public function dosavadniRekordyZavodu($id, $id_druzstva = NULL)
+	/*public function _dosavadniRekordyZavodu($id, $id_druzstva = NULL)
 	{
 		$maxima = $this->connection
 			->select('[ucasti].[id_souteze], [druzstva].[id_kategorie], MIN([vysledky].[vysledny_cas]) AS [vysledny_cas]')
@@ -500,7 +562,7 @@ class Vysledky extends BaseModel
 		}
 		$prikaz .= ')';
 		return $this->connection->query($prikaz);
-	}
+	}*/
 
 	/**
 	 * Vrátí aktuální platné rekordy dráhy podle závodu. Musí se shodovat:
@@ -511,7 +573,7 @@ class Vysledky extends BaseModel
 	 * @param type $id_druzstva ID družstva, pro které se mají rekordy závodu nelézt, nebo NULL.
 	 * @return DibiResult
 	 */
-	public function rekordyZavodu($id, $id_druzstva = NULL)
+	/*public function __rekordyZavodu($id, $id_druzstva = NULL)
 	{
 		$maxima = $this->connection
 			->select('[ucasti].[id_souteze], [druzstva].[id_kategorie], MIN([vysledky].[vysledny_cas]) AS [vysledny_cas]')
@@ -561,7 +623,7 @@ class Vysledky extends BaseModel
 		}
 		$prikaz .= ')';
 		return $this->connection->query($prikaz);
-	}
+	}*/
 
 	/**
 	 * Porovnávací funkce pro celkové bodování ligy

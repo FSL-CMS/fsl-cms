@@ -1169,7 +1169,7 @@ class ZavodyPresenter extends BasePresenter
 				$rekord['druzstvo'] = trim($rekord['druzstvo']);
 			}
 
-		if(strtotime($this->template->zavod['datum']) < time())
+		if(!empty($this->template->zavod['vystaveni_vysledku']) && $this->template->zavod['vystaveni_vysledku'] < Datum::$dnes['ted'])
 		{
 			$this->template->zavod['rekordy'] = $vysledkyModel->rekordyZavodu($id)->fetchAssoc('soutez,kategorie,=');
 			foreach ($this->template->zavod['rekordy'] as $soutez)
@@ -1186,7 +1186,7 @@ class ZavodyPresenter extends BasePresenter
 
 		$this->template->rekordyLigy = array('dosavadni' => array(), 'aktualni' => array());
 		$this->template->rekordyLigy['dosavadni'] = $vysledkyModel->rekordyLigy($id, true)->fetchAssoc('soutez,kategorie,=');
-		if($this->template->zavod['datum'] < Datum::$dnes['dnes']) $this->template->rekordyLigy['aktualni'] = $vysledkyModel->rekordyLigy($id, false)->fetchAssoc('soutez,kategorie,=');
+		if(!empty($this->template->zavod['vystaveni_vysledku']) && $this->template->zavod['vystaveni_vysledku'] < Datum::$dnes['ted']) $this->template->rekordyLigy['aktualni'] = $vysledkyModel->rekordyLigy($id, false)->fetchAssoc('soutez,kategorie,=');
 	}
 
 	public function renderPripravaProKomentatora($id)
