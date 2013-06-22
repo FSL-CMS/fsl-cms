@@ -47,7 +47,7 @@ class Diskuze extends BaseModel implements IUdrzba
 	public function findAll()
 	{
 		return $this->connection
-					 ->select('[diskuze].[id], [diskuze].[nazev], [diskuze].[zamknuto], '.Uzivatele::$_UZIVATEL.' AS [autor], [diskuze].[id_autora], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka], [diskuze].[uri]')
+					 ->select('[diskuze].[id], [diskuze].[nazev], [diskuze].[zamknuto], '.Uzivatele::$_UZIVATEL.' AS [autor], [diskuze].[id_autora], [diskuze].[id_tematu], [temata].[nazev] AS [tema], [temata].[souvisejici] AS [souvisejiciTabulka]')
 					 ->from('[diskuze]')
 					 ->leftJoin('[temata] ON [temata].[id] = [diskuze].[id_tematu]')
 
@@ -222,13 +222,6 @@ class Diskuze extends BaseModel implements IUdrzba
 	{
 		$sledovani = Nette\Environment::getService('sledovani');
 		return $sledovani->jeSledovana("diskuze", $id, $id_uzivatele);
-	}
-
-	public function findIdByUri($uri)
-	{
-		return $this->connection->select('[id]')
-					 ->from($this->table)
-					 ->where('%n.uri = %s', $this->table, $uri);
 	}
 
 	private function constructUri($id, $data)

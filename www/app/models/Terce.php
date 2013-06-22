@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
+use Nette\Utils\Strings;
 
 /**
  * Model terčů
@@ -150,7 +150,7 @@ class Terce extends BaseModel
 			$sbor = $sborModel->find($data['id_sboru'])->fetch();
 			$typyModel = Nette\Environment::getService('typyTercu');
 			$typ = $typyModel->find($data['id_typu'])->fetch();
-			$data['uri'] = '/terce/'.$id.'-'.String::webalize(String::webalize($typ['nazev'])).'-'.String::webalize($sbor['nazev']);
+			$data['uri'] = '/terce/'.$id.'-'.Strings::webalize(Strings::webalize($typ['nazev'])).'-'.Strings::webalize($sbor['nazev']);
 		}
 		return $data;
 	}
