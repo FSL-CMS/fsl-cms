@@ -5,6 +5,7 @@
  *
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
+use Nette\Caching\Cache;
 
 /**
  * Model URL
@@ -16,6 +17,18 @@ class Urls extends BaseModel
 
 	/** @var string */
 	protected $table = 'urls';
+	private $cache = null;
+
+	public function getCache()
+	{
+		if($this->cache === null)
+		{
+			$cacheStorage = Nette\Environment::getService('cacheStorage');
+			$this->cache = new Cache($cacheStorage, 'urlsRouter');
+		}
+
+		return $this->cache;
+	}
 
 	public function find($id)
 	{
@@ -31,12 +44,30 @@ class Urls extends BaseModel
 
 	public function findUrlByPresenterAndAction($presenter, $action)
 	{
-		return $this->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] IS NULL', $presenter, $action);
+		//return $this->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] IS NULL', $presenter, $action)->fetch();
+		$self = $this;
+		$value = $this->getCache()->load(md5($presenter . $action), function() use ($self, $presenter, $action)
+				{
+					$value = $self->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] IS NULL', $presenter, $action)->fetch();
+					$self->getCache()->save(md5($presenter . $action), $value);
+					return $value;
+				});
+
+		return $value;
 	}
 
 	public function findUrlByPresenterAndActionAndParam($presenter, $action, $param)
 	{
-		return $this->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] = %i', $presenter, $action, $param);
+		//return $this->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] = %i', $presenter, $action, $param)->fetch();
+		$self = $this;
+		$value = $this->getCache()->load(md5($presenter . $action . $param), function() use ($self, $presenter, $action, $param)
+				{
+					$value = $self->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] = %i', $presenter, $action, $param)->fetch();
+					$self->getCache()->save(md5($presenter . $action . $param), $value);
+					return $value;
+				});
+
+		return $value;
 	}
 
 	public function findByUrl($url)
@@ -67,7 +98,7 @@ class Urls extends BaseModel
 			// provede doplnění pouze pokud nové URL zatím není v DB
 			$byUrl = false;
 			$byRequest = false;
-			if(($byUrl = $this->findByUrl($url)->fetch()) == false || ($byRequest = $this->findUrlByPresenterAndActionAndParam($presenter, $action, $param)->fetch()) == false || $byUrl['id'] != $byRequest['id'])
+			if(($byUrl = $this->findByUrl($url)->fetch()) == false || ($byRequest = $this->findUrlByPresenterAndActionAndParam($presenter, $action, $param)) == false || $byUrl['id'] != $byRequest['id'])
 			{
 				$redByUrl = $this->findRedirectedByUrl($url)->fetch();
 				if($byUrl == false && $redByUrl == false) // nové URL, které ještě nebylo v DB
@@ -84,6 +115,7 @@ class Urls extends BaseModel
 				}
 			}
 			$this->connection->commit();
+			$this->getCache()->remove(md5($presenter.$action.$param));
 		}
 		catch (DibiException $e)
 		{
