@@ -77,8 +77,8 @@ class UrlsRouter extends Nette\Application\Routers\Route implements IRouter
 		$urlsModel = Nette\Environment::getService('urls');
 		$context = Nette\Environment::getHttpRequest();
 
-		if(isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndActionAndParam($actualPresenter, $actualParams['action'], $actualParams['id'])->fetch()) == FALSE) return NULL;
-		if(!isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndAction($actualPresenter, $actualParams['action'])->fetch()) == FALSE) return NULL;
+		if(isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndActionAndParam($actualPresenter, $actualParams['action'], $actualParams['id'])) == FALSE) return NULL;
+		if(!isset($actualParams['id']) && ($url = $urlsModel->findUrlByPresenterAndAction($actualPresenter, $actualParams['action'])) == FALSE) return NULL;
 
 		$url = $context->getUrl()->basePath . substr($url['url'], 1);
 
