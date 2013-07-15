@@ -21,6 +21,7 @@ class StartovniPoradi extends BaseModel
 	{
 		try
 		{
+			$data = $this->checkData($data);
 			$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
 			$this->lastInsertedId($this->connection->insertId());
 			return $ret;
@@ -36,6 +37,7 @@ class StartovniPoradi extends BaseModel
 	{
 		try
 		{
+			$data = $this->checkData($data);
 			return $this->connection->update($this->table, $data)->where('id=%i', $id)->execute();
 		}
 		catch (DibiException $e)
@@ -43,6 +45,13 @@ class StartovniPoradi extends BaseModel
 			if($e->getCode() == 1062) throw new AlreadyExistException($e->getMessage(), $e->getCode(), $e);
 			else throw $e;
 		}
+	}
+	
+	private function checkData($data)
+	{
+		if($data['poradi'] === 0) throw new InvalidArgumentException('Startovní pořadí nemůže být nula.');
+		
+		return $data;
 	}
 
 	public function delete($id)

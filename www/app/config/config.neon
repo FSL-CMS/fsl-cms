@@ -28,86 +28,50 @@ common:
 		Texy2:
 			class: MyTexy(@httpRequest)
 
-		aktualizaceDB:
-			class: AktualizaceDB(@dibi.connection)
-		ankety:
-			class: Ankety(@dibi.connection)
-		bodoveTabulky:
-			class: BodoveTabulky(@dibi.connection)
-		body:
-			class: body(@dibi.connection)
-		clanky:
-			class: Clanky(@dibi.connection)
-		clankyKategorie:
-			class: ClankyKategorie(@dibi.connection)
-		diskuze:
-			class: Diskuze(@dibi.connection)
-		druzstva:
-			class: Druzstva(@dibi.connection)
-		fotky:
-			class: Fotky(@dibi.connection)
-		funkceRady:
-			class: FunkceRady(@dibi.connection)
-		galerie:
-			class: Galerie(@dibi.connection)
-		kategorie:
-			class: Kategorie(@dibi.connection)
-		komentare:
-			class: Komentare(@dibi.connection)
-		mista:
-			class: Mista(@dibi.connection)
-		nastaveni:
-			class: Nastaveni(@dibi.connection)
-		okresy:
-			class: Okresy(@dibi.connection)
-		pollie:
-			class: OndrejBrejla\Pollie\ModelImpl(@dibi.connection)
-		pravidla:
-			class: Pravidla(@dibi.connection)
-		rocniky:
-			class: Rocniky(@dibi.connection)
-		sablonyClanku:
-			class: SablonyClanku(@dibi.connection)
-		sledovani:
-			class: Sledovani(@dibi.connection)
-		soubory:
-			class: Soubory(@dibi.connection)
-		soutezeRocniku:
-			class: SoutezeRocniku(@dibi.connection)
-		sbory:
-			class: Sbory(@dibi.connection)
-		souteze:
-			class: Souteze(@dibi.connection)
-		souvisejici:
-			class: Souvisejici(@dibi.connection)
-		sportoviste:
-			class: Sportoviste(@dibi.connection)
-		startovniPoradi:
-			class: StartovniPoradi(@dibi.connection)
-		stranky:
-			class: Stranky(@dibi.connection)
-		temata:
-			class: Temata(@dibi.connection)
-		terce:
-			class: Terce(@dibi.connection)
-		typySboru:
-			class: TypySboru(@dibi.connection)
-		typyTercu:
-			class: TypyTercu(@dibi.connection)
-		ucasti:
-			class: Ucasti(@dibi.connection)
-		urls:
-			class: Urls(@dibi.connection)
-		uzivatele:
-			class: Uzivatele(@dibi.connection)
-		videa:
-			class: Videa(@dibi.connection)
-		vysledky:
-			class: Vysledky(@dibi.connection)
-		zavody:
-			class: Zavody(@dibi.connection)
-		zavodResource:
-			class: ZavodResource(@zavody)
+		authenticator: Uzivatele
+
+		aktualizaceDB: AktualizaceDB
+		ankety: Ankety
+		bodoveTabulky: BodoveTabulky
+		body: body
+		clanky: Clanky
+		clankyKategorie: ClankyKategorie
+		diskuze: Diskuze
+		druzstva: Druzstva
+		facebookUzivatele: FacebookUzivatele
+		fotky: Fotky
+		funkceRady: FunkceRady
+		galerie: Galerie
+		kategorieSouteze: KategorieSouteze
+		kategorie: Kategorie
+		komentare: Komentare
+		mista: Mista
+		nastaveni: Nastaveni
+		okresy: Okresy
+		pollie: OndrejBrejla\Pollie\ModelImpl
+		pravidla: Pravidla
+		rocniky: Rocniky
+		sablonyClanku: SablonyClanku
+		sledovani: Sledovani
+		soubory: Soubory
+		soutezeRocniku: SoutezeRocniku
+		sbory: Sbory
+		souteze: Souteze
+		souvisejici: Souvisejici
+		sportoviste: Sportoviste
+		startovniPoradi: StartovniPoradi
+		stranky: Stranky
+		temata: Temata
+		terce: Terce
+		typySboru: TypySboru
+		typyTercu: TypyTercu
+		ucasti: Ucasti
+		urls: Urls
+		uzivatele: Uzivatele
+		videa: Videa
+		vysledky: Vysledky
+		zavody: Zavody
+		zavodResource: ZavodResource(@zavody)
 
 	factories:
 

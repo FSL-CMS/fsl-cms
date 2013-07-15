@@ -39,7 +39,7 @@ class AuthControl extends BaseControl
 	{
 		$form = new Form($this, $name);
 
-		$form->getElementPrototype()->class('ajax');
+		//$form->getElementPrototype()->class('ajax');
 
 		$form->addText('login', 'E-mail')
 			->addRule(Form::FILLED, 'Je nutné vyplnit přihlašovací e-mail.');

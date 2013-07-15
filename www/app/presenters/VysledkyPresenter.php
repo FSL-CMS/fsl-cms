@@ -6,8 +6,6 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
-
-
 /**
  * Presenter výsledků
  *
@@ -30,17 +28,17 @@ class VysledkyPresenter extends BasePresenter
 	{
 		$this->template->vysledky = $this->model->findByZavod($id)->fetchAssoc('kategorie,id,=');
 
-		foreach( $this->template->vysledky as $kategorie => $foo )
+		foreach ($this->template->vysledky as $kategorie => $foo)
 		{
 			$i = 1;
-			foreach( $foo as $vysledkyKategorie => $bar )
+			foreach ($foo as $vysledkyKategorie => $bar)
 			{
 				$this->template->vysledky[$kategorie][$vysledkyKategorie]['poradi'] = $i++;
 			}
 		}
 
 		$this->template->nasledujici = $zavody->findNext($id)->fetch();
-          $this->template->predchozi = $zavody->findPrevious($id)->fetch();
-  	}
+		$this->template->predchozi = $zavody->findPrevious($id)->fetch();
+	}
 
 }

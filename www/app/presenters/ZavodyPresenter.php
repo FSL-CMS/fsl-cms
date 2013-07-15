@@ -964,7 +964,7 @@ class ZavodyPresenter extends BasePresenter
 			}
 			catch (AlreadyExistException $e)
 			{
-				$this->flashMessage('Výsledek k tomuto družstvu byl již přidán.', 'warning');
+				$this->flashMessage('Pokoušíte se přidat výsledek ke družstvu, které již má výsledek uložený.', 'warning');
 			}
 			catch (DibiException $e)
 			{
@@ -1062,7 +1062,7 @@ class ZavodyPresenter extends BasePresenter
 							}
 							else $krok++;
 
-							if((int) $vysledek['vysledny_cas'] < Vysledky::HRANICE_PLATNYCH_CASU && isset($body[$id_souteze][$id_kat][$poradi])) $vysledek['body'] = $body[$id_souteze][$id_kat][$poradi]['body'];
+							if((int) $vysledek['vysledny_cas'] < Vysledky::HRANICE_PLATNYCH_CASU && isset($body[$id_souteze][$id_kat][$poradi]) && $vysledek['platne_body'] == true) $vysledek['body'] = $body[$id_souteze][$id_kat][$poradi]['body'];
 							else $vysledek['body'] = 0;
 
 							$vysledek['poradi'] = $poradi;
@@ -1104,6 +1104,7 @@ class ZavodyPresenter extends BasePresenter
 					}
 
 					$dataDoDB = array('id_druzstva' => $vysledek['id_druzstva'], 'lepsi_cas' => self::float($vysledek['lepsi_cas']), 'lepsi_terc' => $vysledek['lepsi_terc'], 'vysledny_cas' => self::float($vysledek['vysledny_cas']), 'platne_body%i' => (int) $vysledek['platne_body'], 'platne_casy%i' => (int) $vysledek['platne_casy']);
+					if($vysledek['platne_body'] == false) $dataDoDB['body%i'] = 0;
 
 					$vysledky->update($id_vysledku, $dataDoDB);
 				}

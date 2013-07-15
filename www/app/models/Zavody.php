@@ -130,7 +130,7 @@ class Zavody extends Zverejnovane
 	{
 		return $this->findOne()
 			->groupBy('[zavody].[id]')
-			->orderBy('[zavody].[datum] DESC');
+			->orderBy('[zavody].[datum]');
 	}
 
 	public function findAllToSelect()

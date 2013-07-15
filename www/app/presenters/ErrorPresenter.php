@@ -15,6 +15,19 @@ use Nette\Diagnostics\Debugger;
 class ErrorPresenter extends BasePresenter
 {
 
+	public function startup()
+	{
+		try
+		{
+			parent::startup();
+		}
+		catch (Exception $e)
+		{
+			// chybné připojení do databáze nesmí projít dále, ale rovnou se vykreslí
+			if(!($e instanceof DibiException) || !in_array($e->getCode(), array(2002, 2006))) throw $e;
+		}
+	}
+
 	/**
 	 * @param  Exception
 	 * @return void

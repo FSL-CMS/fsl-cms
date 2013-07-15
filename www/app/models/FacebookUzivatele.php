@@ -23,10 +23,10 @@ class FacebookUzivatele extends Uzivatele
 		$row = $this->findByFacebookId($login)->fetch();
 
 		if (!$row) { // uživatel nenalezen?
-			throw new AuthenticationException("Uživatel nebyl nalezen.", self::IDENTITY_NOT_FOUND);
+			throw new Nette\Security\AuthenticationException("Uživatel nebyl nalezen.", self::IDENTITY_NOT_FOUND);
 		}
 
-		$identita = new Identity($row->jmeno, $row->opravneni); // vrátíme identitu
+		$identita = new Nette\Security\Identity($row->jmeno, $row->opravneni); // vrátíme identitu
 		$identita->id = $row->id;
 		$identita->id_sboru = $row->id_sboru;
 		return $identita;

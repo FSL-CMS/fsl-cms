@@ -57,6 +57,8 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 
 	protected function startup()
 	{
+		parent::startup();
+
 		// Získání aktuálního nastavení pro kontrétní ligu
 		$this->loadConfiguration();
 
@@ -209,8 +211,6 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 
 		// zaregistrujeme autorizační handler
 		$this->user->setAuthorizator($acl);
-
-		parent::startup();
 
 		/* if(!($this->getPresenter() instanceOf UzivatelePresenter) && $this->action != 'edit' && $this->getUser()->isLoggedIn() && (empty($this->getUser()->getIdentity()->name)))
 		  {
@@ -1092,12 +1092,9 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 
 	public function handleLoginByFacebook()
 	{
-		$apiKey = '755802d99e8b08b04bea91d60a5f235e';
-		$apiSecret = 'e3a689dd77880081fb9b4380da243f0f';
-
 		include_once LIBS_DIR . "/facebook-platform/php/facebook.php";
 
-		$fb = new Facebook($apiKey, $apiSecret);
+		$fb = $this->context->facebook;
 		$fbUserId = $fb->user;
 
 		if($this->user->isLoggedIn())
@@ -1125,10 +1122,8 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 		$user = $this->getUser();
 		if(isset($udaje['login']) && isset($udaje['heslo']))
 		{
-			// zaregistrujeme autentizační handler
-			$user->setAuthenticator($this->context->uzivatele);
-
-			$user->login($udaje['login'], $udaje['heslo']);
+			$identity = $this->context->uzivatele->authenticate(array(\Nette\Security\IAuthenticator::USERNAME => $udaje['login'], \Nette\Security\IAuthenticator::PASSWORD => $udaje['heslo']));
+			$user->login($identity);
 
 			// nastavíme expiraci
 			$user->setExpiration('+3 hours', true, true);
@@ -1138,9 +1133,10 @@ abstract class CommonBasePresenter extends Nette\Application\UI\Presenter
 		elseif(isset($udaje['facebookId']))
 		{
 			// zaregistrujeme autentizační handler
-			$user->setAuthenticatior(new FacebookUzivatele);
+			//$user->setAuthenticatior($this->context->facebookUzivatele);
+			$identity = $this->context->facebookUzivatele->authenticate(array(\Nette\Security\IAuthenticator::USERNAME => $udaje['facebookId']));
 
-			$user->login($udaje['facebookId'], '');
+			$user->login($identity);
 
 			// nastavíme expiraci
 			$user->setExpiration('+3 hours', true, true);

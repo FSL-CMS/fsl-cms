@@ -24,7 +24,7 @@
 		<td class="okres">{ifset $vysledek['okres']}<abbr title="{$vysledek['okres']}">{$vysledek['okres_zkratka']}</abbr>{else}&nbsp;{/ifset}</td>
           {if $vysledkyKategorie['jeLepsiCas']}<td class="cas">{if $vysledek['lepsi_cas'] != 0} {$vysledek['lepsi_cas']} {$vysledek['lepsi_terc']|upper}{/if}</td>{/if}
           <td class="cas">{ifset $vysledek['vysledny_cas']}{$vysledek['vysledny_cas']|vyslednyCas}{/ifset}</td>
-          <td class="body">{ifset $vysledek['body']}{$vysledek['body']}{/ifset}</td>
+          <td class="body">{ifset $vysledek['body']}{if $vysledek['platne_body'] == false}<abbr title="Družstvu byly odebrány body">{$vysledek['body']}</abbr>{else}{$vysledek['body']}{/if}{/ifset}</td>
 		{if $vysledkyKategorie['jePoradiPred']}<td class="poradi">{if $vysledek['poradiPredZavodem'] != 0}{$vysledek['poradiPredZavodem']}.{/if}</td>{/if}
 		{if $vysledkyKategorie['jePoradiPo'] && $vysledkyKategorie['jePoradiPred']}<td class="ukazatel-prubehu">{if $vysledek['poradiPredZavodem'] > $vysledek['poradiPoZavodu'] && $vysledek['poradiPoZavodu'] != 0}&uarr;{/if}{if $vysledek['poradiPredZavodem'] < $vysledek['poradiPoZavodu'] && $vysledek['poradiPredZavodem'] != 0}&darr;{/if}{if $vysledek['poradiPredZavodem'] == $vysledek['poradiPoZavodu'] && $vysledek['poradiPredZavodem'] != 0}={/if}</td>{/if}
 		{if $vysledkyKategorie['jePoradiPo']}<td class="poradi">{ifset $vysledek['poradiPoZavodu']}{$vysledek['poradiPoZavodu']}.{/ifset}</td>{/if}
