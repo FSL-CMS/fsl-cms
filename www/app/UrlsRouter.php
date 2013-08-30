@@ -36,7 +36,7 @@ class UrlsRouter extends Nette\Application\Routers\Route implements IRouter
 		$context = Nette\Environment::getHttpRequest();
 		$page = array();
 
-		$url = $context->getUrl()->path . '?' . $context->getUrl()->query;
+		$url = $context->getUrl()->path . (!empty($context->getUrl()->query) ? '?' . $context->getUrl()->query : '');
 
 		if (($page = $urlsModel->findByUrl($url)->fetch()) == false)
 		{
