@@ -59,6 +59,7 @@ class KalendarPresenter extends BasePresenter
 
 		foreach ($zavody as $zavod)
 		{
+			if($zavod['zruseno'] == true) continue;
 			$this->pripravZavod($v, $zavod);
 		}
 
