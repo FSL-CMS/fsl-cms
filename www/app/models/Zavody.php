@@ -214,7 +214,7 @@ class Zavody extends Zverejnovane
 	{
 		if(isset($data['datum%t'])) {
 			$zavod = $this->find($id)->fetch();
-			$data['uri'] = date('Y-m-d', strtotime($data['datum%t'])).'-'.Texy::webalize($zavod['nazev']);
+			$data['uri'] = date('Y-m-d-H-i', strtotime($data['datum%t'])).'-'.Texy::webalize($zavod['nazev']);
 		}
 		return $data;
 	}
