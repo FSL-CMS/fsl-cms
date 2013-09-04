@@ -6,6 +6,8 @@
  * @copyright  Copyright (c) 2010 Milan Pála, fslcms.milanpala.cz
  */
 
+use Nette\Application\BadRequestException;
+
 /**
  * Presenter pravidel
  *
