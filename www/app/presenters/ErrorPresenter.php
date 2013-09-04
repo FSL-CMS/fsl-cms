@@ -50,7 +50,7 @@ class ErrorPresenter extends BasePresenter
 		else
 		{
 			$this->setView('500'); // load template 500.latte
-			Debugger::log($exception, Debugger::ERROR); // and log exception
+			if(!($exception instanceof DibiException) || !in_array($exception->getCode(), array(2002, 2006)))Debugger::log($exception, Debugger::ERROR); // and log exception
 		}
 	}
 
