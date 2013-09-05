@@ -56,6 +56,13 @@ class Urls extends BaseModel
 		return $value;
 	}
 
+	/**
+	 * 
+	 * @param string $presenter
+	 * @param string $action
+	 * @param int|string $param
+	 * @return array
+	 */
 	public function findUrlByPresenterAndActionAndParam($presenter, $action, $param)
 	{
 		//return $this->findAll()->where('[redirect] IS NULL AND [presenter] = %s AND [action] = %s AND [param] = %i', $presenter, $action, $param)->fetch();

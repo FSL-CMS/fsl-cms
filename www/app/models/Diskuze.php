@@ -229,7 +229,7 @@ class Diskuze extends BaseModel implements IUdrzba
 		if(isset($data['nazev']) && isset($data['id_tematu']))
 		{
 			$urlsModel = Nette\Environment::getService('urls');
-			$url = $urlsModel->findUrlByPresenterAndActionAndParam('Forum', 'forum', $data['id_tematu'])->fetch();
+			$url = $urlsModel->findUrlByPresenterAndActionAndParam('Forum', 'forum', $data['id_tematu']);
 			if($url != false && !empty($url['url']))
 			{
 				$data['uri'] = $url['url'] . $id . '-' . Texy::webalize($data['nazev']);
