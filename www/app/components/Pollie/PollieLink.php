@@ -28,17 +28,19 @@ class PollieLink extends Pollie
 			$this->flashMessage('Už bylo hlasováno.');
 		}
 
-		if(!$this->getPresenter()->isAjax())
+		$this->redirect('this');
+		/*if(!$this->getPresenter()->isAjax())
 		{
 			$this->redirect('this');
-		} else $this->invalidateControl('this');
+		} else $this->invalidateControl('this');*/
 	}
 
 	public function render()
 	{
+
 		$this->template->setFile(dirname(__FILE__) . '/PollieLink.latte');
 
-		$this->template->render();
+		if($this->model->getId()) $this->template->render();
 	}
 
 }

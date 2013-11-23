@@ -35,11 +35,11 @@ class PollControlModel extends Nette\Object implements IPollControlModel {
      * @param mixed $id Id of the current poll.
      */
     public function __construct($id = 0) {
-        $this->id = $id;
-	   $this->oldId = $id;
-        $this->connection = dibi::getConnection();
+		$this->id = $id;
+		$this->oldId = $id;
+		$this->connection = dibi::getConnection();
 
-        if($this->id == 0) $this->id = $this->connection->fetchSingle('SELECT [id] FROM [poll_control_questions] WHERE [datum_zverejneni] IS NOT NULL ORDER BY [datum_zverejneni] DESC LIMIT 1');
+		if($this->id == 0) $this->id = $this->connection->fetchSingle('SELECT [id] FROM [poll_control_questions] WHERE [datum_zverejneni] IS NOT NULL ORDER BY [datum_zverejneni] DESC LIMIT 1');
     }
 
     /**

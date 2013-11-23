@@ -84,15 +84,6 @@ $(document).ready(function() {
 
 	$('.komentar-form').slideUp();
 
-	$('.commentAdd').on('click', function(e){
-		$('#komentarForm-'+$(this).attr('id')).slideToggle();
-		return false;
-	});
-
-	$('a.delete').on('click', function(e){
-		return window.confirm('Opravdu smazat?');
-	});
-
 	$('.tisk').on('click', function(e){
 		$('link[type="text/css"]').each(function(){
 			if( $(this).attr('media') == 'print' ) $(this).clone().attr('media', 'screen').appendTo($('head'));
@@ -117,6 +108,15 @@ $(document).ready(function() {
 	});
 });
 
+
+$(document).on('click', '.commentAdd', function(){
+	$('#komentarForm-'+$(this).attr('id')).slideToggle();
+	return false;
+});
+
+$(document).on('click', 'a.delete', function(){
+	return window.confirm('Opravdu smazat?');
+});
 
 var odkazyVkotve =
 {

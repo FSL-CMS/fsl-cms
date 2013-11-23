@@ -15,7 +15,6 @@ use DibiConnection;
  */
 class ModelImpl extends Object implements Model
 {
-
 	const SESSION_NAMESPACE = '__pollie';
 
 	/**
@@ -31,6 +30,11 @@ class ModelImpl extends Object implements Model
 	 * @var mixed Id of the current poll.
 	 */
 	private $id;
+
+	public function getId()
+	{
+		return $this->id;
+	}
 
 	/**
 	 * Constructor of the poll control model layer.
@@ -86,7 +90,7 @@ class ModelImpl extends Object implements Model
 	 */
 	public function vote($id)
 	{
-		if($this->isVotable())
+		if ($this->isVotable())
 		{
 			$this->connection->query('UPDATE pollie_answers SET votes = votes + 1 WHERE id = %i', $id, ' AND questionId = %i', $this->id);
 
@@ -103,16 +107,10 @@ class ModelImpl extends Object implements Model
 	 */
 	public function isVotable()
 	{
-return true;
-//$sess = Environment::getSession(self::SESSION_NAMESPACE);
-		//if ($sess->poll[$this->id] === TRUE) {
-		//    return FALSE;
-		//} else {
-		if($this->connection->fetchSingle("SELECT COUNT(*) FROM pollie_votes WHERE ip = '$_SERVER[REMOTE_ADDR]' AND questionId = $this->id AND date + INTERVAL 30 SECOND > NOW()"))
+		if ($this->connection->fetchSingle('SELECT COUNT(*) FROM [pollie_votes] WHERE [ip] = %s AND [questionId] = %i AND [date] > DATE_SUB(CURDATE(), INTERVAL 7 DAY)', $_SERVER['REMOTE_ADDR'], $this->id))
 		{
 			return FALSE;
 		}
-		//}
 
 		return TRUE;
 	}

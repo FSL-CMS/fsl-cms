@@ -16,6 +16,7 @@ use Nette\Application\UI\Form;
 class StrankyPresenter extends BasePresenter
 {
 
+	/** @var Stranky */
 	protected $model;
 
 	protected function startup()
@@ -36,7 +37,7 @@ class StrankyPresenter extends BasePresenter
 
 	public function actionAdd()
 	{
-		if( $this->user === NULL || !$this->user->isAllowed('stranky', 'add') ) throw new ForbiddenRequestException();
+		if( $this->user === NULL || !$this->user->isAllowed('stranky', 'add') ) throw new \Nette\Application\ForbiddenRequestException();
 
 		$this->setView('edit');
 	}
@@ -138,7 +139,7 @@ class StrankyPresenter extends BasePresenter
 		{
 			if( $id == 0 )
 			{
-				$this->model->insert($form->getValues());
+				$this->model->insert((array)$form->getValues());
 				$id = $this->model->lastInsertedId();
 			}
 			else $this->model->update($id, (array)$form->getValues());

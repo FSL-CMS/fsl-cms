@@ -35,9 +35,9 @@ class LinkPollControl extends PollControl {
 	{
 		try
 		{
-			if( $this->model->oldId == 0 && $id != 0 ) $this->model = new PollControlModel($id);
+			if( $this->model->oldId === 0 && $id !== 0 ) $this->model = new PollControlModel($id);
 			$this->template->setFile(dirname(__FILE__) . '/LinkPollControl.phtml');
-			if( $this->model->id != 0 ) $this->template->render();
+			if( $this->model->id !== 0 ) $this->template->render();
 		}
 		catch(DibiDriverException $e)
 		{

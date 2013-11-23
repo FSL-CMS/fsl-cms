@@ -38,12 +38,13 @@ class Fotky extends BaseSoubory implements IUdrzba
 
 	public function uloz($id_souvisejiciho, $souvisejici = 'galerie')
 	{
+		/** @var \Nette\Http\FileUpload */
 		$fotka = $this->soubor->toImage()->resize(800, 600);
 
 		$nahled = $this->soubor->toImage()->resize(180, 135);
 
-		$casti = pathinfo( $this->soubor->getName() );
-		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
+		preg_match('/(?<filename>.+)\.(?<extension>[^.]+)/', mb_convert_encoding($this->soubor->getName(), 'UTF-8'), $casti);
+		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => \Nette\Utils\Strings::webalize($casti['filename'], NULL, TRUE), 'nazev' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
 		$id_souboru = $this->lastInsertedId();
 
 		if( $fotka->save($this->cestaKsouborum.'/'.$id_souboru.'.'.$casti['extension']) === false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');

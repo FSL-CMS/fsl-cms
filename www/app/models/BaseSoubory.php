@@ -91,8 +91,8 @@ class BaseSoubory extends BaseModel
 
 	public function uloz($id_souvisejiciho, $souvisejici = '')
 	{
-		$casti = pathinfo( $this->soubor->getName() );
-		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => $casti['filename'], 'pripona' => $casti['extension'], 'nazev' => $casti['filename'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
+		$casti = pathinfo($this->soubor->getName());
+		$this->insert(array('souvisejici' => $souvisejici, 'id_souvisejiciho' => $id_souvisejiciho, 'soubor' => \Nette\Utils\Strings::webalize($casti['filename'], NULL, TRUE), 'nazev' => $casti['filename'], 'pripona' => $casti['extension'], 'id_autora' => $this->id_autora, 'datum_pridani%sql' => 'NOW()'));
 		$id_souboru = $this->lastInsertedId();
 
 		if( $this->soubor->move($this->cestaKsouborum.'/'.$id_souboru.'.'.$casti['extension']) == false ) throw new Exception('Soubor '.$this->soubor->getName().' se nepodařilo uložit.');

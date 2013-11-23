@@ -73,11 +73,19 @@ class FileUploaderControl extends BaseControl
 				$soubor = new Nette\Http\FileUpload($_FILES[self::UPLOADED_KEY]);
 				$this->souborModel->save($soubor);
 
-				$this->exit_status('ok');
+				$casti = pathinfo($soubor->getName());
+				$this->exit_status($soubor->getName());
+				//$this->exit_status('ok');
+			}
+			else
+			{
+				$this->exit_status('Soubor nebyl přiložen.');
 			}
 		}
 		catch (Exception $e)
 		{
+			if($e instanceof \Nette\Application\AbortException) throw $e;
+
 			Nette\Diagnostics\Debugger::log($e, Nette\Diagnostics\Debugger::ERROR);
 			$this->getPresenter()->flashMessage('Nepodařilo se uložit obrázek.', 'error');
 			$this->exit_status($e->getMessage());
@@ -86,8 +94,8 @@ class FileUploaderControl extends BaseControl
 
 	private function exit_status($str)
 	{
-		echo json_encode(array('status' => $str));
-		exit;
+		$data = array('status' => $str);
+		$this->getPresenter()->sendResponse(new \Nette\Application\Responses\JsonResponse($data));
 	}
 
 	private function get_extension($file_name)
