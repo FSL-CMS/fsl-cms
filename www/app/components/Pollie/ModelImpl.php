@@ -98,7 +98,7 @@ class ModelImpl extends Object implements Model
 		}
 		else
 		{
-			throw new BadRequestException('Můžete hlasovat jednou za hodinu.');
+			throw new \Nette\Application\BadRequestException('Můžete hlasovat jednou za hodinu.');
 		}
 	}
 
