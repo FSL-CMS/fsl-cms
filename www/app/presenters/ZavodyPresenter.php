@@ -50,7 +50,7 @@ class ZavodyPresenter extends BasePresenter
 	 *
 	 * @param $id_rocniku Ročník, ke kterému se závod vkládá.
 	 */
-	public function actionAdd($id_rocniku = 0)
+	public function actionAdd($id_rocniku = 0, $backlink = NULL)
 	{
 		if($this->user === NULL || !$this->user->isAllowed('zavody', 'add')) throw new ForbiddenRequestException();
 
@@ -58,7 +58,7 @@ class ZavodyPresenter extends BasePresenter
 		{
 			$rocnikyModel = $this->context->rocniky;
 			$rocnikyModel->zobrazitNezverejnene();
-			$this->redirect('Zavody:add', $rocnikyModel->findLast()->fetchSingle('id'));
+			$this->redirect('Zavody:add', $rocnikyModel->findLast()->fetchSingle('id'), $backlink);
 		}
 
 		$this->setView('edit');
@@ -599,7 +599,7 @@ class ZavodyPresenter extends BasePresenter
 		}
 		elseif($form['saveAndAdd']->isSubmittedBy())
 		{
-			$this->redirect('Zavody:add', $form['backlink']->value);
+			$this->redirect('Zavody:add', [0, $form['backlink']->value]);
 		}
 		else
 		{

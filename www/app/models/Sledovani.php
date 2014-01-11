@@ -68,8 +68,12 @@ class Sledovani extends BaseModel
 
 	public function sledovat($tabulka, $id, $id_uzivatele)
 	{
-		$data = array('tabulka' => $tabulka, 'id_radku%i' => $id, 'id_uzivatele%i' => $id_uzivatele);
-		return $this->insert($data);
+		try {
+			$data = array('tabulka' => $tabulka, 'id_radku%i' => $id, 'id_uzivatele%i' => $id_uzivatele);
+			return $this->insert($data);
+		} catch (AlreadyExistException $e) {
+			return FALSE;
+		}
 	}
 
 	public function nesledovat($tabulka, $id, $id_uzivatele)
@@ -83,9 +87,14 @@ class Sledovani extends BaseModel
 
 	public function insert(array $data)
 	{
-		$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
-		$this->lastInsertedId($this->connection->insertId());
-		return $ret;
+		try {
+			$ret = parent::insert($data)->execute(Dibi::IDENTIFIER);
+			$this->lastInsertedId($this->connection->insertId());
+			return $ret;
+		} catch (DibiException $e) {
+			if($e->getCode() === DibiMySqlDriver::ERROR_DUPLICATE_ENTRY) throw new AlreadyExistException($e);
+			else throw $e;
+		}
 	}
 
 	public function delete($id)

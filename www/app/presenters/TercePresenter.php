@@ -69,7 +69,7 @@ class TercePresenter extends BasePresenter
 
 	public function actionAdd()
 	{
-		if( $this->user === NULL || !$this->user->isAllowed('terce', 'add') ) throw new ForbiddenRequestException();
+		if( $this->user === NULL || !$this->user->isAllowed('terce', 'add') ) throw new \Nette\Application\ForbiddenRequestException();
 
 		$this->setView('edit');
 	}
