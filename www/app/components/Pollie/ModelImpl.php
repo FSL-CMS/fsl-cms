@@ -107,6 +107,8 @@ class ModelImpl extends Object implements Model
 	 */
 	public function isVotable()
 	{
+		if(empty($this->id)) return FALSE;
+
 		if ($this->connection->fetchSingle('SELECT COUNT(*) FROM [pollie_votes] WHERE [ip] = %s AND [questionId] = %i AND [date] > DATE_SUB(CURDATE(), INTERVAL 7 DAY)', $_SERVER['REMOTE_ADDR'], $this->id))
 		{
 			return FALSE;

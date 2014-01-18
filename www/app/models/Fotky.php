@@ -106,7 +106,7 @@ class Fotky extends BaseSoubory implements IUdrzba
 		if( isset($data['soubor']) && isset($data['pripona']) && isset($data['id_souvisejiciho']) )
 		{
 			$urlsModel = Nette\Environment::getService('urls');
-			$url = (array)$urlsModel->findUrlByPresenterAndActionAndParam('Galerie', 'galerie', $data['id_souvisejiciho'])->fetch();
+			$url = (array)$urlsModel->findUrlByPresenterAndActionAndParam('Galerie', 'galerie', $data['id_souvisejiciho']);
 			$data['uri'] = $url['url'].$id.'-'.Texy::webalize($data['soubor']).'-'.Texy::webalize($data['pripona']);
 		}
 		return $data;

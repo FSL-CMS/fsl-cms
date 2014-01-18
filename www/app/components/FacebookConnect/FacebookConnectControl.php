@@ -91,6 +91,10 @@ class FacebookConnectControl extends BaseControl
 			{
 				$this->getPresenter()->flashMessage('Nepodařilo se přihlásit pomocí Facebook účtu.', 'warning');
 			}
+			catch (\Nette\Security\AuthenticationException $e)
+			{
+				$this->getPresenter()->flashMessage('Nepodařilo se přihlásit pomocí Facebook účtu.', 'warning');
+			}
 		}
 		else
 		{

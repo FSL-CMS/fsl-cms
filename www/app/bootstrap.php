@@ -28,6 +28,7 @@ $configurator->createRobotLoader()
 
 define('DATA_DIR', __DIR__.'/../data');
 
+
 // Přidání podpory pro dibi
 $configurator->onCompile[] = function ($configurator, $compiler) {
     $compiler->addExtension('dibi', new DibiNetteExtension);
