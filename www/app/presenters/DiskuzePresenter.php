@@ -228,7 +228,14 @@ class DiskuzePresenter extends BasePresenter
 
 				}
 
-				$sledovani->sledovat("diskuze", $id_diskuze, (int)$this->user->getIdentity()->id);
+				try
+				{
+					$sledovani->sledovat("diskuze", $id_diskuze, (int) $this->user->getIdentity()->id);
+				}
+				catch (DibiException $e)
+				{
+					if ($e->getCode() !== 1062) throw $e;
+				}
 
 				$sledovani->upozornit("temata", $id_tematu);
 

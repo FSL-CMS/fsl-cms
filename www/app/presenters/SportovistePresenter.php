@@ -61,12 +61,19 @@ class SportovistePresenter extends SecuredPresenter
 
 	public function renderEdit($id = 0, $backlink = NULL)
 	{
-		if( $id != 0 ) $this['editForm']->setDefaults($this->model->find($id)->fetch());
+		$this->template->sportoviste = $this->model->find($id)->fetch();
+
+		if( $id != 0 ) $this['editForm']->setDefaults($this->template->sportoviste);
 
 		if($backlink !== NULL) $this['editForm']['backlink']->setValue($backlink);
 
 		if($id == 0) $this->setTitle('Přidání sportoviště');
 		else $this->setTitle('Úprava sportovistě');
+
+		$fotkyModel = new FotkyManager();
+		$fotkyModel->setAutor($this->user->getIdentity()->id);
+		$fotkyModel->setSouvisejici($id);
+		$this['fileUploader']->setFileModel($fotkyModel);
 	}
 
 	public function createComponentEditForm($name)

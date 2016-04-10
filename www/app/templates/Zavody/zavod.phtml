@@ -14,6 +14,27 @@
 <div class="sdileni-zavodu">
 	{control mapa, array('nazev' => $zavod['nazev'], 'odkaz' => $presenter->link('Zavody:zavod', $zavod['id']), 'sirka' => $zavod['sirka'], 'delka' => $zavod['delka'])}
 
+	{if count($fotkySportoviste)}
+		<div class="fotky-sportoviste-wrapper">
+			<div class="fotky-sportoviste">
+				<div>
+				{foreach $fotkySportoviste as $fotka}
+					{control fotka:nahled $fotka}
+				{/foreach}
+				</div>
+			</div>
+			<div class="controls">
+				<a href="#" class="prev-slide">&lt;</a>
+				<a href="#" class="next-slide">&gt;</a>
+			</div>
+		</div>
+		<script>
+		$(document).ready(function() {
+			$('.fotky-sportoviste').lemmonSlider();
+		});
+		</script>
+	{/if}
+
 	<dl>
 		<dt>Exportovat do kalendáře</dt>
 		<dd class="kalendar"><a href="{plink Kalendar:liga}">Všechny závody ve formátu iCal</a></dd>

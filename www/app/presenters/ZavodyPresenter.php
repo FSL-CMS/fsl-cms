@@ -21,9 +21,13 @@ class ZavodyPresenter extends BasePresenter
 	/** @var Zavody */
 	protected $model;
 
+	/** @var Fotky */
+	protected $fotky;
+
 	protected function startup()
 	{
 		$this->model = $this->context->zavody;
+		$this->fotky = $this->context->fotky;
 		parent::startup();
 		if($this->user->isAllowed('rocniky', 'edit')) $this->model->zobrazitNezverejnene();
 	}
@@ -185,6 +189,9 @@ class ZavodyPresenter extends BasePresenter
 
 		$this->template->backlink = $this->application->storeRequest();
 		$this->template->adresaLigy = $this->getHttpRequest()->getUrl()->getScheme() . '://' . $this->getHttpRequest()->getUrl()->getHost();
+
+		$this->template->fotkySportoviste = array();
+		$this->template->fotkySportoviste = $this->fotky->findBySouvisejici($this->template->zavod['id_mista'], 'sportoviste');
 	}
 
 	public function actionStartovniPoradi($id = 0)
@@ -599,7 +606,7 @@ class ZavodyPresenter extends BasePresenter
 		}
 		elseif($form['saveAndAdd']->isSubmittedBy())
 		{
-			$this->redirect('Zavody:add', [0, $form['backlink']->value]);
+			$this->redirect('Zavody:add', array(0, $form['backlink']->value));
 		}
 		else
 		{

@@ -58,6 +58,7 @@
 						<p class="warning">Přihlásit pořadí můžou pouze přihlášení uživatelé nebo pořadatel.</p>
 					{/if}
 
+					{dump $startovni_poradi['startovni_poradi']}
 					{foreach $startovni_poradi['startovni_poradi'] as $kategorie => $foo}
 
 						{if $startovni_poradi['muze_pridavat'] == true}

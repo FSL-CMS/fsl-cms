@@ -223,6 +223,17 @@ h2 + .perex		{margin-top: -0.5em;}
 .galerie-nahled			{margin-bottom: 1.5em;}
 .galerie-nahled:after		{content:"."; display: block; height: 0; clear: both; visibility: hidden;}
 .galerie-nahled-telo		{margin: 0 20px;}
+
+.fotky-sportoviste-wrapper {margin-bottom: 1.5em; height: 135px; position: relative;}
+.fotky-sportoviste {overflow: hidden; position: relative; margin: 0; padding: 0; height: 135px;}
+.fotky-sportoviste .fotka-nahled {float: left; margin: 0 5px 0 0; list-style: none;}
+/* IE6 issues */
+.fotky-sportoviste {width: 100%;}
+
+.fotky-sportoviste-wrapper .controls .prev-slide,
+.fotky-sportoviste-wrapper .controls .next-slide {position: absolute; top: 50%; margin-top: -17px; height: 34px; width: 36px; display: block; text-indent: -9000px; background: url('../js/jquery.fancybox2/fancybox_sprite.png') no-repeat;}
+.fotky-sportoviste-wrapper .controls .prev-slide {left: -38px; background-position: 0 -36px;}
+.fotky-sportoviste-wrapper .controls .next-slide {right: -38px; left: auto; background-position: 0 -72px;}
 /* ----------------------------------------------------------------------mp-- */
 
 

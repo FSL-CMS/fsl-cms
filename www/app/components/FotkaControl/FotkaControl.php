@@ -48,7 +48,7 @@ class FotkaControl extends BaseControl
 		{
 			$soubor = $this->VELKE_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
 
-			if( !file_exists($soubor) ) throw new Exception('Fotografie "'.$soubor.'" neexistuje.');
+			if( !file_exists($soubor) ) return;
 
 			$rozmery = getimagesize($soubor);
 			$this->fotka['sirka'] = $rozmery[0];
@@ -78,7 +78,7 @@ class FotkaControl extends BaseControl
 			{
 				$soubor = $this->VELKE_DIR.'/'.$this->fotka['id'].'.'.$this->fotka['pripona'];
 
-				if( !file_exists($soubor) ) throw new Exception('Fotografie "'.$soubor.'" neexistuje.');
+				if( !file_exists($soubor) ) return;
 
 				$rozmery = getimagesize($soubor);
 				$noveRozmery = \Nette\Image::calculateSize($rozmery[0], $rozmery[1], 380, 380);
